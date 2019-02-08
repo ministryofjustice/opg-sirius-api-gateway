@@ -1,0 +1,10 @@
+**/terraform.tfstate*
+.terraform
+.notes
+.vs
+
+# lambda zips
+# *.zip
+
+# Ruby
+*.lock
