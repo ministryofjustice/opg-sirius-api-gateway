@@ -16,5 +16,7 @@ jobs:
       - run:
           name: Lint Markdown
           command: |
-            bundle --quiet
+            gem install bundler
+            ruby -v && gem -v && bundle -v
+            bundle install
             bundle exec mdl -- readme.md techdebt.md
