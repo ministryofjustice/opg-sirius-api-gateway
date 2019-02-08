@@ -17,6 +17,7 @@ jobs:
           name: Init Terraform
           command: |
             terraform init
+      - run:
           name: Lint Terraform
           command: |
             terraform validate
