@@ -10,11 +10,14 @@ workflows:
 
 jobs:
   lint:
-    docker: [ image: "circleci/ruby" ]
+    docker: [ image: "hashicorp/terraform:full" ]
     steps:
       - checkout
       - run:
-          name: Lint Markdown
+          name: Init Terraform
           command: |
-            bundle --quiet
-            bundle exec mdl -- readme.md techdebt.md
+            terraform init
+      - run:
+          name: Lint Terraform
+          command: |
+            terraform validate
