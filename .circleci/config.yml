@@ -12,7 +12,7 @@ workflows:
         filters:
             branches:
               ignore: [ master ]
-        name: plan_development
+        name: apply_development
         requires: [ lint_terraform ]
 
 jobs:
@@ -40,3 +40,15 @@ jobs:
           name: Terraform Plan
           command: |
             terraform plan
+  apply_terraform:
+    docker: [ image: "hashicorp/terraform:full" ]
+    steps:
+      - checkout
+      - run:
+          name: Init Terraform
+          command: |
+            terraform init
+      - run:
+          name: Terraform Apply
+          command: |
+            terraform apply
