@@ -3,13 +3,20 @@ version: 2.1
 workflows:
   lint:
     jobs:
-    - lint:
+    - lint_terraform:
         filters:
           branches:
             ignore: [ master ]
+        name: lint_terraform
+    - plan_terraform:
+        filters:
+            branches:
+              ignore: [ master ]
+        name: plan_development
+        requires: [ lint_terraform ]
 
 jobs:
-  lint:
+  lint_terraform:
     docker: [ image: "hashicorp/terraform:full" ]
     steps:
       - checkout
@@ -21,3 +28,15 @@ jobs:
           name: Lint Terraform
           command: |
             terraform validate
+  plan_terraform:
+    docker: [ image: "hashicorp/terraform:full" ]
+    steps:
+      - checkout
+      - run:
+          name: Init Terraform
+          command: |
+            terraform init
+      - run:
+          name: Terraform Plan
+          command: |
+            terraform plan
