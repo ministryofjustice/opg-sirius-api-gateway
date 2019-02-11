@@ -8,7 +8,7 @@ workflows:
           branches:
             ignore: [ master ]
         name: lint_terraform
-    - plan_terraform:
+    - apply_terraform:
         filters:
             branches:
               ignore: [ master ]
