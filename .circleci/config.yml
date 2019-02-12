@@ -83,7 +83,6 @@ orbs:
           - restore_cache:
               keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
           - run: bundle install --path vendor/bundle --quiet
-          - run: bundle exec rake get_latest_image
           - save_cache:
               key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
               paths: [ vendor/bundle ]
