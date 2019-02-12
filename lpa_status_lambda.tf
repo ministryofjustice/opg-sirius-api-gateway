@@ -2,26 +2,7 @@ data "aws_security_group" "default" {
   id = "sg-10537c76"
 }
 
-data "aws_subnet" "private_1" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1a.dev-vpc"]
-  }
-}
 
-data "aws_subnet" "private_2" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1b.dev-vpc"] # insert value here
-  }
-}
-
-data "aws_subnet" "private_3" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1c.dev-vpc"] # insert value here
-  }
-}
 
 data "archive_file" "lpa_status_lambda_archive" {
   type        = "zip"
@@ -33,7 +14,7 @@ module "lpa_status" {
   source = "modules/api_gateway_lambda_function"
 
   lambda_name              = "lpa_status"
-  lambda_function_filename = "${path.module}/lpa_status_lambda/lpa_status_lambda.zip"
+  lambda_function_filename = "${data.archive_file.lpa_status_lambda_archive.output_path}"
   lambda_runtime           = "python3.7"
 
   subnet_ids = [
@@ -55,4 +36,26 @@ module "lpa_status" {
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
     "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
   ]
+}
+
+
+data "aws_subnet" "private_1" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-1a.dev-vpc"]
+  }
+}
+
+data "aws_subnet" "private_2" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-1b.dev-vpc"] # insert value here
+  }
+}
+
+data "aws_subnet" "private_3" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-1c.dev-vpc"] # insert value here
+  }
 }
