@@ -23,11 +23,17 @@ data "aws_subnet" "private_3" {
   }
 }
 
+data "archive_file" "lpa_status_lambda_archive" {
+  type        = "zip"
+  source_dir  = "${path.module}/lpa_status_lambda/"
+  output_path = "${path.module}/lpa_status_lambda/lpa_status_lambda.zip"
+}
+
 module "lpa_status" {
   source = "modules/api_gateway_lambda_function"
 
   lambda_name              = "lpa_status"
-  lambda_function_filename = "lpa_status_lambda/lpa_status_lambda.zip"
+  lambda_function_filename = "${path.module}/lpa_status_lambda/lpa_status_lambda.zip"
   lambda_runtime           = "python3.7"
 
   subnet_ids = [
