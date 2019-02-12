@@ -1,54 +1,98 @@
 version: 2.1
 
 workflows:
-  lint:
+  path_to_live:
     jobs:
-    - lint_terraform:
+    - sirius-api-gateway/lint_terraform:
         filters:
           branches:
             ignore: [ master ]
         name: lint_terraform
-    - apply_terraform:
+    - sirius-api-gateway/build_gem_cache:
+        filters:
+            branches:
+              ignore: [ master ]
+        name: build_gem_cache
+    - sirius-api-gateway/terraform_apply_from_ruby:
         filters:
             branches:
               ignore: [ master ]
         name: apply_development
-        requires: [ lint_terraform ]
-
-jobs:
-  lint_terraform:
-    docker: [ image: "hashicorp/terraform:full" ]
-    steps:
-      - checkout
-      - run:
-          name: Init Terraform
-          command: |
-            terraform init
-      - run:
-          name: Lint Terraform
-          command: |
-            terraform validate
-  plan_terraform:
-    docker: [ image: "hashicorp/terraform:full" ]
-    steps:
-      - checkout
-      - run:
-          name: Init Terraform
-          command: |
-            terraform init
-      - run:
-          name: Terraform Plan
-          command: |
-            terraform plan
-  apply_terraform:
-    docker: [ image: "hashicorp/terraform:full" ]
-    steps:
-      - checkout
-      - run:
-          name: Init Terraform
-          command: |
-            terraform init
-      - run:
-          name: Terraform Apply
-          command: |
-            terraform apply -auto-approve
+        requires: [ lint_terraform, build_gem_cache ]
+orbs:
+  sirius-api-gateway:
+    executors:
+      ruby:
+        docker: [ image: circleci/ruby:latest-browsers ]
+      terraform:
+        docker: [ image: hashicorp/terraform ]
+    commands:
+      install_terraform:
+        steps: 
+          - run:
+              name: install_terraform
+              command: |
+                export TERRAFORM_VERSION=0.11.11
+                export TERRAFORM_SHA256SUM=94504f4a67bad612b5c8e3a4b7ce6ca2772b3c1559630dfd71e9c519e3d6149c
+                curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip > terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+                echo "${TERRAFORM_SHA256SUM}  terraform_${TERRAFORM_VERSION}_linux_amd64.zip" > terraform_${TERRAFORM_VERSION}_SHA256SUMS
+                sha256sum -c --status terraform_${TERRAFORM_VERSION}_SHA256SUMS
+                sudo unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
+                rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+    jobs:
+      lint_terraform:
+        executor: terraform
+        steps:
+          - checkout
+          - run:
+              name: Init Terraform
+              command: |
+                terraform init
+          - run:
+              name: Lint Terraform
+              command: |
+                terraform validate
+      plan_terraform:
+        executor: terraform
+        steps:
+          - checkout
+          - run:
+              name: Init Terraform
+              command: |
+                terraform init
+          - run:
+              name: Terraform Plan
+              command: |
+                terraform plan
+      apply_terraform:
+        executor: terraform
+        steps:
+          - checkout
+          - run:
+              name: Init Terraform
+              command: |
+                terraform init
+          - run:
+              name: Terraform Apply
+              command: |
+                terraform apply -auto-approve
+      build_gem_cache:
+        executor: ruby
+        steps:
+          - checkout
+          - restore_cache:
+              keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
+          - run: bundle install --path vendor/bundle --quiet
+          - save_cache:
+              key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
+              paths: [ vendor/bundle ]
+      terraform_apply_from_ruby:
+        parameters:
+        executor: ruby
+        steps:
+          - checkout
+          - install_terraform
+          - restore_cache:
+              keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
+          - run: bundle install --path vendor/bundle --quiet
+          - run: bundle exec rake terraform:apply
