@@ -31,5 +31,5 @@ module "lpa_status" {
 }
 
 output "lambda_invoke_url" {
-  value = "${module.lpa_status.lambda_invoke_url}"
+  value = "${module.lpa_status.lambda_name} invoke URL: ${module.lpa_status.lambda_invoke_url}"
 }
