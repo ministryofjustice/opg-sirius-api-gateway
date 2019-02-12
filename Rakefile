@@ -18,15 +18,7 @@ namespace :terraform do
   desc 'Workstation: apply'
   task :apply do
     Rake::Task['terraform:init'].invoke
-    sh 'terraform apply -var-file config.json -var-file versions.tfvars -auto-approve'
+    sh 'terraform apply'
     Rake::Task['terraform:clean_local_files'].invoke
   end
-  desc 'Workstation: clean_local_files'
-  task :clean_local_files do
-    sh 'terraform state rm local_file.api_migration'
-    sh 'terraform state rm local_file.membrane_migration'
-    sh 'terraform state rm local_file.smoke_tests_task'
-  end
 end
-
-#ave identity -- bundle exec rake terraform:init

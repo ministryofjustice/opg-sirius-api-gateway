@@ -2,8 +2,6 @@ data "aws_security_group" "default" {
   id = "sg-10537c76"
 }
 
-
-
 data "archive_file" "lpa_status_lambda_archive" {
   type        = "zip"
   source_dir  = "${path.module}/lpa_status_lambda/"
