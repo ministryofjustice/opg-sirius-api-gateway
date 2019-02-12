@@ -1,3 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'mdl'
+gem 'rake'
+gem 'terraform_landscape'

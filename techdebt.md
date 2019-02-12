@@ -1,1 +1,9 @@
-No state storage for this repository yet
+- ~~No state storage for this repository yet~~
+- build an image for ruby+terraform from circleci/ruby
+- Split up modules/api_gateway_lambda_function/main.tf into smaller files
+- Use lookup patter for account numbers everywhere `${lookup(local.accounts, "opg-sirius-development")`
+- Tag all resources
+- Move subnets into module as we'll always be using the same ones
+- Move make zip into module and ask for path only
+- create security group
+- Add README for module
