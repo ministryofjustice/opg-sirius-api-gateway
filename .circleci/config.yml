@@ -18,6 +18,7 @@ workflows:
             branches:
               ignore: [ master ]
         name: apply_development
+        workspace: development
         requires: [ lint_terraform, build_gem_cache ]
 orbs:
   sirius-api-gateway:
@@ -88,6 +89,12 @@ orbs:
               paths: [ vendor/bundle ]
       terraform_apply_from_ruby:
         parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: '<< parameters.workspace >>'
         executor: ruby
         steps:
           - checkout

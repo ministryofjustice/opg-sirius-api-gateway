@@ -11,9 +11,30 @@ terraform {
 
 provider "aws" {
   region = "eu-west-1"
+  alias  = "development"
 
   assume_role {
     role_arn     = "arn:aws:iam::${lookup(local.accounts, "opg-sirius-development")}:role/${var.default_role}"
+    session_name = "terraform-session"
+  }
+}
+
+provider "aws" {
+  region = "eu-west-1"
+  alias  = "production"
+
+  assume_role {
+    role_arn     = "arn:aws:iam::${lookup(local.accounts, "opg-sirius-production")}:role/${var.default_role}"
+    session_name = "terraform-session"
+  }
+}
+
+provider "aws" {
+  region = "eu-west-1"
+  alias  = "preproduction"
+
+  assume_role {
+    role_arn     = "arn:aws:iam::${lookup(local.accounts, "opg-sirius-production")}:role/${var.default_role}"
     session_name = "terraform-session"
   }
 }

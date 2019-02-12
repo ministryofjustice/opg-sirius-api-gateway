@@ -19,8 +19,9 @@ module "lpa_status" {
     "${data.aws_security_group.default.id}",
   ]
 
+  vpc                          = "${lookup(local.vpc, terraform.workspace)}"
+  account_id                   = "${lookup(local.target_account, terraform.workspace)}"
   api_gateway                  = "opg-api-gateway"
-  account_id                   = "${lookup(local.accounts, "opg-sirius-development")}"
   api_gateway_deployment_stage = "testing-0-0-1"
 
   permitted_consumer_roles = [
@@ -28,6 +29,8 @@ module "lpa_status" {
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
     "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
   ]
+
+  providers = "${terraform.workspace}"
 }
 
 output "lambda_invoke_url" {

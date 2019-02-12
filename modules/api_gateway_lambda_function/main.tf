@@ -3,21 +3,21 @@ data "aws_region" "current" {}
 data "aws_subnet" "private_1" {
   filter {
     name   = "tag:Name"
-    values = ["private-1a.dev-vpc"]
+    values = ["private-1a.${(var.vpc)}"]
   }
 }
 
 data "aws_subnet" "private_2" {
   filter {
     name   = "tag:Name"
-    values = ["private-1b.dev-vpc"] # insert value here
+    values = ["private-1b.${(var.vpc)}"]
   }
 }
 
 data "aws_subnet" "private_3" {
   filter {
     name   = "tag:Name"
-    values = ["private-1c.dev-vpc"] # insert value here
+    values = ["private-1c.${(var.vpc)}"]
   }
 }
 

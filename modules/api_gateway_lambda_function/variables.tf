@@ -34,3 +34,7 @@ variable "permitted_consumer_roles" {
   type        = "list"
   default     = []
 }
+
+variable "vpc" {
+  description = "Name of vpc to target"
+}

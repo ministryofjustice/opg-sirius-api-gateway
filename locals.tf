@@ -10,10 +10,22 @@ locals {
     "management"             = "311462405659"
   }
 
-  account_name = "development"
+  account_name = "sirius-development"
+
+  vpc = {
+    "production"    = "prod-vpc"
+    "preproduction" = "prod-vpc"
+    "development"   = "dev-vpc"
+  }
+
+  target_account = {
+    "production"    = "649098267436"
+    "preproduction" = "649098267436"
+    "development"   = "288342028542"
+  }
 
   account_tags = {
-    is_production    = "${local.account_name == "production" ? "true" : "false"}"
+    is_production    = "${local.account_name == "sirius-production" ? "true" : "false"}"
     environment_name = "${local.account_name}"
   }
 
@@ -28,7 +40,7 @@ locals {
     source-code            = "https://github.com/ministryofjustice/opg-sirius-api-gateway"
     Environment            = "${local.account_name}"
     Project                = "core"
-    Stack                  = "dev-vpc"
+    Stack                  = "${lookup(local.vpc, terraform.workspace )}"
     component              = "OPG Sirius API Gateway"
   }
 }
