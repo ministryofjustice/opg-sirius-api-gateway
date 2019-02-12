@@ -22,7 +22,6 @@ See [opg-org-infra/AWS-CONSOLE.md](https://github.com/ministryofjustice/opg-org-
 
 ### Initialize Terraform
 
-shared  357766484745
 ```bash
 aws-vault exec identity -- terraform init -backend-config="role_arn=arn:aws:iam::311462405659:role/management-admin"
 ```
