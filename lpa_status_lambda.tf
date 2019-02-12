@@ -57,3 +57,7 @@ data "aws_subnet" "private_3" {
     values = ["private-1c.dev-vpc"] # insert value here
   }
 }
+
+output "lambda_invoke_url" {
+  value = "${module.lpa_status.lambda_invoke_url}"
+}
