@@ -1,5 +1,26 @@
 data "aws_region" "current" {}
 
+data "aws_subnet" "private_1" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-1a.dev-vpc"]
+  }
+}
+
+data "aws_subnet" "private_2" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-1b.dev-vpc"] # insert value here
+  }
+}
+
+data "aws_subnet" "private_3" {
+  filter {
+    name   = "tag:Name"
+    values = ["private-1c.dev-vpc"] # insert value here
+  }
+}
+
 # Lambda Function IAM Stuff
 
 resource "aws_iam_role" "iam_for_lambda" {
@@ -41,7 +62,12 @@ resource "aws_lambda_function" "lambda_function" {
   source_code_hash = "${base64sha256(file("${var.lambda_function_filename}"))}"
 
   vpc_config {
-    subnet_ids         = ["${var.subnet_ids}"]
+    subnet_ids = [
+      "${data.aws_subnet.private_1.id}",
+      "${data.aws_subnet.private_2.id}",
+      "${data.aws_subnet.private_3.id}",
+    ]
+
     security_group_ids = ["${var.security_group_ids}"]
   }
 }

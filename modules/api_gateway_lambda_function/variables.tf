@@ -11,11 +11,6 @@ variable "lambda_runtime" {
   default     = "python3.7"
 }
 
-variable "subnet_ids" {
-  type        = "list"
-  description = "List of subnet IDs for lambda function vpc_config"
-}
-
 variable "security_group_ids" {
   type        = "list"
   description = "List of security group IDs for lambda function vpc_config"

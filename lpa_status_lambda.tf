@@ -15,12 +15,6 @@ module "lpa_status" {
   lambda_function_filename = "${data.archive_file.lpa_status_lambda_archive.output_path}"
   lambda_runtime           = "python3.7"
 
-  subnet_ids = [
-    "${data.aws_subnet.private_1.id}",
-    "${data.aws_subnet.private_2.id}",
-    "${data.aws_subnet.private_3.id}",
-  ]
-
   security_group_ids = [
     "${data.aws_security_group.default.id}",
   ]
@@ -34,28 +28,6 @@ module "lpa_status" {
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
     "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
   ]
-}
-
-
-data "aws_subnet" "private_1" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1a.dev-vpc"]
-  }
-}
-
-data "aws_subnet" "private_2" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1b.dev-vpc"] # insert value here
-  }
-}
-
-data "aws_subnet" "private_3" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1c.dev-vpc"] # insert value here
-  }
 }
 
 output "lambda_invoke_url" {
