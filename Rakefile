@@ -18,7 +18,6 @@ namespace :terraform do
   desc 'Workstation: apply'
   task :apply do
     Rake::Task['terraform:init'].invoke
-    sh 'terraform apply'
-    Rake::Task['terraform:clean_local_files'].invoke
+    sh 'terraform apply -auto-approve'
   end
 end

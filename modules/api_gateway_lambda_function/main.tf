@@ -107,7 +107,7 @@ resource "aws_lambda_permission" "lambda_permission" {
   function_name = "${aws_lambda_function.lambda_function.function_name}"
   principal     = "apigateway.amazonaws.com"
 
-  #Output exeuction arn from api gateway resource as the data source doesn't have it
+  #Output execution arn from api gateway resource as the data source doesn't have it
   source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${var.account_id}:${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}/*/${aws_api_gateway_method.gateway_method_get.http_method}${aws_api_gateway_resource.gateway_resource.path}"
 }
 
