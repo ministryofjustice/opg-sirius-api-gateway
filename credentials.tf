@@ -13,12 +13,11 @@ provider "aws" {
   region = "eu-west-1"
 
   assume_role {
-    role_arn     = "arn:aws:iam::${lookup(local.target_account, "development")}:role/${var.default_role}"
+    role_arn     = "arn:aws:iam::${lookup(local.target_account, terraform.workspace)}:role/${var.default_role}"
     session_name = "terraform-session"
   }
 }
 
-#terraform.workspace
 provider "aws" {
   region = "eu-west-1"
   alias  = "management"
