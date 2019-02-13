@@ -15,6 +15,9 @@ workflows:
         workspace: development
         requires: [ lint_terraform, build_gem_cache ]
     - sirius-api-gateway/apply_terraform:
+        filters:
+            branches:
+              only: [ master ]
         name: apply_production
         workspace: production
         requires: [ lint_terraform, build_gem_cache ]
