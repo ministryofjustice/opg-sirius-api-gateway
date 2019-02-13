@@ -57,6 +57,10 @@ orbs:
               command: |
                 terraform init
           - run:
+              name: Select Workspace
+              command: |
+                terraform workspace select development
+          - run:
               name: Lint Terraform
               command: |
                 terraform validate
