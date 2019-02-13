@@ -4,14 +4,8 @@ workflows:
   path_to_live:
     jobs:
     - sirius-api-gateway/lint_terraform:
-        filters:
-          branches:
-            ignore: [ master ]
         name: lint_terraform
     - sirius-api-gateway/build_gem_cache:
-        filters:
-            branches:
-              ignore: [ master ]
         name: build_gem_cache
     - sirius-api-gateway/apply_terraform:
         filters:
@@ -20,13 +14,10 @@ workflows:
         name: apply_development
         workspace: development
         requires: [ lint_terraform, build_gem_cache ]
-    - sirius-api-gateway/plan_terraform:
-        filters:
-            branches:
-              ignore: [ master ]
-        name: plan_production
+    - sirius-api-gateway/apply_terraform:
+        name: apply_production
         workspace: production
-        requires: [ apply_development ]
+        requires: [ lint_terraform, build_gem_cache ]
 orbs:
   sirius-api-gateway:
     executors:
@@ -74,22 +65,6 @@ orbs:
           - save_cache:
               key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
               paths: [ vendor/bundle ]
-      plan_terraform:
-        parameters:
-          workspace:
-            description: Terraform Workspace name
-            type: string
-            default: development
-        environment:
-          TF_WORKSPACE: '<< parameters.workspace >>'
-        executor: ruby
-        steps:
-          - checkout
-          - install_terraform
-          - restore_cache:
-              keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
-          - run: bundle install --path vendor/bundle --quiet
-          - run: bundle exec rake terraform:plan
       apply_terraform:
         parameters:
           workspace:
