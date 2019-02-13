@@ -24,6 +24,7 @@ namespace :terraform do
   desc 'Workstation: apply'
   task :apply do
     Rake::Task['terraform:init'].invoke
+    sh 'terraform apply -auto-approve -target=aws_api_gateway_rest_api.opg_api_gateway'
     sh 'terraform apply -auto-approve'
   end
 end

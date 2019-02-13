@@ -21,7 +21,7 @@ module "lpa_status" {
 
   vpc                          = "${lookup(local.vpc, terraform.workspace)}"
   account_id                   = "${lookup(local.target_account, terraform.workspace)}"
-  api_gateway                  = "opg-api-gateway"
+  api_gateway                  = "opg-api-gateway-${terraform.workspace}"
   api_gateway_deployment_stage = "testing-0-0-1"
 
   permitted_consumer_roles = [

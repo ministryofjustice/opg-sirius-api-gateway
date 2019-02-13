@@ -40,7 +40,8 @@ locals {
     source-code            = "https://github.com/ministryofjustice/opg-sirius-api-gateway"
     Environment            = "${local.account_name}"
     Project                = "core"
-    Stack                  = "${lookup(local.vpc, terraform.workspace )}"
-    component              = "OPG Sirius API Gateway"
+
+    Stack     = "${lookup(local.vpc, terraform.workspace )}"
+    component = "OPG Sirius API Gateway"
   }
 }
