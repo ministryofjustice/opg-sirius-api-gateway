@@ -10,6 +10,12 @@ namespace :terraform do
       sh 'terraform init -backend-config="role_arn=arn:aws:iam::311462405659:role/management-admin"'
     end
   end
+  desc 'Workstation: localplan'
+  task :localplan do
+    Rake::Task['terraform:init'].invoke
+    sh 'terraform workspace select development'
+    sh 'terraform plan'
+  end
   desc 'Workstation: plan'
   task :plan do
     Rake::Task['terraform:init'].invoke

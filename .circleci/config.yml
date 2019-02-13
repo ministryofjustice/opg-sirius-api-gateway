@@ -13,13 +13,20 @@ workflows:
             branches:
               ignore: [ master ]
         name: build_gem_cache
-    - sirius-api-gateway/terraform_apply_from_ruby:
+    - sirius-api-gateway/apply_terraform:
         filters:
             branches:
               ignore: [ master ]
         name: apply_development
         workspace: development
         requires: [ lint_terraform, build_gem_cache ]
+    - sirius-api-gateway/plan_terraform:
+        filters:
+            branches:
+              ignore: [ master ]
+        name: plan_production
+        workspace: production
+        requires: [ apply_development ]
 orbs:
   sirius-api-gateway:
     executors:
@@ -53,30 +60,6 @@ orbs:
               name: Lint Terraform
               command: |
                 terraform validate
-      plan_terraform:
-        executor: terraform
-        steps:
-          - checkout
-          - run:
-              name: Init Terraform
-              command: |
-                terraform init
-          - run:
-              name: Terraform Plan
-              command: |
-                terraform plan
-      apply_terraform:
-        executor: terraform
-        steps:
-          - checkout
-          - run:
-              name: Init Terraform
-              command: |
-                terraform init
-          - run:
-              name: Terraform Apply
-              command: |
-                terraform apply -auto-approve
       build_gem_cache:
         executor: ruby
         steps:
@@ -87,7 +70,23 @@ orbs:
           - save_cache:
               key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
               paths: [ vendor/bundle ]
-      terraform_apply_from_ruby:
+      plan_terraform:
+        parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: '<< parameters.workspace >>'
+        executor: ruby
+        steps:
+          - checkout
+          - install_terraform
+          - restore_cache:
+              keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
+          - run: bundle install --path vendor/bundle --quiet
+          - run: bundle exec rake terraform:plan
+      apply_terraform:
         parameters:
           workspace:
             description: Terraform Workspace name
