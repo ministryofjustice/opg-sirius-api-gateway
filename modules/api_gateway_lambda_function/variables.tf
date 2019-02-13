@@ -1,5 +1,5 @@
 variable "lambda_name" {
-  description = "Name of the lambda and role policy that accompanies it."
+  description = "Name for the lambda function and role policies that accompany it."
 }
 
 variable "lambda_function_filename" {
@@ -7,7 +7,7 @@ variable "lambda_function_filename" {
 }
 
 variable "lambda_runtime" {
-  description = ""
+  description = "Language used for the lambda function"
   default     = "python3.7"
 }
 
@@ -17,8 +17,7 @@ variable "security_group_ids" {
 }
 
 variable "api_gateway" {
-  description = "API gateway to use"
-  default     = "opg-api-gateway"
+  description = "API gateway REST API to attach lambda functions to"
 }
 
 variable "account_id" {
@@ -26,11 +25,11 @@ variable "account_id" {
 }
 
 variable "api_gateway_deployment_stage" {
-  description = "The name of the stage. If the specified stage already exists, it will be updated to point to the new deployment. If the stage does not exist, a new one will be created and point to this deployment"
+  description = "The name of the deployment stage. If the specified stage already exists, it will be updated to point to the new deployment. If the stage does not exist, a new one will be created and point to this deployment"
 }
 
 variable "permitted_consumer_roles" {
-  description = "Cross account IAM roles to permit access to in ARN format"
+  description = "Cross account IAM roles that are permitted to use the API resource, in ARN format"
   type        = "list"
   default     = []
 }
