@@ -44,16 +44,14 @@ orbs:
     jobs:
       lint_terraform:
         executor: terraform
+        environment:
+          TF_WORKSPACE: 'development'
         steps:
           - checkout
           - run:
               name: Init Terraform
               command: |
                 terraform init
-          - run:
-              name: Select Workspace
-              command: |
-                terraform workspace select development
           - run:
               name: Lint Terraform
               command: |

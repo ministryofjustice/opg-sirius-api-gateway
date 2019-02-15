@@ -19,8 +19,8 @@ module "lpa_status" {
     "${data.aws_security_group.default.id}",
   ]
 
-  vpc                          = "${lookup(local.vpc, terraform.workspace)}"
-  account_id                   = "${lookup(local.target_account, terraform.workspace)}"
+  vpc                          = "${local.vpc_name}"
+  account_id                   = "${local.target_account}"
   api_gateway                  = "opg-api-gateway-${terraform.workspace}"
   api_gateway_deployment_stage = "testing-0-0-1"
 

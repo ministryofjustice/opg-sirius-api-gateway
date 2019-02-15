@@ -1,23 +1,18 @@
 data "aws_region" "current" {}
+data "aws_availability_zones" "available" {}
 
-data "aws_subnet" "private_1" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1a.${(var.vpc)}"]
-  }
-}
+data "aws_subnet" "private" {
+  count             = 3
+  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
 
-data "aws_subnet" "private_2" {
   filter {
-    name   = "tag:Name"
-    values = ["private-1b.${(var.vpc)}"]
-  }
-}
+    name = "tag:Name"
 
-data "aws_subnet" "private_3" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1c.${(var.vpc)}"]
+    values = [
+      "private-1a.${var.vpc}",
+      "private-1b.${var.vpc}",
+      "private-1c.${var.vpc}",
+    ]
   }
 }
 
@@ -63,9 +58,7 @@ resource "aws_lambda_function" "lambda_function" {
 
   vpc_config {
     subnet_ids = [
-      "${data.aws_subnet.private_1.id}",
-      "${data.aws_subnet.private_2.id}",
-      "${data.aws_subnet.private_3.id}",
+      "${data.aws_subnet.private.*.id}",
     ]
 
     security_group_ids = ["${var.security_group_ids}"]
