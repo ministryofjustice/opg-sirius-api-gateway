@@ -8,3 +8,9 @@
 
 # Ruby
 *.lock
+
+# IDEs
+.idea
+
+# Mac
+.DS_Store
