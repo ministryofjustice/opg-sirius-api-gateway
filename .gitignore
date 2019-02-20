@@ -9,8 +9,11 @@
 # Ruby
 *.lock
 
-# IDEs
+# IDE & development
 .idea
+/api-gateway
+__pycache__
 
 # Mac
 .DS_Store
+
