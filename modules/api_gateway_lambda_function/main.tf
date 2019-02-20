@@ -21,6 +21,7 @@ data "aws_subnet" "private" {
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "${var.lambda_name}-invoke"
   assume_role_policy = "${data.aws_iam_policy_document.lambda_assume.json}"
+  tags               = "${var.tags}"
 }
 
 resource "aws_iam_role_policy_attachment" "aws_lambda_vpc_access_execution_role" {
@@ -63,6 +64,9 @@ resource "aws_lambda_function" "lambda_function" {
 
     security_group_ids = ["${var.security_group_ids}"]
   }
+
+  environment = ["${slice( list(var.environment), 0, length(var.environment) == 0 ? 0 : 1 )}"]
+  tags        = "${var.tags}"
 }
 
 # Add api gateway route
@@ -73,7 +77,7 @@ data "aws_api_gateway_rest_api" "api_gateway_rest_api" {
 resource "aws_api_gateway_resource" "gateway_resource" {
   rest_api_id = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
   parent_id   = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.root_resource_id}"
-  path_part   = "lpa-status"
+  path_part   = "${var.lambda_name}"
 }
 
 resource "aws_api_gateway_method" "gateway_method_get" {
@@ -108,11 +112,6 @@ resource "aws_api_gateway_deployment" "deployment" {
   depends_on  = ["aws_api_gateway_integration.integration", "aws_lambda_permission.lambda_permission"]
   rest_api_id = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
   stage_name  = "${var.api_gateway_deployment_stage}"
-
-  # #TODO how does this resolve?
-  # variables = {
-  #   deployed_sha1 = "${sha1(file("${path.module}/api-gateway.tf"))}"
-  # }
 
   lifecycle {
     create_before_destroy = true

@@ -37,3 +37,15 @@ variable "permitted_consumer_roles" {
 variable "vpc" {
   description = "Name of vpc to target"
 }
+
+variable "environment" {
+  description = "Environment configuration for the Lambda function"
+  type        = "map"
+  default     = {}
+}
+
+variable "tags" {
+  description = "A mapping of tags"
+  type        = "map"
+  default     = {}
+}

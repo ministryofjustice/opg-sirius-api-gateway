@@ -29,6 +29,14 @@ module "lpa_status" {
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
     "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
   ]
+
+  environment {
+    variables {
+      USER = "user-one"
+    }
+  }
+
+  tags = "${local.default_tags}"
 }
 
 output "lambda_invoke_url" {
