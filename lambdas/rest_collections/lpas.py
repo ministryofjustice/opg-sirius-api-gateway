@@ -18,13 +18,13 @@ def get_lpa(lpa_online_tool_id=None, sirius_uid=None):
 
     elif lpa_online_tool_id is not None:
         lpa = provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
-        if lpa is not lpa:
+        if lpa is not None:
             return lpa['payload']
         return lpa
 
     elif sirius_uid is not None:
         lpa = provider.get_lpa_by_sirius_uid(sirius_uid)
-        if lpa is not lpa:
+        if lpa is not None:
             return lpa['payload']
         return lpa
 
