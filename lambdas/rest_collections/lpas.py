@@ -17,10 +17,16 @@ def get_lpa(lpa_online_tool_id=None, sirius_uid=None):
         raise InvalidInputError("Must be either 'lpa_online_tool_id' or 'sirius_uid'; not both")
 
     elif lpa_online_tool_id is not None:
-        return provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
+        lpa = provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
+        if lpa is not lpa:
+            return lpa['payload']
+        return lpa
 
     elif sirius_uid is not None:
-        return provider.get_lpa_by_sirius_uid(sirius_uid)
+        lpa = provider.get_lpa_by_sirius_uid(sirius_uid)
+        if lpa is not lpa:
+            return lpa['payload']
+        return lpa
 
     else:
         raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")
