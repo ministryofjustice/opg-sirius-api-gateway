@@ -1,23 +1,18 @@
 data "aws_region" "current" {}
+data "aws_availability_zones" "available" {}
 
-data "aws_subnet" "private_1" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1a.dev-vpc"]
-  }
-}
+data "aws_subnet" "private" {
+  count             = 3
+  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
 
-data "aws_subnet" "private_2" {
   filter {
-    name   = "tag:Name"
-    values = ["private-1b.dev-vpc"] # insert value here
-  }
-}
+    name = "tag:Name"
 
-data "aws_subnet" "private_3" {
-  filter {
-    name   = "tag:Name"
-    values = ["private-1c.dev-vpc"] # insert value here
+    values = [
+      "private-1a.${var.vpc}",
+      "private-1b.${var.vpc}",
+      "private-1c.${var.vpc}",
+    ]
   }
 }
 
@@ -26,6 +21,7 @@ data "aws_subnet" "private_3" {
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "${var.lambda_name}-invoke"
   assume_role_policy = "${data.aws_iam_policy_document.lambda_assume.json}"
+  tags               = "${var.tags}"
 }
 
 resource "aws_iam_role_policy_attachment" "aws_lambda_vpc_access_execution_role" {
@@ -63,13 +59,14 @@ resource "aws_lambda_function" "lambda_function" {
 
   vpc_config {
     subnet_ids = [
-      "${data.aws_subnet.private_1.id}",
-      "${data.aws_subnet.private_2.id}",
-      "${data.aws_subnet.private_3.id}",
+      "${data.aws_subnet.private.*.id}",
     ]
 
     security_group_ids = ["${var.security_group_ids}"]
   }
+
+  environment = ["${slice( list(var.environment), 0, length(var.environment) == 0 ? 0 : 1 )}"]
+  tags        = "${var.tags}"
 }
 
 # Add api gateway route
@@ -80,7 +77,7 @@ data "aws_api_gateway_rest_api" "api_gateway_rest_api" {
 resource "aws_api_gateway_resource" "gateway_resource" {
   rest_api_id = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
   parent_id   = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.root_resource_id}"
-  path_part   = "lpa-status"
+  path_part   = "${var.lambda_name}"
 }
 
 resource "aws_api_gateway_method" "gateway_method_get" {
@@ -106,9 +103,7 @@ resource "aws_lambda_permission" "lambda_permission" {
   action        = "lambda:InvokeFunction"
   function_name = "${aws_lambda_function.lambda_function.function_name}"
   principal     = "apigateway.amazonaws.com"
-
-  #Output execution arn from api gateway resource as the data source doesn't have it
-  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${var.account_id}:${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}/*/${aws_api_gateway_method.gateway_method_get.http_method}${aws_api_gateway_resource.gateway_resource.path}"
+  source_arn    = "arn:aws:execute-api:${data.aws_region.current.name}:${var.account_id}:${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}/*/${aws_api_gateway_method.gateway_method_get.http_method}${aws_api_gateway_resource.gateway_resource.path}"
 }
 
 # Deploy the Gateway Stage
@@ -117,11 +112,6 @@ resource "aws_api_gateway_deployment" "deployment" {
   depends_on  = ["aws_api_gateway_integration.integration", "aws_lambda_permission.lambda_permission"]
   rest_api_id = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
   stage_name  = "${var.api_gateway_deployment_stage}"
-
-  # #TODO how does this resolve?
-  # variables = {
-  #   deployed_sha1 = "${sha1(file("${path.module}/api-gateway.tf"))}"
-  # }
 
   lifecycle {
     create_before_destroy = true

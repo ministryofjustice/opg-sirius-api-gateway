@@ -10,25 +10,46 @@ locals {
     "management"             = "311462405659"
   }
 
-  account_name = "development"
+  account_names = {
+    "production"    = "sirius-production"
+    "preproduction" = "sirius-production"
+    "development"   = "sirius-development"
+  }
 
-  account_tags = {
-    is_production    = "${local.account_name == "production" ? "true" : "false"}"
-    environment_name = "${local.account_name}"
+  vpcs = {
+    "production"    = "prod-vpc"
+    "preproduction" = "prod-vpc"
+    "development"   = "dev-vpc"
+  }
+
+  vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
+
+  target_accounts = {
+    "production"    = "649098267436"
+    "preproduction" = "649098267436"
+    "development"   = "288342028542"
+  }
+
+  target_account = "${lookup(local.target_accounts, terraform.workspace)}"
+
+  is_production = {
+    "production"    = "true"
+    "preproduction" = "false"
+    "development"   = "false"
   }
 
   default_tags = {
     business-unit          = "OPG"
-    application            = "sirius"
-    is-production          = "${local.account_tags["is_production"]}"
-    environment-name       = "${local.account_tags["environment_name"]}"
+    application            = "Sirius"
+    is-production          = "${lookup(local.is_production, terraform.workspace)}"
+    environment-name       = "${lookup(local.account_names, terraform.workspace)}"
     owner                  = "OPGOPS opgteam@digital.justice.gov.uk"
     infrastructure-support = "OPGOPS opgteam@digital.justice.gov.uk"
     runbook                = "https://github.com/ministryofjustice/opg-webops-runbooks/tree/master/Sirius"
     source-code            = "https://github.com/ministryofjustice/opg-sirius-api-gateway"
-    Environment            = "${local.account_name}"
+    Environment            = "${lookup(local.account_names, terraform.workspace)}"
     Project                = "core"
-    Stack                  = "dev-vpc"
+    Stack                  = "${local.vpc_name}"
     component              = "OPG Sirius API Gateway"
   }
 }

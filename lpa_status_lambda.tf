@@ -19,8 +19,9 @@ module "lpa_status" {
     "${data.aws_security_group.default.id}",
   ]
 
-  api_gateway                  = "opg-api-gateway"
-  account_id                   = "${lookup(local.accounts, "opg-sirius-development")}"
+  vpc                          = "${local.vpc_name}"
+  account_id                   = "${local.target_account}"
+  api_gateway                  = "${aws_api_gateway_rest_api.opg_api_gateway.name}"
   api_gateway_deployment_stage = "testing-0-0-1"
 
   permitted_consumer_roles = [
@@ -28,6 +29,14 @@ module "lpa_status" {
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
     "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
   ]
+
+  environment {
+    variables {
+      USER = "user-one"
+    }
+  }
+
+  tags = "${local.default_tags}"
 }
 
 output "lambda_invoke_url" {

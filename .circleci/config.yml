@@ -4,20 +4,22 @@ workflows:
   path_to_live:
     jobs:
     - sirius-api-gateway/lint_terraform:
-        filters:
-          branches:
-            ignore: [ master ]
         name: lint_terraform
     - sirius-api-gateway/build_gem_cache:
-        filters:
-            branches:
-              ignore: [ master ]
         name: build_gem_cache
-    - sirius-api-gateway/terraform_apply_from_ruby:
+    - sirius-api-gateway/apply_terraform:
         filters:
             branches:
               ignore: [ master ]
         name: apply_development
+        workspace: development
+        requires: [ lint_terraform, build_gem_cache ]
+    - sirius-api-gateway/apply_terraform:
+        filters:
+            branches:
+              only: [ master ]
+        name: apply_production
+        workspace: production
         requires: [ lint_terraform, build_gem_cache ]
 orbs:
   sirius-api-gateway:
@@ -42,6 +44,8 @@ orbs:
     jobs:
       lint_terraform:
         executor: terraform
+        environment:
+          TF_WORKSPACE: 'development'
         steps:
           - checkout
           - run:
@@ -52,30 +56,6 @@ orbs:
               name: Lint Terraform
               command: |
                 terraform validate
-      plan_terraform:
-        executor: terraform
-        steps:
-          - checkout
-          - run:
-              name: Init Terraform
-              command: |
-                terraform init
-          - run:
-              name: Terraform Plan
-              command: |
-                terraform plan
-      apply_terraform:
-        executor: terraform
-        steps:
-          - checkout
-          - run:
-              name: Init Terraform
-              command: |
-                terraform init
-          - run:
-              name: Terraform Apply
-              command: |
-                terraform apply -auto-approve
       build_gem_cache:
         executor: ruby
         steps:
@@ -86,8 +66,14 @@ orbs:
           - save_cache:
               key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
               paths: [ vendor/bundle ]
-      terraform_apply_from_ruby:
+      apply_terraform:
         parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: '<< parameters.workspace >>'
         executor: ruby
         steps:
           - checkout
