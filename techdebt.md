@@ -8,3 +8,6 @@
 - Move make zip into module and ask for path only
 - create security group instead of using an existing one
 - ~~Add README for module~~
+- interpolate the vpc name and id from a data source
+- ~~output security group from module for use elsewhere~~
+- log to cloudwatch
