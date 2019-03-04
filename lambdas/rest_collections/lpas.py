@@ -1,5 +1,5 @@
 from . import InvalidInputError
-from data_providers import JsonProvider, SiriusProvider
+from data_providers import JsonProvider
 
 # --------------------------------------------
 # Responsible for:
@@ -10,7 +10,7 @@ from data_providers import JsonProvider, SiriusProvider
 
 def get_lpa(lpa_online_tool_id=None, sirius_uid=None):
 
-    provider = JsonProvider()
+    provider = JsonProvider('test-data.json')
 
     if lpa_online_tool_id is not None and sirius_uid is not None:
         # Input violation: Must be one, and only one, of 'lpa_online_tool_id' or 'sirius_uid'
