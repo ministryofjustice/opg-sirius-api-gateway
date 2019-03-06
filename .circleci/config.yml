@@ -3,12 +3,13 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - sirius-api-gateway/lint_terraform:
-          name: lint_terraform
-      - sirius-api-gateway/build_gem_cache:
-          name: build_gem_cache
       - sirius-api-gateway/package_lpa_status_lambda:
           name: package_lpa_status_lambda
+      - sirius-api-gateway/build_gem_cache:
+          name: build_gem_cache
+      - sirius-api-gateway/lint_terraform:
+          name: lint_terraform
+          requires: [package_lpa_status_lambda]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
