@@ -94,6 +94,7 @@ orbs:
         executor: python
         steps:
           - checkout
+          - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
           - run: cd ./lambdas; zip -r9 ./lpa_status_lambda.zip .
           - save_cache:
