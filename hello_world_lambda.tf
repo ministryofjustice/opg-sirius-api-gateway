@@ -1,10 +1,3 @@
-data "aws_vpc" "vpc" {
-  filter {
-    name   = "tag:Stack"
-    values = ["${local.vpc_name}"]
-  }
-}
-
 resource "aws_security_group" "hello_world" {
   name        = "hello_world"
   description = "hello_world Security Group"
