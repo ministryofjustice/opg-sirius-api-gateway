@@ -53,6 +53,9 @@ orbs:
           TF_WORKSPACE: "development"
         steps:
           - checkout
+          - restore_cache:
+              keys:
+                - lpa_status_lambda-{{ .Branch }}
           - run:
               name: Init Terraform
               command: |
