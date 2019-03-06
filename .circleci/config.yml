@@ -106,4 +106,4 @@ orbs:
           - save_cache:
               key: lpa_status_lambda-{{ .Branch }}-{{ .Revision }}
               paths:
-                - $HOME/lambdas/lpa_status_lambda.zip
+                - /root/project/lambdas/lpa_status_lambda.zip
