@@ -1,6 +1,6 @@
 # Local Container mock for OPG Sirius API Gateway
 
-## Local development of the OPG API Gateway container
+## Local development of the OPG Sirius API Gateway container
 
 To create a virtual environment to work in
 ```bash
