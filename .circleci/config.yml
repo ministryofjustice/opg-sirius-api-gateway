@@ -15,7 +15,7 @@ workflows:
               ignore: [master]
           name: apply_development
           workspace: development
-          requires: [lint_terraform, build_gem_cache]
+          requires: [lint_terraform, build_gem_cache, package_lpa_status_lambda]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
