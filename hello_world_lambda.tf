@@ -7,7 +7,7 @@ data "aws_vpc" "vpc" {
 
 resource "aws_security_group" "hello_world" {
   name        = "hello_world"
-  description = "LPA Status Security Group"
+  description = "hello_world Security Group"
   vpc_id      = "${data.aws_vpc.vpc.id}"
 }
 
@@ -48,6 +48,6 @@ module "hello_world" {
   tags = "${local.default_tags}"
 }
 
-output "lambda_invoke_url" {
+output "hello_world_invoke_url" {
   value = "${module.hello_world.lambda_name} invoke URL: ${module.hello_world.lambda_invoke_url}"
 }
