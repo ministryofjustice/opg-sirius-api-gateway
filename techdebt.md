@@ -2,12 +2,13 @@
 - build an image for ruby+terraform from circleci/ruby
 - Split up modules/api_gateway_lambda_function/main.tf into smaller files
 - ~~Use lookup patter for account numbers everywhere `${lookup(local.accounts, "opg-sirius-development")`~~
-- Tag all resources
+- ~~Tag all resources~~
 - ~~Move subnets into module as we'll always be using the same ones~~
 - ~~Use workspaces to pick the correct vpc for subnets~~
-- Move make zip into module and ask for path only
-- create security group instead of using an existing one
+- ~~create security group instead of using an existing one~~
 - ~~Add README for module~~
 - interpolate the vpc name and id from a data source
 - ~~output security group from module for use elsewhere~~
 - log to cloudwatch
+- test lambda apis as they're deployed
+- package and deploy lambdas zips in pipeline
