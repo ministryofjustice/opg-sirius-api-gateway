@@ -87,7 +87,7 @@ orbs:
           - restore_cache:
               keys:
                 -'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}'
-                -'lpa_status_lambda-{{ .BuildNum }}''
+                -'lpa_status_lambda-{{ .BuildNum }}'
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
       package_lpa_status_lambda:
