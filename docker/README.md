@@ -1,4 +1,4 @@
-# Local Container mock for OPG API Gateway
+# Local Container mock for OPG Sirius API Gateway
 
 ## Local development of the OPG API Gateway container
 
