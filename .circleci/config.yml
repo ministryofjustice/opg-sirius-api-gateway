@@ -103,6 +103,7 @@ orbs:
           - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
           - run: cd ./lambdas; zip -r9 ./lpa_status_lambda.zip .
+          - run: chmod -R 777 ./lpa_status_lambda.zip
           - save_cache:
               key: lpa_status_lambda-{{ .Branch }}-{{ .Revision }}
               paths:
