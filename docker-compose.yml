@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  gateway:
+    container_name: opg-api-gateway
+    build: ./
+    depends_on:
+      - lambci
+    volumes:
+      - ./docker:/srv/docker:cached
+      - ./lambdas:/srv/lambdas:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 5000:5000
+    environment:
+      - LAMBDAS_PATH=${PWD}/lambdas
+
+  lambci:
+    container_name: lambci-python
+    image: lambci/lambda:python3.7
+    entrypoint: bash

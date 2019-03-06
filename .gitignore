@@ -8,3 +8,11 @@
 
 # Ruby
 *.lock
+
+# IDE & development
+.idea
+__pycache__
+
+# Mac
+.DS_Store
+

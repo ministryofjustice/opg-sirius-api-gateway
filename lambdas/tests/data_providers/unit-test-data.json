@@ -1,0 +1,26 @@
+[
+  {
+      "uid": "700000000001",
+      "onlineLpaId": "A00000000001",
+      "receiptDate": "2018-06-30",
+      "registrationDate": null,
+      "rejectedDate": null,
+      "status": "Pending"
+  },
+  {
+      "uid": "700000000002",
+      "onlineLpaId": "A00000000002",
+      "receiptDate": "2018-06-30",
+      "registrationDate": "2018-07-12",
+      "rejectedDate": null,
+      "status": "Perfect"
+  },
+  {
+      "uid": "700000000003",
+      "onlineLpaId": "A00000000003",
+      "receiptDate": "2018-06-30",
+      "registrationDate": null,
+      "rejectedDate": "2018-07-12",
+      "status": "Rejected"
+  }
+]

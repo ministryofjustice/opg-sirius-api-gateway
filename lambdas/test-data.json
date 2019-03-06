@@ -1,0 +1,23 @@
+[
+  {
+      "onlineLpaId": "A00000000001",
+      "receiptDate": "2018-06-30",
+      "registrationDate": null,
+      "rejectedDate": null,
+      "status": "Pending"
+  },
+  {
+      "onlineLpaId": "A00000000002",
+      "receiptDate": "2018-06-30",
+      "registrationDate": "2018-07-12",
+      "rejectedDate": null,
+      "status": "Perfect"
+  },
+  {
+      "onlineLpaId": "A00000000003",
+      "receiptDate": "2018-06-30",
+      "registrationDate": null,
+      "rejectedDate": "2018-07-12",
+      "status": "Rejected"
+  }
+]
