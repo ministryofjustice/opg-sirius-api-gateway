@@ -32,7 +32,7 @@ orbs:
       terraform:
         docker: [image: hashicorp/terraform]
       python:
-        docker: [image: circleci/python]
+        docker: [image: python:alpine]
     commands:
       install_terraform:
         steps:
@@ -108,6 +108,7 @@ orbs:
         executor: python
         steps:
           - checkout
+          - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
           - run: cd ./lambdas; zip -r9 /tmp/lpa_status_lambda.zip .
           - save_cache:
