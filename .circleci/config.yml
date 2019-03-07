@@ -3,34 +3,40 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-    - sirius-api-gateway/lint_terraform:
-        name: lint_terraform
-    - sirius-api-gateway/build_gem_cache:
-        name: build_gem_cache
-    - sirius-api-gateway/apply_terraform:
-        filters:
+      - sirius-api-gateway/package_lpas_collection_lambda:
+          name: package_lpas_collection_lambda
+      - sirius-api-gateway/build_gem_cache:
+          name: build_gem_cache
+      - sirius-api-gateway/lint_terraform:
+          name: lint_terraform
+          requires: [package_lpas_collection_lambda]
+      - sirius-api-gateway/apply_terraform:
+          filters:
             branches:
-              ignore: [ master ]
-        name: apply_development
-        workspace: development
-        requires: [ lint_terraform, build_gem_cache ]
-    - sirius-api-gateway/apply_terraform:
-        filters:
+              ignore: [master]
+          name: apply_development
+          workspace: development
+          requires:
+            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+      - sirius-api-gateway/apply_terraform:
+          filters:
             branches:
-              only: [ master ]
-        name: apply_production
-        workspace: production
-        requires: [ lint_terraform, build_gem_cache ]
+              only: [master]
+          name: apply_production
+          workspace: production
+          requires: [lint_terraform, build_gem_cache]
 orbs:
   sirius-api-gateway:
     executors:
       ruby:
-        docker: [ image: circleci/ruby:latest-browsers ]
+        docker: [image: circleci/ruby:latest-browsers]
       terraform:
-        docker: [ image: hashicorp/terraform ]
+        docker: [image: hashicorp/terraform]
+      python:
+        docker: [image: python:alpine]
     commands:
       install_terraform:
-        steps: 
+        steps:
           - run:
               name: install_terraform
               command: |
@@ -41,13 +47,23 @@ orbs:
                 sha256sum -c --status terraform_${TERRAFORM_VERSION}_SHA256SUMS
                 sudo unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
                 rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+      relocate_lambda_packages:
+        steps:
+          - run:
+              name: relocate_lambda_packages
+              command: |
+                mv /tmp/*.zip ~/project/lambdas/
     jobs:
       lint_terraform:
         executor: terraform
         environment:
-          TF_WORKSPACE: 'development'
+          TF_WORKSPACE: "development"
         steps:
           - checkout
+          - restore_cache:
+              keys:
+                - lpas_collection_lambda-{{ .Branch }}
+          - relocate_lambda_packages
           - run:
               name: Init Terraform
               command: |
@@ -61,11 +77,12 @@ orbs:
         steps:
           - checkout
           - restore_cache:
-              keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
+              keys:
+                ['gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}']
           - run: bundle install --path vendor/bundle --quiet
           - save_cache:
               key: gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
-              paths: [ vendor/bundle ]
+              paths: [vendor/bundle]
       apply_terraform:
         parameters:
           workspace:
@@ -73,12 +90,29 @@ orbs:
             type: string
             default: development
         environment:
-          TF_WORKSPACE: '<< parameters.workspace >>'
+          TF_WORKSPACE: "<< parameters.workspace >>"
         executor: ruby
         steps:
           - checkout
           - install_terraform
+
           - restore_cache:
-              keys: [ 'gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}' ]
+              keys:
+                - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
+          - restore_cache:
+              keys:
+                - lpas_collection_lambda-{{ .Branch }}
+          - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
+      package_lpas_collection_lambda:
+        executor: python
+        steps:
+          - checkout
+          - run: apk add zip
+          - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
+          - run: cd ./lambdas; zip -r9 /tmp/lpas_collection_lambda.zip .
+          - save_cache:
+              key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
+              paths:
+                - /tmp/lpas_collection_lambda.zip

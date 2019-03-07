@@ -1,31 +1,19 @@
-data "aws_vpc" "vpc" {
-  filter {
-    name   = "tag:Stack"
-    values = ["${local.vpc_name}"]
-  }
-}
-
-resource "aws_security_group" "lpa_status" {
-  name        = "lpa_status"
-  description = "LPA Status Security Group"
+resource "aws_security_group" "lpas_collection" {
+  name        = "lpas_collection"
+  description = "lpas_collection Security Group"
   vpc_id      = "${data.aws_vpc.vpc.id}"
 }
 
-data "archive_file" "lpa_status_lambda_archive" {
-  type        = "zip"
-  source_dir  = "${path.module}/lpa_status_lambda/"
-  output_path = "${path.module}/lpa_status_lambda/lpa_status_lambda.zip"
-}
-
-module "lpa_status" {
+module "lpas_collection" {
   source = "modules/api_gateway_lambda_function"
 
-  lambda_name              = "lpa_status"
-  lambda_function_filename = "${data.archive_file.lpa_status_lambda_archive.output_path}"
+  lambda_name              = "lpas_collection"
+  lambda_function_filename = "./lambdas/lpas_collection_lambda.zip"
   lambda_runtime           = "python3.7"
+  lambda_handler           = "id_handler"
 
   security_group_ids = [
-    "${aws_security_group.lpa_status.id}",
+    "${aws_security_group.lpas_collection.id}",
   ]
 
   vpc                          = "${local.vpc_name}"
@@ -48,6 +36,6 @@ module "lpa_status" {
   tags = "${local.default_tags}"
 }
 
-output "lambda_invoke_url" {
-  value = "${module.lpa_status.lambda_name} invoke URL: ${module.lpa_status.lambda_invoke_url}"
+output "lpas_collection_invoke_url" {
+  value = "${module.lpas_collection.lambda_name} invoke URL: ${module.lpas_collection.lambda_invoke_url}"
 }

@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 require 'rake'
+namespace :lambda do
+  desc 'Workstation: package-lambda'
+  task :package do
+    sh 'pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor'
+    sh 'cd ./lambdas; zip -r9 ./lpas_collection_lambda.zip .'
+    sh 'rm -r ./lambdas/vendor'
+  end
+end
 
 namespace :terraform do
   task :init do

@@ -19,6 +19,7 @@ pip install -r docker/api-gateway/requirements.txt
 ```
 
 ### Helpful Commands
-
+```bash
 docker build -t test/opg-sirius-api-gateway .
 docker run -v /var/run/docker.sock:/var/run/docker.sock -ti test/opg-sirius-api-gateway:latest
+```
