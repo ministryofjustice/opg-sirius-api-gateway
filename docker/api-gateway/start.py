@@ -113,12 +113,18 @@ def generate_event_payload_lpa_lookup(resource, path, method, headers, path_para
 
 
 def invoke_lambda(handler, event):
+
+    # Holds the container ID of the running opg-sirius-api-gateway container
+    # This is used so we connect lambci/lambda to the same network
+    container_id = os.environ['HOSTNAME']
+
     lambda_path_on_host = os.environ['LAMBDAS_PATH']
 
     container = dockerClient.containers.run(
         image="lambci/lambda:python3.7",
         command=[handler, json.dumps(event)],
         volumes={lambda_path_on_host: {'bind': '/var/task', 'mode': 'ro'}},
+        network_mode='container:'+container_id,
         stderr=True,
         detach=True,
     )
