@@ -23,7 +23,7 @@ module "lpa_status" {
   permitted_consumer_roles = [
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:root",
     "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
-    "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.*",
+    "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
   ]
 
   environment {
