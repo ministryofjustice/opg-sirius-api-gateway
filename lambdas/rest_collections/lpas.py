@@ -1,5 +1,5 @@
 from . import InvalidInputError
-from data_providers import JsonProvider
+from data_providers import SiriusProvider, JsonProvider
 
 # --------------------------------------------
 # Responsible for:
@@ -8,31 +8,35 @@ from data_providers import JsonProvider
 #   Responding with the correctly filtered response
 
 
-def get_lpa(lpa_online_tool_id=None, sirius_uid=None):
+class LpasCollection:
 
-    provider = JsonProvider('test-data.json')
+    @staticmethod
+    def factory():
+        #return LpasCollection(SiriusProvider.factory())
+        return LpasCollection(JsonProvider.factory())
 
-    if lpa_online_tool_id is not None and sirius_uid is not None:
-        # Input violation: Must be one, and only one, of 'lpa_online_tool_id' or 'sirius_uid'
-        raise InvalidInputError("Must be either 'lpa_online_tool_id' or 'sirius_uid'; not both")
+    # --------------------
 
-    elif lpa_online_tool_id is not None:
-        lpa = provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
-        if lpa is not None:
-            return lpa['payload']
-        return lpa
+    def __init__(self, provider):
+        self._provider = provider
 
-    elif sirius_uid is not None:
-        lpa = provider.get_lpa_by_sirius_uid(sirius_uid)
-        if lpa is not None:
-            return lpa['payload']
-        return lpa
+    def get_lpa(self, lpa_online_tool_id=None, sirius_uid=None):
 
-    else:
-        raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")
+        if lpa_online_tool_id is not None and sirius_uid is not None:
+            # Input violation: Must be one, and only one, of 'lpa_online_tool_id' or 'sirius_uid'
+            raise InvalidInputError("Must be either 'lpa_online_tool_id' or 'sirius_uid'; not both")
 
+        elif lpa_online_tool_id is not None:
+            lpa = self._provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
+            if lpa is not None:
+                return lpa['payload']
+            return lpa
 
-if __name__ == '__main__':
-    from pprint import pprint
-    result = get_lpa({'lpa_online_tool_id': 'A00000000001'})
-    pprint(result)
+        elif sirius_uid is not None:
+            lpa = self._provider.get_lpa_by_sirius_uid(sirius_uid)
+            if lpa is not None:
+                return lpa['payload']
+            return lpa
+
+        else:
+            raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")

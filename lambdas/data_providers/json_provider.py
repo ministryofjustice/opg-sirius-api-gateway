@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from . import get_datetime
 
 # --------------------------------------------
 # Responsible for looking up a given LPA from
@@ -7,6 +7,13 @@ from datetime import datetime, timezone
 
 
 class JsonProvider:
+
+    @staticmethod
+    def factory():
+        return JsonProvider('test-data.json')
+
+    # --------------------
+
     def __init__(self, data_path):
         self._lpas = None
         self._data_path = data_path
@@ -24,7 +31,7 @@ class JsonProvider:
         for lpa in self._get_data():
             if 'uid' in lpa and lpa['uid'] == sirius_uid:
                 return {
-                    'metadata': {'date': datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()},
+                    'metadata': {'date': get_datetime()},
                     'payload': lpa
                 }
 
@@ -32,7 +39,7 @@ class JsonProvider:
         for lpa in self._get_data():
             if 'onlineLpaId' in lpa and lpa['onlineLpaId'] == online_tool_id:
                 return {
-                    'metadata': {'date': datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()},
+                    'metadata': {'date': get_datetime()},
                     'payload': lpa
                 }
 
