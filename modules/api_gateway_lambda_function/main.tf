@@ -91,12 +91,10 @@ resource "aws_api_gateway_method_settings" "gateway_method_settings" {
   method_path = "${aws_api_gateway_resource.gateway_resource.path_part}/${aws_api_gateway_method.gateway_method_get.http_method}"
 
   settings {
-    logging_level      = "INFO"
+    logging_level      = "${var.logging_level}"
     data_trace_enabled = true
     metrics_enabled    = true
   }
-
-  # This is dependant on aws_api_gateway_account.opg_api_gateway
 }
 
 resource "aws_api_gateway_integration" "integration" {

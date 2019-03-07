@@ -55,8 +55,11 @@ variable "tags" {
   default     = {}
 }
 
-variable depends_on {
-  default = []
+variable api_gateway_cloudwatch_role_arn {
+  description = "The ARN of an IAM role for CloudWatch (to allow logging & monitoring)."
+}
 
-  type = "list"
+variable logging_level {
+  description = "Specifies the logging level for this method, which effects the log entries pushed to Amazon CloudWatch Logs. The available levels are OFF, ERROR, and INFO"
+  default     = "INFO"
 }

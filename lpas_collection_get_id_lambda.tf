@@ -33,8 +33,8 @@ module "lpas_collection" {
     }
   }
 
-  tags       = "${local.default_tags}"
-  depends_on = ["aws_api_gateway_account.opg_api_gateway"]
+  tags                            = "${local.default_tags}"
+  api_gateway_cloudwatch_role_arn = "${aws_api_gateway_account.opg_api_gateway.cloudwatch_role_arn}"
 }
 
 output "lpas_collection_invoke_url" {
