@@ -85,6 +85,18 @@ resource "aws_api_gateway_method" "gateway_method_get" {
   authorization = "AWS_IAM"
 }
 
+resource "aws_api_gateway_method_settings" "gateway_method_settings" {
+  rest_api_id = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
+  stage_name  = "${var.api_gateway_deployment_stage}"
+  method_path = "${aws_api_gateway_resource.gateway_resource.path_part}/${aws_api_gateway_method.gateway_method_get.http_method}"
+
+  settings {
+    logging_level      = "INFO"
+    data_trace_enabled = true
+    metrics_enabled    = true
+  }
+}
+
 resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
   resource_id             = "${aws_api_gateway_resource.gateway_resource.id}"
