@@ -10,6 +10,7 @@ module "lpas_collection" {
   lambda_name              = "lpas_collection"
   lambda_function_filename = "./lambdas/lpas_collection_lambda.zip"
   lambda_runtime           = "python3.7"
+  lambda_handler           = "id_handler"
 
   security_group_ids = [
     "${aws_security_group.lpas_collection.id}",
