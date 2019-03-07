@@ -1,12 +1,8 @@
-# Required to provide access to pip installed modules.
+import includes
 from pprint import pprint
-from rest_collections import lpas, InvalidInputError, LpasCollection
+from rest_collections import InvalidInputError, LpasCollection
 import traceback
 import json
-import os
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './vendor'))
 
 
 def id_handler(event, context):
