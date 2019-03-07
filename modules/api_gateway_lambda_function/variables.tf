@@ -54,3 +54,9 @@ variable "tags" {
   type        = "map"
   default     = {}
 }
+
+variable depends_on {
+  default = []
+
+  type = "list"
+}

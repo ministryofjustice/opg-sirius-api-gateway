@@ -33,7 +33,8 @@ module "lpas_collection" {
     }
   }
 
-  tags = "${local.default_tags}"
+  tags       = "${local.default_tags}"
+  depends_on = ["aws_api_gateway_account.opg_api_gateway"]
 }
 
 output "lpas_collection_invoke_url" {

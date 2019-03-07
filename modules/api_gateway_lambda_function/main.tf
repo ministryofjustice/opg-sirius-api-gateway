@@ -95,6 +95,8 @@ resource "aws_api_gateway_method_settings" "gateway_method_settings" {
     data_trace_enabled = true
     metrics_enabled    = true
   }
+
+  # This is dependant on aws_api_gateway_account.opg_api_gateway
 }
 
 resource "aws_api_gateway_integration" "integration" {
