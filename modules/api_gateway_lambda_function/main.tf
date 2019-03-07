@@ -110,6 +110,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   depends_on  = ["aws_api_gateway_integration.integration", "aws_lambda_permission.lambda_permission"]
   rest_api_id = "${data.aws_api_gateway_rest_api.api_gateway_rest_api.id}"
   stage_name  = "${var.api_gateway_deployment_stage}"
+  depends_on  = ["aws_api_gateway_method.gateway_method_get", "aws_api_gateway_integration.integration"]
 
   lifecycle {
     create_before_destroy = true
