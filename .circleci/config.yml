@@ -3,20 +3,21 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - sirius-api-gateway/package_lpa_status_lambda:
-          name: package_lpa_status_lambda
+      - sirius-api-gateway/package_lpas_collection_lambda:
+          name: package_lpas_collection_lambda
       - sirius-api-gateway/build_gem_cache:
           name: build_gem_cache
       - sirius-api-gateway/lint_terraform:
           name: lint_terraform
-          requires: [package_lpa_status_lambda]
+          requires: [package_lpas_collection_lambda]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
               ignore: [master]
           name: apply_development
           workspace: development
-          requires: [lint_terraform, build_gem_cache, package_lpa_status_lambda]
+          requires:
+            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -61,7 +62,7 @@ orbs:
           - checkout
           - restore_cache:
               keys:
-                - lpa_status_lambda-{{ .Branch }}
+                - lpas_collection_lambda-{{ .Branch }}
           - relocate_lambda_packages
           - run:
               name: Init Terraform
@@ -100,18 +101,18 @@ orbs:
                 - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
           - restore_cache:
               keys:
-                - lpa_status_lambda-{{ .Branch }}
+                - lpas_collection_lambda-{{ .Branch }}
           - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
-      package_lpa_status_lambda:
+      package_lpas_collection_lambda:
         executor: python
         steps:
           - checkout
           - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
-          - run: cd ./lambdas; zip -r9 /tmp/lpa_status_lambda.zip .
+          - run: cd ./lambdas; zip -r9 /tmp/lpas_collection_lambda.zip .
           - save_cache:
-              key: lpa_status_lambda-{{ .Branch }}-{{ .Revision }}
+              key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
               paths:
-                - /tmp/lpa_status_lambda.zip
+                - /tmp/lpas_collection_lambda.zip

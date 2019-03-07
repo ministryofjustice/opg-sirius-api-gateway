@@ -5,7 +5,7 @@ namespace :lambda do
   desc 'Workstation: package-lambda'
   task :package do
     sh 'pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor'
-    sh 'cd ./lambdas; zip -r9 ./lpa_status_lambda.zip .'
+    sh 'cd ./lambdas; zip -r9 ./lpas_collection_lambda.zip .'
     sh 'rm -r ./lambdas/vendor'
   end
 end

@@ -1,10 +1,12 @@
 # Required to provide access to pip installed modules.
-import os; import sys; sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './vendor'))
-
-import json
-import traceback
-from rest_collections import lpas, InvalidInputError
 from pprint import pprint
+from rest_collections import lpas, InvalidInputError
+import traceback
+import json
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(
+    os.path.realpath(__file__)), './vendor'))
 
 
 def id_handler(event, context):
@@ -58,7 +60,7 @@ def id_handler(event, context):
 if __name__ == '__main__':
     response = id_handler({
         'pathParameters': {
-            #'sirius_uid': '700000000001',
+            # 'sirius_uid': '700000000001',
             'lpa_online_tool_id': 'A00000000001'
         }
     }, {})

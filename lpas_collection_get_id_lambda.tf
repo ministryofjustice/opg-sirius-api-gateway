@@ -1,18 +1,18 @@
-resource "aws_security_group" "lpa_status" {
-  name        = "lpa_status"
-  description = "LPA Status Security Group"
+resource "aws_security_group" "lpas_collection" {
+  name        = "lpas_collection"
+  description = "lpas_collection Security Group"
   vpc_id      = "${data.aws_vpc.vpc.id}"
 }
 
-module "lpa_status" {
+module "lpas_collection" {
   source = "modules/api_gateway_lambda_function"
 
-  lambda_name              = "lpa_status"
-  lambda_function_filename = "./lambdas/lpa_status_lambda.zip"
+  lambda_name              = "lpas_collection"
+  lambda_function_filename = "./lambdas/lpas_collection_lambda.zip"
   lambda_runtime           = "python3.7"
 
   security_group_ids = [
-    "${aws_security_group.lpa_status.id}",
+    "${aws_security_group.lpas_collection.id}",
   ]
 
   vpc                          = "${local.vpc_name}"
@@ -35,6 +35,6 @@ module "lpa_status" {
   tags = "${local.default_tags}"
 }
 
-output "lpa_status_invoke_url" {
-  value = "${module.lpa_status.lambda_name} invoke URL: ${module.lpa_status.lambda_invoke_url}"
+output "lpas_collection_invoke_url" {
+  value = "${module.lpas_collection.lambda_name} invoke URL: ${module.lpas_collection.lambda_invoke_url}"
 }
