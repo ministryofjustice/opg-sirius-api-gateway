@@ -1,12 +1,12 @@
 # Required to provide access to pip installed modules.
 from pprint import pprint
-from rest_collections import lpas, InvalidInputError
+from rest_collections import lpas, InvalidInputError, LpasCollection
 import traceback
 import json
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), './vendor'))
+
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), './vendor'))
 
 
 def id_handler(event, context):
@@ -18,8 +18,13 @@ def id_handler(event, context):
         # -------------------------------------
         # Lookup LPA
 
-        lpa = lpas.get_lpa(**event['pathParameters'])
-        pprint(lpa)
+        c = LpasCollection.factory()
+        result = c.get_lpa(**event['pathParameters'])
+
+        #keep = ['uId', 'onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
+        #lpa = {k: result['data'][k] for k in keep }
+
+        lpa = result
 
         # -------------------------------------
         # Respond
