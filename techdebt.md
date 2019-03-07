@@ -11,4 +11,4 @@
 - ~~output security group from module for use elsewhere~~
 - log to cloudwatch
 - test lambda apis as they're deployed
-- package and deploy lambdas zips in pipeline
+- ~~package and deploy lambdas zips in pipeline~~
