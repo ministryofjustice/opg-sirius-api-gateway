@@ -8,7 +8,7 @@ module "lpa_status" {
   source = "modules/api_gateway_lambda_function"
 
   lambda_name              = "lpa_status"
-  lambda_function_filename = "${path.module}/lambdas/lpa_status_lambda.zip"
+  lambda_function_filename = "./lambdas/lpa_status_lambda.zip"
   lambda_runtime           = "python3.7"
 
   security_group_ids = [
