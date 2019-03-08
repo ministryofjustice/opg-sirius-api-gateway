@@ -21,8 +21,12 @@ variable "security_group_ids" {
   description = "List of security group IDs for lambda function vpc_config"
 }
 
-variable "api_gateway" {
-  description = "API gateway REST API to attach lambda functions to"
+variable "api_gateway_id" {
+  description = "The ID of the REST API"
+}
+
+variable "api_gateway_root_resource_id" {
+  description = "The resource ID of the REST API's root"
 }
 
 variable "account_id" {
@@ -53,4 +57,9 @@ variable "tags" {
   description = "A mapping of tags"
   type        = "map"
   default     = {}
+}
+
+variable logging_level {
+  description = "Specifies the logging level for this method, which effects the log entries pushed to Amazon CloudWatch Logs. The available levels are OFF, ERROR, and INFO"
+  default     = "INFO"
 }

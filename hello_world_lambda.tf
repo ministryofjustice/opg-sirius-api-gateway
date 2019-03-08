@@ -23,7 +23,8 @@ module "hello_world" {
 
   vpc                          = "${local.vpc_name}"
   account_id                   = "${local.target_account}"
-  api_gateway                  = "${aws_api_gateway_rest_api.opg_api_gateway.name}"
+  api_gateway_id               = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  api_gateway_root_resource_id = "${aws_api_gateway_rest_api.opg_api_gateway.root_resource_id}"
   api_gateway_deployment_stage = "testing-0-0-1"
 
   permitted_consumer_roles = [

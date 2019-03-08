@@ -7,8 +7,10 @@
 - ~~Use workspaces to pick the correct vpc for subnets~~
 - ~~create security group instead of using an existing one~~
 - ~~Add README for module~~
-- interpolate the vpc name and id from a data source
+- ~~interpolate the vpc name and id from a data source~~
 - ~~output security group from module for use elsewhere~~
-- log to cloudwatch
+- ~~log to cloudwatch~~
 - test lambda apis as they're deployed
 - ~~package and deploy lambdas zips in pipeline~~
+- pass secrets as env variables to lambda
+- add multiple paths to module resource /<calling-service>/<collection>/{id}
