@@ -13,3 +13,4 @@
 - test lambda apis as they're deployed
 - ~~package and deploy lambdas zips in pipeline~~
 - pass secrets as env variables to lambda
+- add multiple paths to module resource /<calling-service>/<collection>/{id}
