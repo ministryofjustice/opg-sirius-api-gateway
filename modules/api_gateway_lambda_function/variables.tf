@@ -21,8 +21,12 @@ variable "security_group_ids" {
   description = "List of security group IDs for lambda function vpc_config"
 }
 
-variable "api_gateway" {
-  description = "API gateway REST API to attach lambda functions to"
+variable "api_gateway_id" {
+  description = "The ID of the REST API"
+}
+
+variable "api_gateway_root_resource_id" {
+  description = "The resource ID of the REST API's root"
 }
 
 variable "account_id" {
@@ -53,12 +57,6 @@ variable "tags" {
   description = "A mapping of tags"
   type        = "map"
   default     = {}
-}
-
-variable lambda_dependencies {
-  description = "Resources that a lambda function is dependent on beingin place before it can be provisioned."
-  type        = "list"
-  default     = []
 }
 
 variable logging_level {

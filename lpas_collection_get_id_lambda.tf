@@ -18,7 +18,8 @@ module "lpas_collection" {
 
   vpc                          = "${local.vpc_name}"
   account_id                   = "${local.target_account}"
-  api_gateway                  = "${aws_api_gateway_rest_api.opg_api_gateway.name}"
+  api_gateway_id               = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  api_gateway_root_resource_id = "${aws_api_gateway_rest_api.opg_api_gateway.root_resource_id}"
   api_gateway_deployment_stage = "testing-0-0-1"
 
   permitted_consumer_roles = [
@@ -33,8 +34,7 @@ module "lpas_collection" {
     }
   }
 
-  tags                = "${local.default_tags}"
-  lambda_dependencies = ["${aws_api_gateway_account.opg_api_gateway.cloudwatch_role_arn}"]
+  tags = "${local.default_tags}"
 }
 
 output "lpas_collection_invoke_url" {
