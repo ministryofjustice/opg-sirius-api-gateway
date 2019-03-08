@@ -38,8 +38,8 @@ module "hello_world" {
     }
   }
 
-  tags                            = "${local.default_tags}"
-  api_gateway_cloudwatch_role_arn = "${aws_api_gateway_account.opg_api_gateway.cloudwatch_role_arn}"
+  tags                = "${local.default_tags}"
+  lambda_dependencies = ["${aws_api_gateway_account.opg_api_gateway.cloudwatch_role_arn}"]
 }
 
 output "hello_world_invoke_url" {
