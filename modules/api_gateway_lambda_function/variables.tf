@@ -55,8 +55,10 @@ variable "tags" {
   default     = {}
 }
 
-variable api_gateway_cloudwatch_role_arn {
-  description = "The ARN of an IAM role for CloudWatch (to allow logging & monitoring)."
+variable lambda_dependencies {
+  description = "Resources that a lambda function is dependent on beingin place before it can be provisioned."
+  type        = "list"
+  default     = []
 }
 
 variable logging_level {
