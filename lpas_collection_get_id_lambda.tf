@@ -30,25 +30,20 @@ module "lpas_collection" {
 
   environment {
     variables {
-      CREDENTIALS = "${aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
+      CREDENTIALS = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
     }
   }
 
   tags = "${local.default_tags}"
 }
 
-resource "aws_secretsmanager_secret" "sirius_credentials" {
-  name = "sirius_credentials"
+data "aws_secretsmanager_secret" "sirius_credentials" {
+  name = "${terraform.workspace}/sirius/credentials"
 }
 
-resource "aws_secretsmanager_secret_version" "sirius_credentials" {
-  secret_id     = "${aws_secretsmanager_secret.sirius_credentials.id}"
-  secret_string = "example-string-to-protect"
+data "aws_secretsmanager_secret_version" "sirius_credentials" {
+  secret_id = "${data.aws_secretsmanager_secret.sirius_credentials.id}"
 }
-
-# data "aws_secretsmanager_secret_version" "sirius_credentials" {
-#   secret_id = "${aws_secretsmanager_secret.sirius_credentials.id}"
-# }
 
 output "lpas_collection_invoke_url" {
   value = "${module.lpas_collection.lambda_name} invoke URL: ${module.lpas_collection.lambda_invoke_url}"
