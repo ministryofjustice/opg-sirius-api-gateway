@@ -30,7 +30,7 @@ module "lpas_collection" {
 
   environment {
     variables {
-      CREDENTIALS = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
+      CREDENTIALS = "${aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
     }
   }
 
@@ -41,9 +41,14 @@ resource "aws_secretsmanager_secret" "sirius_credentials" {
   name = "sirius_credentials"
 }
 
-data "aws_secretsmanager_secret_version" "sirius_credentials" {
-  secret_id = "${aws_secretsmanager_secret.sirius_credentials.id}"
+resource "aws_secretsmanager_secret_version" "sirius_credentials" {
+  secret_id     = "${aws_secretsmanager_secret.sirius_credentials.id}"
+  secret_string = "example-string-to-protect"
 }
+
+# data "aws_secretsmanager_secret_version" "sirius_credentials" {
+#   secret_id = "${aws_secretsmanager_secret.sirius_credentials.id}"
+# }
 
 output "lpas_collection_invoke_url" {
   value = "${module.lpas_collection.lambda_name} invoke URL: ${module.lpas_collection.lambda_invoke_url}"
