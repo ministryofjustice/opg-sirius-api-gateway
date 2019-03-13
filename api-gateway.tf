@@ -33,9 +33,22 @@ resource "aws_iam_role_policy_attachment" "log_to_cloudwatch" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
 
+
+resource "aws_api_gateway_stage" "testing_stage" {
+  stage_name    = "more-testing"
+  rest_api_id   = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  deployment_id = "${aws_api_gateway_deployment.deployment.id}"
+
+  access_log_settings {
+    destination_arn = "${aws_iam_role.cloudwatch.arn}"
+    format  = "JSON"
+  }
+}
+
+
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
-  stage_name  = "testing"
+  stage_name  = ""  // Deliberately empty
 
   // The policy is dependent on the module completing, so we can depend on that to mean everything is in place
   depends_on  = ["aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy"]
