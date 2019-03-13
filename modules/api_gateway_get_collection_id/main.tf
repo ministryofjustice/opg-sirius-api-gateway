@@ -9,7 +9,6 @@ resource "aws_api_gateway_resource" "gateway_resource_product" {
   path_part   = "${var.gateway_path_product}"   // eg. lpa-online-tool
 }
 
-# Eg: /lpa-online-tool/lpas
 resource "aws_api_gateway_resource" "gateway_resource_collection" {
   rest_api_id = "${var.api_gateway_id}"
   parent_id   = "${aws_api_gateway_resource.gateway_resource_product.id}"
@@ -17,15 +16,13 @@ resource "aws_api_gateway_resource" "gateway_resource_collection" {
   path_part   = "${var.gateway_path_collection}"    // eg. lpas
 }
 
-# Eg:  /lpa-online-tool/lpas/{id}
 resource "aws_api_gateway_resource" "gateway_resource_collection_resource" {
   rest_api_id = "${var.api_gateway_id}"
   parent_id   = "${aws_api_gateway_resource.gateway_resource_collection.id}"
 
-  path_part   = "{lpa_online_tool_id}"
+  path_part   = "${var.gateway_path_id_name}"    // eg. {lpa_online_tool_id}
 }
 
-# Eg:  /lpa-online-tool/lpas/{id}
 resource "aws_api_gateway_method" "gateway_resource_collection_resource_get" {
   rest_api_id = "${var.api_gateway_id}"
   resource_id   = "${aws_api_gateway_resource.gateway_resource_collection_resource.id}"
@@ -33,7 +30,6 @@ resource "aws_api_gateway_method" "gateway_resource_collection_resource_get" {
   authorization = "AWS_IAM"
 }
 
-# Eg: /lpa-online-tool/lpas/{id}
 resource "aws_api_gateway_integration" "gateway_lpa_online_tool_lpas_collection_resource_get_integration" {
   rest_api_id             = "${var.api_gateway_id}"
   resource_id             = "${aws_api_gateway_resource.gateway_resource_collection_resource.id}"
@@ -47,6 +43,7 @@ resource "aws_api_gateway_integration" "gateway_lpa_online_tool_lpas_collection_
 }
 
 
+// Give the endpoint permission to trigger the lambda
 resource "aws_lambda_permission" "gateway_lambda_permission" {
   statement_id  = "AllowOpgApiGatewayInvoke_${var.gateway_path_product}_${var.gateway_path_collection}_id"
   action        = "lambda:InvokeFunction"
@@ -57,6 +54,7 @@ resource "aws_lambda_permission" "gateway_lambda_permission" {
   source_arn = "${var.api_gateway_execution_arn}/*/${aws_api_gateway_method.gateway_resource_collection_resource_get.http_method}${aws_api_gateway_resource.gateway_resource_collection_resource.path}"
 }
 
+// Generate a policy that allowed the endpoint to be called from a user/group/role.
 data "aws_iam_policy_document" "gateway_resource_execution_policy" {
   statement {
     sid = "OPGApiGatewayAccessPolicy"
@@ -76,4 +74,3 @@ resource "aws_iam_policy" "opg_api_gateway_access_policy" {
   path   = "/"
   policy = "${data.aws_iam_policy_document.gateway_resource_execution_policy.json}"
 }
-

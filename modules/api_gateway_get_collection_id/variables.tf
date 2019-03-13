@@ -24,6 +24,10 @@ variable "gateway_path_collection" {
   description = "Pluralise collection name"
 }
 
+variable "gateway_path_id_name" {
+  description = "The parameter name to use for the resource id"
+}
+
 //---------------------
 // Lambda details
 

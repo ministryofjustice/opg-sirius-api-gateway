@@ -53,6 +53,7 @@ module "lpa_online_tool_get_lpas_id" {
 
   gateway_path_product    = "lpa-online-tool"
   gateway_path_collection = "lpas"
+  gateway_path_id_name    = "{lpa_online_tool_id}"
 
 
   lambda_arn  = "${module.lpas_collection_lambda.lambda_arn}"
