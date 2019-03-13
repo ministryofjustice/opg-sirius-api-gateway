@@ -43,15 +43,14 @@ resource "aws_api_gateway_domain_name" "opg_api_gateway" {
 }
 
 # Domain names and Certificates are provisioned in the Management account
-data "aws_route53_zone" "opg_service_justice_gov_uk" {
-  provider = "aws.management"
+resource "aws_route53_zone" "opg_service_justice_gov_uk" {
   name     = "opg.service.justice.gov.uk"
 }
 
 resource "aws_route53_record" "opg_api_gateway" {
   name     = "${local.opg_sirius_api_gateway_custom_url}"
   type     = "A"
-  zone_id  = "${data.aws_route53_zone.opg_service_justice_gov_uk.id}"
+  zone_id  = "${aws_route53_zone.opg_service_justice_gov_uk.id}"
 
   alias {
     evaluate_target_health = true
@@ -72,7 +71,7 @@ resource "aws_acm_certificate" "opg_api_gateway" {
 resource "aws_route53_record" "opg_api_gateway_certificate_validation" {
   name     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_name}"
   type     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_type}"
-  zone_id  = "${data.aws_route53_zone.opg_service_justice_gov_uk.id}"
+  zone_id  = "${aws_route53_zone.opg_service_justice_gov_uk.id}"
   records  = ["${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_value}"]
   ttl      = 60
 }
