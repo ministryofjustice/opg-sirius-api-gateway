@@ -45,6 +45,8 @@ resource "aws_api_gateway_integration" "gateway_lpa_online_tool_lpas_collection_
 
 // Give the endpoint permission to trigger the lambda
 resource "aws_lambda_permission" "gateway_lambda_permission" {
+  depends_on = ["aws_api_gateway_resource.gateway_resource_collection_resource"]
+
   statement_id  = "AllowOpgApiGatewayInvoke_${var.gateway_path_product}_${var.gateway_path_collection}_id"
   action        = "lambda:InvokeFunction"
   function_name = "${var.lambda_name}"
