@@ -112,6 +112,11 @@ resource "aws_lambda_permission" "lambda_permission" {
   source_arn    = "arn:aws:execute-api:${data.aws_region.current.name}:${var.account_id}:${var.api_gateway_id}/*/${aws_api_gateway_method.gateway_method_get.http_method}${aws_api_gateway_resource.gateway_resource.path}"
 }
 
+
+
+
+
+
 # Deploy the Gateway Stage
 
 resource "aws_api_gateway_deployment" "deployment" {
@@ -123,6 +128,9 @@ resource "aws_api_gateway_deployment" "deployment" {
     create_before_destroy = true
   }
 }
+
+
+
 
 # OPG API Gateway Access Policy
 resource "aws_iam_role" "opg_api_endpoint_access" {

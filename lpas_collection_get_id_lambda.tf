@@ -1,3 +1,4 @@
+/*
 resource "aws_security_group" "lpas_collection" {
   name        = "lpas_collection"
   description = "lpas_collection Security Group"
@@ -48,3 +49,4 @@ data "aws_secretsmanager_secret_version" "sirius_credentials" {
 output "lpas_collection_invoke_url" {
   value = "${module.lpas_collection.lambda_name} invoke URL: ${module.lpas_collection.lambda_invoke_url}"
 }
+*/
