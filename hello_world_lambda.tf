@@ -1,3 +1,4 @@
+/*
 resource "aws_security_group" "hello_world" {
   name        = "hello_world"
   description = "hello_world Security Group"
@@ -45,3 +46,4 @@ module "hello_world" {
 output "hello_world_invoke_url" {
   value = "${module.hello_world.lambda_name} invoke URL: ${module.hello_world.lambda_invoke_url}"
 }
+*/
