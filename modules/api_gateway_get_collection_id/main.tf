@@ -59,7 +59,7 @@ resource "aws_lambda_permission" "gateway_lambda_permission" {
 
 data "aws_iam_policy_document" "gateway_resource_execution_policy" {
   statement {
-    sid = "OPGApiGatewayAccessPolicy_${var.gateway_path_product}_${var.gateway_path_collection}_id"
+    sid = "OPGApiGatewayAccessPolicy"
 
     actions = [
       "execute-api:Invoke"

@@ -10,7 +10,7 @@ resource "aws_iam_role" "lpa_online_tool_role" {
 // Access policy, defining who and assume this role
 data "aws_iam_policy_document" "lpa_online_tool_role_cross_account_policy" {
   statement {
-    sid = "assume-role-policy-sirius-api-gateway-access-lpa-online-tool"
+    sid = "CrossAccountApiGatewayAccessPolicy"
 
     actions = [
       "sts:AssumeRole"
