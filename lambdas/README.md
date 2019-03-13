@@ -30,3 +30,9 @@ python3 -m virtualenv .venv
 source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 ```
+
+### Getting secrets into your Lambda function
+
+Secrets can be kept in AWS Secrets Manager.
+
+Credentials for Sirius, stored in secrets manager can be pushed into a lambda function as the environment variable `CREDENTIALS` when the lambda function is provisioned by Terraform.

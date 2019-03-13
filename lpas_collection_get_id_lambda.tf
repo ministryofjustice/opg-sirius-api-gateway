@@ -30,11 +30,19 @@ module "lpas_collection" {
 
   environment {
     variables {
-      USER = "user-one"
+      CREDENTIALS = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
     }
   }
 
   tags = "${local.default_tags}"
+}
+
+data "aws_secretsmanager_secret" "sirius_credentials" {
+  name = "${terraform.workspace}/sirius/credentials"
+}
+
+data "aws_secretsmanager_secret_version" "sirius_credentials" {
+  secret_id = "${data.aws_secretsmanager_secret.sirius_credentials.id}"
 }
 
 output "lpas_collection_invoke_url" {
