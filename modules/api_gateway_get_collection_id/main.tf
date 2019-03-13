@@ -22,7 +22,7 @@ resource "aws_api_gateway_resource" "gateway_resource_collection_resource" {
   rest_api_id = "${var.api_gateway_id}"
   parent_id   = "${aws_api_gateway_resource.gateway_resource_collection.id}"
 
-  path_part   = "{id}"
+  path_part   = "{lpa_online_tool_id}"
 }
 
 # Eg:  /lpa-online-tool/lpas/{id}
