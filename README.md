@@ -39,3 +39,27 @@ For example import a resource using the following command
 ```bash
 aws-vault exec identity -- terraform import module.opg-backoffice-datastore-preprod2.aws_s3_bucket.bucket opg-backoffice-datastore-preprod2
 ```
+
+## Rakefile
+A Rakefile has been provided to ensure that the commands you run on your machine are the same as those run by the pipeline.
+
+They are effectively shortcuts, intended to be useful, and not an abstraction or obfuscation of the work.
+
+You can list the available commands in the Rake file
+
+```bash
+bundle exec rake -T
+rake lambda:package       # Workstation: package-lambda
+rake terraform:apply      # Workstation: apply
+rake terraform:localplan  # Workstation: localplan
+rake terraform:plan       # Workstation: plan
+```
+
+For commands that require aws IAM roles, you can use aws-vault to select the correct profile
+(see https://github.com/ministryofjustice/opg-new-starter/blob/master/AWS-VAULT.md)
+
+```bash
+aws-vault exec identity -- bundle exec rake terraform:localplan
+```
+
+

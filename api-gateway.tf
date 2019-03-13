@@ -32,3 +32,60 @@ resource "aws_iam_role_policy_attachment" "log_to_cloudwatch" {
   role       = "${aws_iam_role.cloudwatch.id}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
 }
+
+resource "aws_api_gateway_domain_name" "opg_api_gateway" {
+  domain_name              = "${local.opg_sirius_api_gateway_custom_url}"
+  regional_certificate_arn = "${aws_acm_certificate_validation.opg_api_gateway.certificate_arn}"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+# Domain names and Certificates are provisioned in the Management account
+data "aws_route53_zone" "opg_service_justice_gov_uk" {
+  provider = "aws.management"
+  name     = "opg.service.justice.gov.uk"
+}
+
+resource "aws_route53_record" "opg_api_gateway" {
+  provider = "aws.management"
+  name     = "${local.opg_sirius_api_gateway_custom_url}"
+  type     = "A"
+  zone_id  = "${data.aws_route53_zone.opg_service_justice_gov_uk.id}"
+
+  alias {
+    evaluate_target_health = true
+    name                   = "${aws_api_gateway_domain_name.opg_api_gateway.regional_domain_name}"
+    zone_id                = "${aws_api_gateway_domain_name.opg_api_gateway.regional_zone_id}"
+  }
+}
+
+resource "aws_acm_certificate" "opg_api_gateway" {
+  provider          = "aws.management"
+  domain_name       = "${local.opg_sirius_api_gateway_custom_url}"
+  validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "opg_api_gateway_certificate_validation" {
+  provider = "aws.management"
+  name     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_name}"
+  type     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_type}"
+  zone_id  = "${data.aws_route53_zone.opg_service_justice_gov_uk.id}"
+  records  = ["${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_value}"]
+  ttl      = 60
+}
+
+resource "aws_acm_certificate_validation" "opg_api_gateway" {
+  provider                = "aws.management"
+  certificate_arn         = "${aws_acm_certificate.opg_api_gateway.arn}"
+  validation_record_fqdns = ["${aws_route53_record.opg_api_gateway_certificate_validation.fqdn}"]
+}
+
+output "opg_sirius_api_gateway_custom_url" {
+  value = "${aws_api_gateway_domain_name.opg_api_gateway.domain_name}"
+}

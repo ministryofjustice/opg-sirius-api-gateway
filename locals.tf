@@ -32,6 +32,15 @@ locals {
 
   target_account = "${lookup(local.target_accounts, terraform.workspace)}"
 
+  opg_sirius_api_gateway_custom_urls = {
+    "production"    = "api.sirius.opg.service.justice.gov.uk"
+    "preproduction" = "api.preproduction.sirius.opg.service.justice.gov.uk"
+    "development"   = "api.development.sirius.opg.service.justice.gov.uk"
+  }
+
+  opg_sirius_api_gateway_custom_url = "${lookup(local.opg_sirius_api_gateway_custom_urls, terraform.workspace)}"
+
+
   is_production = {
     "production"    = "true"
     "preproduction" = "false"
