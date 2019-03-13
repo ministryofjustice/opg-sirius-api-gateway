@@ -22,7 +22,7 @@ namespace :terraform do
   task :localplan do
     Rake::Task['terraform:init'].invoke
     sh 'terraform workspace select development'
-    sh 'terraform plan'
+    sh 'terraform plan | ./redact_output.sh'
   end
   desc 'Workstation: plan'
   task :plan do
@@ -32,6 +32,6 @@ namespace :terraform do
   desc 'Workstation: apply'
   task :apply do
     Rake::Task['terraform:init'].invoke
-    sh 'terraform apply -auto-approve'
+    sh 'terraform apply -auto-approve | ./redact_output.sh'
   end
 end
