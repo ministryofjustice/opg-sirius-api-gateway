@@ -49,7 +49,6 @@ data "aws_route53_zone" "opg_service_justice_gov_uk" {
 }
 
 resource "aws_route53_record" "opg_api_gateway" {
-  provider = "aws.management"
   name     = "${local.opg_sirius_api_gateway_custom_url}"
   type     = "A"
   zone_id  = "${data.aws_route53_zone.opg_service_justice_gov_uk.id}"
@@ -62,7 +61,6 @@ resource "aws_route53_record" "opg_api_gateway" {
 }
 
 resource "aws_acm_certificate" "opg_api_gateway" {
-  provider          = "aws.management"
   domain_name       = "${local.opg_sirius_api_gateway_custom_url}"
   validation_method = "DNS"
 
@@ -72,7 +70,6 @@ resource "aws_acm_certificate" "opg_api_gateway" {
 }
 
 resource "aws_route53_record" "opg_api_gateway_certificate_validation" {
-  provider = "aws.management"
   name     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_name}"
   type     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_type}"
   zone_id  = "${data.aws_route53_zone.opg_service_justice_gov_uk.id}"
@@ -81,7 +78,6 @@ resource "aws_route53_record" "opg_api_gateway_certificate_validation" {
 }
 
 resource "aws_acm_certificate_validation" "opg_api_gateway" {
-  provider                = "aws.management"
   certificate_arn         = "${aws_acm_certificate.opg_api_gateway.arn}"
   validation_record_fqdns = ["${aws_route53_record.opg_api_gateway_certificate_validation.fqdn}"]
 }
