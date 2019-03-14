@@ -24,6 +24,7 @@ data "aws_iam_policy_document" "lpa_online_tool_role_cross_account_policy" {
         "arn:aws:iam::${lookup(local.accounts, "sandbox")}:root",
         "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
         "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
+        "arn:aws:iam::631181914621:user/andrew.pearce",
       ]
     }
   }
