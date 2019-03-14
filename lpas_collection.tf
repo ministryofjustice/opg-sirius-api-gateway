@@ -1,4 +1,6 @@
 
+# Defines endpoints for the lpas collection
+
 //-------------------------------
 // Pull in the secrets
 
@@ -69,3 +71,4 @@ resource "aws_iam_role_policy_attachment" "lpa_online_tool_get_lpas_id_access_po
 //----------------------------------------------
 // Setup Use my LPA gateway endpoint
 
+// TODO

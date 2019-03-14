@@ -4,13 +4,11 @@ variable "lambda_name" {
 
 variable "lambda_handler" {
   description = "The function entrypoint in your code."
-  default     = "handler"
 }
 
 variable "lambda_function_filename" {
   description = "Relative path to file with lambda source code"
 }
-
 
 variable "tags" {
   description = "A mapping of tags"

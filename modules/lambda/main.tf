@@ -1,5 +1,11 @@
+
+# Defines a single lambda function
+
 data "aws_region" "current" {}
 data "aws_availability_zones" "available" {}
+
+//-------------------------------------
+// Network configuration
 
 data "aws_subnet" "private" {
   count             = 3
@@ -16,7 +22,9 @@ data "aws_subnet" "private" {
   }
 }
 
-# Lambda Function IAM
+//-------------------------------------
+// The lambda's execution role
+
 resource "aws_iam_role" "iam_for_lambda" {
   name               = "${var.lambda_name}-invoke"
   assume_role_policy = "${data.aws_iam_policy_document.lambda_assume.json}"
@@ -43,7 +51,9 @@ data "aws_iam_policy_document" "lambda_assume" {
   }
 }
 
-# Lambda Function
+//-------------------------------------
+// The lambda function itself
+
 resource "aws_lambda_function" "lambda_function" {
   function_name = "${var.lambda_name}"
   role          = "${aws_iam_role.iam_for_lambda.arn}"

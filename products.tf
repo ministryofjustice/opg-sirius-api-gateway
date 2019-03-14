@@ -1,4 +1,6 @@
 
+# Defines products that have access to endpoint on the Gateway
+
 // -----------------------------------------------------------
 // LPA Online Tool
 
