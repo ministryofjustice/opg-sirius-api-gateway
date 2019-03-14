@@ -34,7 +34,7 @@ resource "aws_iam_role_policy_attachment" "log_to_cloudwatch" {
 }
 
 resource "aws_api_gateway_domain_name" "opg_api_gateway" {
-  domain_name              = "${local.opg_sirius_api_gateway_custom_url}"
+  domain_name              = "api.sirius.opg.digital"
   regional_certificate_arn = "${aws_acm_certificate_validation.opg_api_gateway.certificate_arn}"
 
   endpoint_configuration {
@@ -43,14 +43,14 @@ resource "aws_api_gateway_domain_name" "opg_api_gateway" {
 }
 
 # Domain names and Certificates are provisioned in the Management account
-resource "aws_route53_zone" "opg_service_justice_gov_uk" {
-  name     = "${local.opg_sirius_api_gateway_custom_url}"
+data "aws_route53_zone" "sirius_opg_digital" {
+  name = "sirius.opg.digital."
 }
 
 resource "aws_route53_record" "opg_api_gateway" {
-  name     = "${local.opg_sirius_api_gateway_custom_url}"
-  type     = "A"
-  zone_id  = "${aws_route53_zone.opg_service_justice_gov_uk.id}"
+  name    = "api.sirius.opg.digital"
+  type    = "A"
+  zone_id = "${data.aws_route53_zone.sirius_opg_digital.id}"
 
   alias {
     evaluate_target_health = true
@@ -60,7 +60,7 @@ resource "aws_route53_record" "opg_api_gateway" {
 }
 
 resource "aws_acm_certificate" "opg_api_gateway" {
-  domain_name       = "${local.opg_sirius_api_gateway_custom_url}"
+  domain_name       = "api.sirius.opg.digital"
   validation_method = "DNS"
 
   lifecycle {
@@ -69,11 +69,11 @@ resource "aws_acm_certificate" "opg_api_gateway" {
 }
 
 resource "aws_route53_record" "opg_api_gateway_certificate_validation" {
-  name     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_name}"
-  type     = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_type}"
-  zone_id  = "${aws_route53_zone.opg_service_justice_gov_uk.id}"
-  records  = ["${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_value}"]
-  ttl      = 60
+  name    = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_name}"
+  type    = "${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_type}"
+  zone_id = "${data.aws_route53_zone.sirius_opg_digital.id}"
+  records = ["${aws_acm_certificate.opg_api_gateway.domain_validation_options.0.resource_record_value}"]
+  ttl     = 60
 }
 
 resource "aws_acm_certificate_validation" "opg_api_gateway" {
