@@ -1,11 +1,10 @@
-
 # Defines products that have access to endpoint on the Gateway
 
 // -----------------------------------------------------------
 // LPA Online Tool
 
 resource "aws_iam_role" "lpa_online_tool_role" {
-  name = "sirius-api-gateway-access-lpa-online-tool"
+  name               = "sirius-api-gateway-access-lpa-online-tool"
   assume_role_policy = "${data.aws_iam_policy_document.lpa_online_tool_role_cross_account_policy.json}"
 }
 
@@ -15,17 +14,17 @@ data "aws_iam_policy_document" "lpa_online_tool_role_cross_account_policy" {
     sid = "CrossAccountApiGatewayAccessPolicy"
 
     actions = [
-      "sts:AssumeRole"
+      "sts:AssumeRole",
     ]
 
     principals {
       type = "AWS"
+
       identifiers = [
         "arn:aws:iam::${lookup(local.accounts, "sandbox")}:root",
         "arn:aws:iam::${lookup(local.accounts, "sandbox")}:role/SandboxPoweruser",
         "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
       ]
     }
-
   }
 }

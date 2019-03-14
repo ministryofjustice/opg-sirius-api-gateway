@@ -1,4 +1,3 @@
-
 # Defines a single HTTP endpoint representing a product, collection and resource id
 # The schema is: /<product>/<collection>/{id}
 
@@ -11,28 +10,28 @@ resource "aws_api_gateway_resource" "gateway_resource_product" {
   rest_api_id = "${var.api_gateway_id}"
   parent_id   = "${var.api_gateway_root_resource_id}"
 
-  path_part   = "${var.gateway_path_product}"   // eg. lpa-online-tool
+  path_part = "${var.gateway_path_product}" // eg. lpa-online-tool
 }
 
 resource "aws_api_gateway_resource" "gateway_resource_collection" {
   rest_api_id = "${var.api_gateway_id}"
   parent_id   = "${aws_api_gateway_resource.gateway_resource_product.id}"
 
-  path_part   = "${var.gateway_path_collection}"    // eg. lpas
+  path_part = "${var.gateway_path_collection}" // eg. lpas
 }
 
 resource "aws_api_gateway_resource" "gateway_resource_collection_resource" {
   rest_api_id = "${var.api_gateway_id}"
   parent_id   = "${aws_api_gateway_resource.gateway_resource_collection.id}"
 
-  path_part   = "${var.gateway_path_id_name}"    // eg. {lpa_online_tool_id}
+  path_part = "${var.gateway_path_id_name}" // eg. {lpa_online_tool_id}
 }
 
 //-------------------------------------
 // Setup the method
 
 resource "aws_api_gateway_method" "gateway_resource_collection_resource_get" {
-  rest_api_id = "${var.api_gateway_id}"
+  rest_api_id   = "${var.api_gateway_id}"
   resource_id   = "${aws_api_gateway_resource.gateway_resource_collection_resource.id}"
   http_method   = "GET"
   authorization = "AWS_IAM"
@@ -45,12 +44,12 @@ resource "aws_api_gateway_integration" "gateway_lpa_online_tool_lpas_collection_
   rest_api_id             = "${var.api_gateway_id}"
   resource_id             = "${aws_api_gateway_resource.gateway_resource_collection_resource.id}"
   http_method             = "${aws_api_gateway_method.gateway_resource_collection_resource_get.http_method}"
-  integration_http_method = "POST"  # We POST to Lambda, even on a HTTP GET.
+  integration_http_method = "POST"                                                                           # We POST to Lambda, even on a HTTP GET.
 
-  type                    = "AWS_PROXY"
-  content_handling        = "CONVERT_TO_TEXT"
+  type             = "AWS_PROXY"
+  content_handling = "CONVERT_TO_TEXT"
 
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${var.lambda_arn}/invocations"
+  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${var.lambda_arn}/invocations"
 }
 
 //-------------------------------------
@@ -69,7 +68,6 @@ resource "aws_lambda_permission" "gateway_lambda_permission" {
   source_arn = "${var.api_gateway_execution_arn}/*/${aws_api_gateway_method.gateway_resource_collection_resource_get.http_method}${aws_api_gateway_resource.gateway_resource_collection_resource.path}"
 }
 
-
 //-------------------------------------
 // Configure the endpoint's access policy
 // i.e. who can access the endpoint
@@ -80,7 +78,7 @@ data "aws_iam_policy_document" "gateway_resource_execution_policy" {
     sid = "OPGApiGatewayAccessPolicy"
 
     actions = [
-      "execute-api:Invoke"
+      "execute-api:Invoke",
     ]
 
     resources = [

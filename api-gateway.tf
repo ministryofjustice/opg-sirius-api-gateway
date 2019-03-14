@@ -1,4 +1,3 @@
-
 # Defines the gateway, its settings, and the deploy
 
 //------------------------------------
@@ -43,7 +42,6 @@ resource "aws_api_gateway_rest_api" "opg_api_gateway" {
   }
 }
 
-
 //------------------------------------
 // Deploy the gateway
 
@@ -52,7 +50,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   stage_name  = "testing"
 
   // The policy is dependent on the module completing, so we can depend on that to mean everything is in place
-  depends_on  = ["aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy"]
+  depends_on = ["aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy"]
 
   variables {
     // Force a deploy on every apply.

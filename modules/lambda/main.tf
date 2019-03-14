@@ -1,4 +1,3 @@
-
 # Defines a single lambda function
 
 data "aws_region" "current" {}
