@@ -34,28 +34,28 @@ resource "aws_iam_role_policy_attachment" "log_to_cloudwatch" {
 }
 
 resource "aws_api_gateway_domain_name" "opg_api_gateway" {
-  domain_name              = "api.sirius.opg.digital"
-  regional_certificate_arn = "${data.aws_acm_certificate.dev_sirius_opg_digital.arn}"
+  domain_name              = "api.${local.opg_sirius_hosted_zone}"
+  regional_certificate_arn = "${data.aws_acm_certificate.sirius_opg_digital.arn}"
 
   endpoint_configuration {
     types = ["REGIONAL"]
   }
 }
 
-data "aws_route53_zone" "dev_sirius_opg_digital" {
-  name = "dev.sirius.opg.digital."
+data "aws_route53_zone" "sirius_opg_digital" {
+  name = "${local.opg_sirius_hosted_zone}."
 }
 
-data "aws_acm_certificate" "dev_sirius_opg_digital" {
-  domain      = "*.dev.sirius.opg.digital"
+data "aws_acm_certificate" "sirius_opg_digital" {
+  domain      = "*.${local.opg_sirius_hosted_zone}"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
 
 resource "aws_route53_record" "opg_api_gateway" {
-  name    = "api.sirius.opg.digital"
+  name    = "api.${local.opg_sirius_hosted_zone}"
   type    = "A"
-  zone_id = "${data.aws_route53_zone.dev_sirius_opg_digital.id}"
+  zone_id = "${data.aws_route53_zone.sirius_opg_digital.id}"
 
   alias {
     evaluate_target_health = true
