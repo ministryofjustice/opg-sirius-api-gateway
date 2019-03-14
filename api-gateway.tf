@@ -44,7 +44,7 @@ resource "aws_api_gateway_domain_name" "opg_api_gateway" {
 
 # Domain names and Certificates are provisioned in the Management account
 resource "aws_route53_zone" "opg_service_justice_gov_uk" {
-  name     = "opg.service.justice.gov.uk"
+  name     = "${local.opg_sirius_api_gateway_custom_url}"
 }
 
 resource "aws_route53_record" "opg_api_gateway" {
