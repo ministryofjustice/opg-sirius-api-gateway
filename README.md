@@ -100,5 +100,5 @@ npm install -g newman
 
 Run a test against development
 ```bash
-newman run ./tests/lpas_collection.postman_collection.json
+newman run ./tests/development.lpas_collection.postman_collection.json
 ```

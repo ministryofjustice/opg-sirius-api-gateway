@@ -18,6 +18,10 @@ workflows:
           workspace: development
           requires:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+      - newman-collection-run:
+          name: test_lpas_collection_endpoint
+          workspace: development
+          requires: [apply_development]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -26,6 +30,7 @@ workflows:
           workspace: production
           requires: [lint_terraform, build_gem_cache]
 orbs:
+  newman: postman/newman@0.0.1
   sirius-api-gateway:
     executors:
       ruby:
@@ -116,3 +121,15 @@ orbs:
               key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
               paths:
                 - /tmp/lpas_collection_lambda.zip
+jobs:
+  newman-collection-run:
+        executor: newman/postman-newman-docker
+        parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        steps:
+          - checkout
+          - newman/newman-run:
+              collection: newman run ./tests/<< parameters.workspace >>.lpas_collection.postman_collection.json
