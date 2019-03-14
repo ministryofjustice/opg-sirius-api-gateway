@@ -10,7 +10,7 @@ namespace :lambda do
   end
   desc 'Workstation: test_lpas_collection'
   task :testlpas do
-    sh 'newman run ./tests/development.lpas_collection.postman_collection.json'
+    sh 'newman run https://www.getpostman.com/collections/de1229e9f4d76fd28379'
   end
 end
 
