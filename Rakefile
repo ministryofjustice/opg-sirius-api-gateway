@@ -8,6 +8,10 @@ namespace :lambda do
     sh 'cd ./lambdas; zip -r9 ./lpas_collection_lambda.zip .'
     sh 'rm -r ./lambdas/vendor'
   end
+  desc 'Workstation: test_lpas_collection'
+  task :testlpas do
+    sh 'newman run ./tests/development.lpas_collection.postman_collection.json'
+  end
 end
 
 namespace :terraform do
@@ -28,6 +32,11 @@ namespace :terraform do
   task :plan do
     Rake::Task['terraform:init'].invoke
     sh 'terraform plan | landscape'
+  end
+  desc 'Workstation: apply'
+  task :apply do
+    Rake::Task['terraform:init'].invoke
+    sh 'terraform apply -auto-approve | ./redact_output.sh'
   end
   desc 'Workstation: apply'
   task :apply do
