@@ -14,3 +14,4 @@
 - ~~package and deploy lambdas zips in pipeline~~
 - pass secrets as env variables to lambda
 - add multiple paths to module resource /<calling-service>/<collection>/{id}
+- Move `cloudwatch_role_arn` to an account level terraform state.
