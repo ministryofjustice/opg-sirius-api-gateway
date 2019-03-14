@@ -132,4 +132,4 @@ jobs:
         steps:
           - checkout
           - newman/newman-run:
-              collection: newman run https://www.getpostman.com/collections/de1229e9f4d76fd28379
+              collection: https://www.getpostman.com/collections/de1229e9f4d76fd28379
