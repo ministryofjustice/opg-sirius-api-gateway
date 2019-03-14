@@ -47,6 +47,8 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 resource "aws_api_gateway_method_settings" "global_gateway_settings" {
+  depends_on = ["aws_api_gateway_deployment.deployment"]
+
   rest_api_id = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
   stage_name  = "more-testing"
   method_path = "*/*"
