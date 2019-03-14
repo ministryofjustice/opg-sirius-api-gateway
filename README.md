@@ -84,3 +84,21 @@ For commands that require aws IAM roles, you can use aws-vault to select the cor
 ```bash
 aws-vault exec identity -- bundle exec rake terraform:localplan
 ```
+
+
+## Testing the OPG Sirius API Gateway
+
+Testing of the deployed api gateway is done using Postman and Newman
+
+https://www.getpostman.com/downloads/
+https://www.npmjs.com/package/newman
+
+Install Newman
+```bash
+npm install -g newman
+```
+
+Run a test against development
+```bash
+newman run ./tests/lpas_collection.postman_collection.json
+```
