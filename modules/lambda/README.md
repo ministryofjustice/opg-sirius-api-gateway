@@ -1,4 +1,4 @@
-# Lambdas for OPA API Gateway
+# Lambdas for OPG API Gateway
 
 This module provisions 
 * An single VPC based lambda
