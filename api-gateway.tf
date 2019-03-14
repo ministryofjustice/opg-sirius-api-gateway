@@ -45,3 +45,14 @@ resource "aws_api_gateway_deployment" "deployment" {
     create_before_destroy = true
   }
 }
+
+resource "aws_api_gateway_method_settings" "global_gateway_settings" {
+  rest_api_id = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  stage_name  = "more-testing"
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
+}
