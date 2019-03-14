@@ -88,6 +88,8 @@ data "aws_iam_policy_document" "gateway_resource_execution_policy" {
 }
 
 resource "aws_iam_policy" "opg_api_gateway_access_policy" {
+  depends_on = ["aws_api_gateway_integration.gateway_lpa_online_tool_lpas_collection_resource_get_integration"]
+
   name   = "${var.gateway_path_product}_${var.gateway_path_collection}_access_policy"
   path   = "/"
   policy = "${data.aws_iam_policy_document.gateway_resource_execution_policy.json}"
