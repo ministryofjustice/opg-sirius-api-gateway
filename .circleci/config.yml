@@ -131,7 +131,7 @@ orbs:
               keys:
                 ['gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}']
           - run: bundle install --path vendor/bundle --quiet
-          - run: ./modify_env.rb
+          - run: ruby ./modify_env.rb
           - save_cache:
               key: api_test_config-{{ .Branch }}-{{ .Revision }}
               paths: /tmp/generated.postman_environment.json
