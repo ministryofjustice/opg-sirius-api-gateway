@@ -10,7 +10,9 @@ namespace :lambda do
   end
   desc 'Workstation: test_lpas_collection'
   task :testlpas do
-    sh 'newman run https://www.getpostman.com/collections/de1229e9f4d76fd28379'
+    sh 'ruby ./modify_env.rb'
+    sh 'newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e ./tests/generated.postman_environment.json'
+    sh 'rm ./tests/generated.postman_environment.json'
   end
 end
 
@@ -32,11 +34,6 @@ namespace :terraform do
   task :plan do
     Rake::Task['terraform:init'].invoke
     sh 'terraform plan | landscape'
-  end
-  desc 'Workstation: apply'
-  task :apply do
-    Rake::Task['terraform:init'].invoke
-    sh 'terraform apply -auto-approve | ./redact_output.sh'
   end
   desc 'Workstation: apply'
   task :apply do
