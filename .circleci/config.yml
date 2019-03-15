@@ -18,10 +18,13 @@ workflows:
           workspace: development
           requires:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+      - sirius-api-gateway/build_api_test_file:
+          name: build_api_test_file
+          requires: [apply_development]
       - newman-collection-run:
           name: test_lpas_collection_endpoint
           workspace: development
-          requires: [apply_development]
+          requires: [build_api_test_file]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -106,7 +109,7 @@ orbs:
                 - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
           - restore_cache:
               keys:
-                - lpas_collection_lambda-{{ .Branch }}
+                - lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
@@ -121,15 +124,31 @@ orbs:
               key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
               paths:
                 - /tmp/lpas_collection_lambda.zip
-jobs:
-  newman-collection-run:
-        executor: newman/postman-newman-docker
-        parameters:
-          workspace:
-            description: Terraform Workspace name
-            type: string
-            default: development
+      build_api_test_file:
+        executor: ruby
         steps:
           - checkout
-          - newman/newman-run:
-              collection: https://www.getpostman.com/collections/de1229e9f4d76fd28379
+          - restore_cache:
+              keys:
+                ['gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}']
+          - run: bundle install --path vendor/bundle --quiet
+          - run: ./modify_env.rb
+          - save_cache:
+              key: api_test_config-{{ .Branch }}-{{ .Revision }}
+              paths: ./tests/generated.postman_environment.json
+jobs:
+  newman-collection-run:
+    executor: newman/postman-newman-docker
+    parameters:
+      workspace:
+        description: Terraform Workspace name
+        type: string
+        default: development
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - api_test_config-{{ .Branch }}-{{ .Revision }}
+      - newman/newman-run:
+          collection: https://www.getpostman.com/collections/c85538a8e4fb4f19b892
+          environment: ./tests/generated.postman_environment.json
