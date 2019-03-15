@@ -10,9 +10,13 @@ namespace :lambda do
   end
   desc 'Workstation: test_lpas_collection'
   task :testlpas do
-    sh 'ruby ./modify_env.rb'
+    Rake::Task['lambda:buildtestconfig'].invoke
     sh 'newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json'
     sh 'rm /tmp/generated.postman_environment.json'
+  end
+  desc 'Workstation: test_lpas_collection'
+  task :buildapitestfile do
+    sh 'ruby ./modify_env.rb'
   end
 end
 
