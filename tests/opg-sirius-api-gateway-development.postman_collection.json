@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "18173c86-db21-473c-865f-e144fae0e988",
+		"name": "opg-sirius-api-gateway-development",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "lpa-online-tool",
+			"item": [
+				{
+					"name": "A00000000001",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5acdba8d-7231-4764-8e8f-293afd419816",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "awsv4",
+							"awsv4": [
+								{
+									"key": "service",
+									"value": "execute-api",
+									"type": "string"
+								},
+								{
+									"key": "sessionToken",
+									"value": "{{aws_session_token}}",
+									"type": "string"
+								},
+								{
+									"key": "region",
+									"value": "eu-west-1",
+									"type": "string"
+								},
+								{
+									"key": "saveHelper",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "secretKey",
+									"value": "{{aws_secret_access_key}}",
+									"type": "string"
+								},
+								{
+									"key": "accessKey",
+									"value": "{{aws_access_key_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://3d9iqi6bq9.execute-api.eu-west-1.amazonaws.com/testing/lpa-online-tool/lpas/:lpa_online_tool_id",
+							"protocol": "https",
+							"host": [
+								"3d9iqi6bq9",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"testing",
+								"lpa-online-tool",
+								"lpas",
+								":lpa_online_tool_id"
+							],
+							"variable": [
+								{
+									"key": "lpa_online_tool_id",
+									"value": "A00000000001"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "A00000000002",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3b99a0d0-c437-409d-82ee-2476c15fdb2c",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "awsv4",
+							"awsv4": [
+								{
+									"key": "sessionToken",
+									"value": "{{aws_session_token}}",
+									"type": "string"
+								},
+								{
+									"key": "service",
+									"value": "execute-api",
+									"type": "string"
+								},
+								{
+									"key": "region",
+									"value": "eu-west-1",
+									"type": "string"
+								},
+								{
+									"key": "saveHelper",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "secretKey",
+									"value": "{{aws_secret_access_key}}",
+									"type": "string"
+								},
+								{
+									"key": "accessKey",
+									"value": "{{aws_access_key_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://3d9iqi6bq9.execute-api.eu-west-1.amazonaws.com/testing/lpa-online-tool/lpas/:lpa_online_tool_id",
+							"protocol": "https",
+							"host": [
+								"3d9iqi6bq9",
+								"execute-api",
+								"eu-west-1",
+								"amazonaws",
+								"com"
+							],
+							"path": [
+								"testing",
+								"lpa-online-tool",
+								"lpas",
+								":lpa_online_tool_id"
+							],
+							"variable": [
+								{
+									"key": "lpa_online_tool_id",
+									"value": "A00000000002"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for lpa-online-tool"
+		}
+	]
+}
