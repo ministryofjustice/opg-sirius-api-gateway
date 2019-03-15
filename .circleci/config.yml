@@ -20,11 +20,12 @@ workflows:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
       - sirius-api-gateway/build_api_test_file:
           name: build_api_test_file
-          requires: [apply_development]
+          requires:
+            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
       - newman-collection-run:
           name: test_lpas_collection_endpoint
           workspace: development
-          requires: [build_api_test_file]
+          requires: [build_api_test_file, apply_development]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
