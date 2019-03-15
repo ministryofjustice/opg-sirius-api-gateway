@@ -103,7 +103,6 @@ orbs:
         steps:
           - checkout
           - install_terraform
-
           - restore_cache:
               keys:
                 - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
@@ -135,7 +134,7 @@ orbs:
           - run: ./modify_env.rb
           - save_cache:
               key: api_test_config-{{ .Branch }}-{{ .Revision }}
-              paths: ./tests/generated.postman_environment.json
+              paths: /tmp/generated.postman_environment.json
 jobs:
   newman-collection-run:
     executor: newman/postman-newman-docker
@@ -151,4 +150,4 @@ jobs:
             - api_test_config-{{ .Branch }}-{{ .Revision }}
       - newman/newman-run:
           collection: https://www.getpostman.com/collections/c85538a8e4fb4f19b892
-          environment: ./tests/generated.postman_environment.json
+          environment: /tmp/generated.postman_environment.json

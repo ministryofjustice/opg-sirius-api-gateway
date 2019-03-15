@@ -22,4 +22,4 @@ obj["values"][0]["value"] = resp.credentials.access_key_id
 obj["values"][1]["value"] = resp.credentials.secret_access_key
 obj["values"][2]["value"] = resp.credentials.session_token
 
-File.open("./tests/generated.postman_environment.json", "w") { |file| file.puts JSON.pretty_generate(obj)}
+File.open("/tmp/generated.postman_environment.json", "w") { |file| file.puts JSON.pretty_generate(obj)}
