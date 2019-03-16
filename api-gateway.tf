@@ -85,6 +85,13 @@ resource "aws_api_gateway_domain_name" "opg_api_gateway" {
   }
 }
 
+resource "aws_api_gateway_base_path_mapping" "mapping" {
+  api_id      = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
+  domain_name = "${aws_api_gateway_domain_name.opg_api_gateway.domain_name}"
+  base_path   = "${aws_api_gateway_deployment.deployment.stage_name}"
+}
+
 data "aws_route53_zone" "sirius_opg_digital" {
   name = "${local.opg_sirius_hosted_zone}."
 }
