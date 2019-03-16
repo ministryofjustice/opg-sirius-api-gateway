@@ -20,9 +20,8 @@ workflows:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
       - sirius-api-gateway/build_api_test_file:
           name: build_api_test_file
-          requires:
-            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
-      - newman-collection-run:
+          requires: [build_gem_cache]
+      - sirius-api-gateway/newman_api_test:
           name: test_lpas_collection_endpoint
           workspace: development
           requires: [build_api_test_file, apply_development]
@@ -43,6 +42,8 @@ orbs:
         docker: [image: hashicorp/terraform]
       python:
         docker: [image: python:alpine]
+      newman:
+        docker: [image: valveless/newman:alpine]
     commands:
       install_terraform:
         steps:
@@ -136,6 +137,21 @@ orbs:
           - save_cache:
               key: api_test_config-{{ .Branch }}-{{ .Revision }}
               paths: ./tests/generated.postman_environment.json
+      newman_api_test:
+        parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: "<< parameters.workspace >>"
+        executor: newman
+        steps:
+          - checkout
+          - restore_cache:
+              keys:
+                - api_test_config-{{ .Branch }}-{{ .Revision }}
+          - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e ./tests/generated.postman_environment.json'
 jobs:
   newman-collection-run:
     executor: newman/postman-newman-docker
