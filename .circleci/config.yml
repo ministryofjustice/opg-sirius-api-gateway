@@ -32,6 +32,10 @@ workflows:
           name: apply_production
           workspace: production
           requires: [lint_terraform, build_gem_cache]
+      - sirius-api-gateway/newman_api_test:
+          name: test_lpas_collection_endpoint
+          workspace: production
+          requires: [build_api_test_file, apply_production]
 orbs:
   sirius-api-gateway:
     executors:
