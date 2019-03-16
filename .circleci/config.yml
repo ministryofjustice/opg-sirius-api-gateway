@@ -151,7 +151,7 @@ orbs:
           - restore_cache:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
-          - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e ./tests/generated.postman_environment.json'
+          - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e ./tests/generated.postman_environment.json
 jobs:
   newman-collection-run:
     executor: newman/postman-newman-docker
