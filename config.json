@@ -3,7 +3,10 @@
     "production": "649098267436",
     "preproduction": "649098267436",
     "development": "288342028542"
+  },
+  "endpoint_domain_name": {
+    "production": "https://api.sirius.opg.digital/testing",
+    "preproduction": "https://api.sirius.opg.digital/testing",
+    "development": "https://api.dev.sirius.opg.digital/testing"
   }
 }
-
-

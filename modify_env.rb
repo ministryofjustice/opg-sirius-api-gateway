@@ -7,6 +7,7 @@ CONFIG       = hash_from_file('config.json')
 ROLE_NAME    = ENV['TF_VAR_api_test_role'] || 'ci'
 TF_WORKSPACE = ENV['TF_WORKSPACE'] || 'development'
 ACCOUNT_ID   = CONFIG['accounts'][TF_WORKSPACE]
+ENDPOINT_DOMAIN_NAME   = CONFIG['endpoint_domain_name'][TF_WORKSPACE]
 
 resp = Aws::STS::Resource.new(
   region: 'eu-west-1'
@@ -21,5 +22,6 @@ obj = JSON.parse(json)
 obj["values"][0]["value"] = resp.credentials.access_key_id
 obj["values"][1]["value"] = resp.credentials.secret_access_key
 obj["values"][2]["value"] = resp.credentials.session_token
+obj["values"][3]["value"] = ENDPOINT_DOMAIN_NAME
 
 File.open("/tmp/generated.postman_environment.json", "w") { |file| file.puts JSON.pretty_generate(obj)}
