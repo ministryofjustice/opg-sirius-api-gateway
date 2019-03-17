@@ -10,28 +10,41 @@ workflows:
       - sirius-api-gateway/lint_terraform:
           name: lint_terraform
           requires: [package_lpas_collection_lambda]
-      - sirius-api-gateway/apply_terraform:
-          filters:
-            branches:
-              ignore: [master]
-          name: terraform_apply
-          workspace: development
-          requires:
-            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
       - sirius-api-gateway/build_api_test_file:
           name: build_api_test_file
           requires: [build_gem_cache]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
+              ignore: [master]
+          name: apply_development
+          workspace: development
+          requires:
+            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+      - sirius-api-gateway/build_api_test_file:
+          name: build_api_test_file
+          requires: [build_gem_cache]
+      - sirius-api-gateway/newman_api_test:
+          filters:
+            branches:
+              ignore: [master]
+          name: test_lpas_collection_endpoint
+          workspace: development
+          requires: [build_api_test_file, apply_development]
+      - sirius-api-gateway/apply_terraform:
+          filters:
+            branches:
               only: [master]
-          name: terraform_apply
+          name: apply_production
           workspace: production
           requires: [lint_terraform, build_gem_cache]
       - sirius-api-gateway/newman_api_test:
+          filters:
+            branches:
+              only: [master]
           name: test_lpas_collection_endpoint
           workspace: production
-          requires: [build_api_test_file, terraform_apply]
+          requires: [build_api_test_file, apply_production]
 orbs:
   sirius-api-gateway:
     executors:
