@@ -113,7 +113,3 @@ resource "aws_route53_record" "opg_api_gateway" {
     zone_id                = "${aws_api_gateway_domain_name.opg_api_gateway.regional_zone_id}"
   }
 }
-
-output "opg_sirius_api_gateway_custom_url" {
-  value = "${aws_api_gateway_domain_name.opg_api_gateway.domain_name}"
-}
