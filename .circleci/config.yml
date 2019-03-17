@@ -25,7 +25,7 @@ workflows:
           filters:
             branches:
               ignore: [master]
-          name: test_lpas_collection_endpoint
+          name: test_lpas_collection_endpoint_development
           workspace: development
           requires: [build_api_test_file, apply_development]
       - sirius-api-gateway/apply_terraform:
@@ -39,7 +39,7 @@ workflows:
           filters:
             branches:
               only: [master]
-          name: test_lpas_collection_endpoint
+          name: test_lpas_collection_endpoint_production
           workspace: production
           requires: [build_api_test_file, apply_production]
 orbs:
