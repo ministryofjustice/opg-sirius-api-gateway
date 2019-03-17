@@ -1,6 +1,10 @@
 # opg-sirius-api-gateway
 OPG API Gateway into Sirius: Managed by opg-org-infra &amp; Terraform
 
+## Project build status - production
+[![CircleCI](https://circleci.com/gh/ministryofjustice/opg-sirius-api-gateway/tree/master.svg?style=svg)](https://circleci.com/gh/ministryofjustice/opg-sirius-api-gateway/tree/master)
+
+
 ## Working localling with Terraform
 
 ### Setting Env Vars
@@ -34,18 +38,20 @@ Then you can run terraform commands
 aws-vault exec identity -- terraform $command
 ```
 
-All commands should now work through the identity account.
+All commands through an identity account.
 
-For example import a resource using the following command
+For example, import a resource using the following command
 
 ```bash
-aws-vault exec identity -- terraform import module.opg-backoffice-datastore-preprod2.aws_s3_bucket.bucket opg-backoffice-datastore-preprod2
+aws-vault exec identity -- terraform import module.any-bucket-you-own.aws_s3_bucket.bucket any-bucket-you-own
 ```
 
 ## Rakefile - Shortcuts for local work
-A Rakefile has been provided to with commands helpful for local work.
+A Rakefile has been provided with commands helpful for local work.
 
-They are effectively shortcuts, intended to be useful, and not an abstraction or obfuscation of the work.
+They are effectively shortcuts, intended to be useful.
+
+Some are used in the CI pipeline too.
 
 ### Set up your environment
 Make sure you have Ruby installed
@@ -65,15 +71,17 @@ Now install the gems required for the package
 bundle install
 ```
 
+
 ### Listing the available Rake tasks
 You can list the available commands in the Rake file
 
 ```bash
 bundle exec rake -T
-rake lambda:package       # Workstation: package-lambda
-rake terraform:apply      # Workstation: apply
-rake terraform:localplan  # Workstation: localplan
-rake terraform:plan       # Workstation: plan
+rake lambda:buildapitestfile  # Lambda: build api tests env file
+rake lambda:package           # Lambda: package lambda function
+rake lambda:testlpas          # Lambda: test lpas collection endpoint
+rake terraform:apply          # Terraform: apply
+rake terraform:plan           # Terraform: plan
 ```
 
 
