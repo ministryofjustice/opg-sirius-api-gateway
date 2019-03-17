@@ -14,28 +14,24 @@ workflows:
           filters:
             branches:
               ignore: [master]
-          name: apply_development
+          name: terraform_apply
           workspace: development
           requires:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
       - sirius-api-gateway/build_api_test_file:
           name: build_api_test_file
           requires: [build_gem_cache]
-      - sirius-api-gateway/newman_api_test:
-          name: test_lpas_collection_endpoint
-          workspace: development
-          requires: [build_api_test_file, apply_development]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
               only: [master]
-          name: apply_production
+          name: terraform_apply
           workspace: production
           requires: [lint_terraform, build_gem_cache]
       - sirius-api-gateway/newman_api_test:
           name: test_lpas_collection_endpoint
           workspace: production
-          requires: [build_api_test_file, apply_production]
+          requires: [build_api_test_file, terraform_apply]
 orbs:
   sirius-api-gateway:
     executors:
