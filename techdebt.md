@@ -9,9 +9,10 @@
 - ~~interpolate the vpc name and id from a data source~~
 - ~~output security group from module for use elsewhere~~
 - ~~log to cloudwatch~~
-- test lambda apis as they're deployed
+- ~~test lambda apis as they're deployed~~
 - ~~package and deploy lambdas zips in pipeline~~
 - ~~pass secrets as env variables to lambda~~
 - ~~add multiple paths to module resource /<calling-service>/<collection>/{id}~~
 - Move `cloudwatch_role_arn` to an account level terraform state.
 - Newman complains about postman collection version. Postman collections haven't been updated yet. Update them when available
+- deploy a gateway for every sirius app stack?
