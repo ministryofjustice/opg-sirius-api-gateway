@@ -21,9 +21,6 @@ workflows:
           workspace: development
           requires:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
-      - sirius-api-gateway/build_api_test_file:
-          name: build_api_test_file
-          requires: [build_gem_cache]
       - sirius-api-gateway/newman_api_test:
           filters:
             branches:
