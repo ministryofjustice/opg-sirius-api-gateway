@@ -16,12 +16,15 @@ resp = Aws::STS::Resource.new(
   role_session_name: 'checkdeployment'
 )
 
-json = File.read('./tests/template.postman_environment.json')
-obj = JSON.parse(json)
+obj = hash_from_file('./tests/template.postman_environment.json')
 
-obj["values"][0]["value"] = resp.credentials.access_key_id
-obj["values"][1]["value"] = resp.credentials.secret_access_key
-obj["values"][2]["value"] = resp.credentials.session_token
-obj["values"][3]["value"] = ENDPOINT_DOMAIN_NAME
+session = { 
+  "aws_access_key_id" => resp.credentials.access_key_id,
+  "aws_secret_access_key" => resp.credentials.secret_access_key,
+  "aws_session_token" => resp.credentials.session_token,
+  "endpoint_domain_name" => ENDPOINT_DOMAIN_NAME,
+}
 
+obj["values"].map { | x | x["value"] = session[ x["key"] ] }
+ 
 File.open("/tmp/generated.postman_environment.json", "w") { |file| file.puts JSON.pretty_generate(obj)}
