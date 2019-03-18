@@ -157,8 +157,8 @@ orbs:
         executor: newman
         steps:
           - checkout
+          - run: apk add ca-certificates -q
           - restore_cache:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
-          - run: apk add ca-certificates
           - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json
