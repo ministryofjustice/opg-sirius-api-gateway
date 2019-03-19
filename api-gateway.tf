@@ -75,3 +75,41 @@ resource "aws_api_gateway_method_settings" "global_gateway_settings" {
     logging_level   = "INFO"
   }
 }
+
+resource "aws_api_gateway_domain_name" "opg_api_gateway" {
+  domain_name              = "api.${local.opg_sirius_hosted_zone}"
+  regional_certificate_arn = "${data.aws_acm_certificate.sirius_opg_digital.arn}"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+resource "aws_api_gateway_base_path_mapping" "mapping" {
+  api_id      = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
+  domain_name = "${aws_api_gateway_domain_name.opg_api_gateway.domain_name}"
+  base_path   = "${aws_api_gateway_deployment.deployment.stage_name}"
+}
+
+data "aws_route53_zone" "sirius_opg_digital" {
+  name = "${local.opg_sirius_hosted_zone}."
+}
+
+data "aws_acm_certificate" "sirius_opg_digital" {
+  domain      = "*.${local.opg_sirius_hosted_zone}"
+  types       = ["AMAZON_ISSUED"]
+  most_recent = true
+}
+
+resource "aws_route53_record" "opg_api_gateway" {
+  name    = "api.${local.opg_sirius_hosted_zone}"
+  type    = "A"
+  zone_id = "${data.aws_route53_zone.sirius_opg_digital.id}"
+
+  alias {
+    evaluate_target_health = true
+    name                   = "${aws_api_gateway_domain_name.opg_api_gateway.regional_domain_name}"
+    zone_id                = "${aws_api_gateway_domain_name.opg_api_gateway.regional_zone_id}"
+  }
+}

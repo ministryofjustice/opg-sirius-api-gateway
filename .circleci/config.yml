@@ -10,6 +10,9 @@ workflows:
       - sirius-api-gateway/lint_terraform:
           name: lint_terraform
           requires: [package_lpas_collection_lambda]
+      - sirius-api-gateway/build_api_test_file:
+          name: build_api_test_file
+          requires: [build_gem_cache]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -18,6 +21,13 @@ workflows:
           workspace: development
           requires:
             [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+      - sirius-api-gateway/newman_api_test:
+          filters:
+            branches:
+              ignore: [master]
+          name: test_lpas_collection_endpoint_development
+          workspace: development
+          requires: [build_api_test_file, apply_development]
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -25,6 +35,13 @@ workflows:
           name: apply_production
           workspace: production
           requires: [lint_terraform, build_gem_cache]
+      - sirius-api-gateway/newman_api_test:
+          filters:
+            branches:
+              only: [master]
+          name: test_lpas_collection_endpoint_production
+          workspace: production
+          requires: [build_api_test_file, apply_production]
 orbs:
   sirius-api-gateway:
     executors:
@@ -34,6 +51,8 @@ orbs:
         docker: [image: hashicorp/terraform]
       python:
         docker: [image: python:alpine]
+      newman:
+        docker: [image: postman/newman:alpine]
     commands:
       install_terraform:
         steps:
@@ -95,13 +114,12 @@ orbs:
         steps:
           - checkout
           - install_terraform
-
           - restore_cache:
               keys:
                 - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
           - restore_cache:
               keys:
-                - lpas_collection_lambda-{{ .Branch }}
+                - lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
@@ -116,3 +134,31 @@ orbs:
               key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
               paths:
                 - /tmp/lpas_collection_lambda.zip
+      build_api_test_file:
+        executor: ruby
+        steps:
+          - checkout
+          - restore_cache:
+              keys:
+                ['gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}']
+          - run: bundle install --path vendor/bundle --quiet
+          - run: bundle exec rake lambda:buildapitestfile
+          - save_cache:
+              key: api_test_config-{{ .Branch }}-{{ .Revision }}
+              paths: /tmp/generated.postman_environment.json
+      newman_api_test:
+        parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: "<< parameters.workspace >>"
+        executor: newman
+        steps:
+          - checkout
+          - run: apk add ca-certificates -q
+          - restore_cache:
+              keys:
+                - api_test_config-{{ .Branch }}-{{ .Revision }}
+          - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json

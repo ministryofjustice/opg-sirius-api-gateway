@@ -1,6 +1,5 @@
 - ~~No state storage for this repository yet~~
-- build an image for ruby+terraform from circleci/ruby
-- Split up modules/api_gateway_lambda_function/main.tf into smaller files
+- ~~Split up modules/api_gateway_lambda_function/main.tf into smaller files~~
 - ~~Use lookup patter for account numbers everywhere `${lookup(local.accounts, "opg-sirius-development")`~~
 - ~~Tag all resources~~
 - ~~Move subnets into module as we'll always be using the same ones~~
@@ -10,8 +9,11 @@
 - ~~interpolate the vpc name and id from a data source~~
 - ~~output security group from module for use elsewhere~~
 - ~~log to cloudwatch~~
-- test lambda apis as they're deployed
+- ~~test lambda apis as they're deployed~~
 - ~~package and deploy lambdas zips in pipeline~~
-- pass secrets as env variables to lambda
-- add multiple paths to module resource /<calling-service>/<collection>/{id}
+- ~~pass secrets as env variables to lambda~~
+- ~~add multiple paths to module resource /<calling-service>/<collection>/{id}~~
 - Move `cloudwatch_role_arn` to an account level terraform state.
+- Newman complains about postman collection version. Postman collections haven't been updated yet. Update them when available
+- Deploy a gateway for every sirius app stack?
+- Restructure IAM setup for resource access and individual access
