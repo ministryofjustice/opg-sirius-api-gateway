@@ -120,11 +120,18 @@ def invoke_lambda(handler, event):
 
     lambda_path_on_host = os.environ['LAMBDAS_PATH']
 
+    # Any env variable prefixed with `PASSTHROUGH_` is to be passed through to the lambda container
+    # This extracts all such vars into their own dictionary, and removes the `PASSTHROUGH_` prefix
+    envs_for_lambda_container = {k.replace('PASSTHROUGH_', ''): v for k, v in os.environ.items() if k.startswith('PASSTHROUGH_')}
+
+    app.logger.info("Passing to lambda: %s" % envs_for_lambda_container)
+
     container = dockerClient.containers.run(
         image="lambci/lambda:python3.7",
         command=[handler, json.dumps(event)],
         volumes={lambda_path_on_host: {'bind': '/var/task', 'mode': 'ro'}},
         network_mode='container:'+container_id,
+        environment=envs_for_lambda_container,
         stderr=True,
         detach=True,
     )

@@ -8,19 +8,28 @@ import json
 def id_handler(event, context):
 
     try:
+        if 'resource' not in event:
+            raise InvalidInputError("'resource' missing from event")
+
         if 'pathParameters' not in event:
             raise InvalidInputError("'pathParameters' missing from event")
+
+        # -------------------------------------
+        # Determine what fields the service can return
+
+        fields = []
+
+        if event['resource'].startswith('/lpa-online-tool'):
+            fields = ['onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
+
+        elif event['resource'].startswith('/use-my-lpa'):
+            fields = ['uId']
 
         # -------------------------------------
         # Lookup LPA
 
         c = LpasCollection.factory()
-        result = c.get_lpa(**event['pathParameters'])
-
-        #keep = ['uId', 'onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
-        #lpa = {k: result['data'][k] for k in keep }
-
-        lpa = result
+        lpa, age = c.get_lpa(**event['pathParameters'])
 
         # -------------------------------------
         # Respond
@@ -31,8 +40,12 @@ def id_handler(event, context):
             response["statusCode"] = 404
             response["body"] = {}
         else:
+            # Filter the return fields
+            lpa = {k: lpa[k] for k in fields if k in lpa}
+
             response["statusCode"] = 200
             response["body"] = lpa
+            response["headers"] = {'Age': age}
 
         # ---
 

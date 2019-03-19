@@ -1,5 +1,6 @@
 from . import InvalidInputError
 from data_providers import SiriusProvider, JsonProvider
+from datetime import datetime, timezone
 
 # --------------------------------------------
 # Responsible for:
@@ -15,6 +16,24 @@ class LpasCollection:
         #return LpasCollection(SiriusProvider.factory())
         return LpasCollection(JsonProvider.factory())
 
+    @classmethod
+    def _calculate_age(cls, str_date):
+        d = datetime.fromisoformat(str_date)
+        return (datetime.utcnow().replace(tzinfo=timezone.utc) - d).seconds
+
+    @classmethod
+    def _prepare_response(cls, collection):
+        # For the LPA collection lookup, we're expecting an array of 1 item back.
+        if collection is None \
+                or 'payload' not in collection.data \
+                or type(collection.data['payload']) is not list \
+                or len(collection.data['payload']) != 1:
+            return None, 0  # (empty) data and (dummy) age
+
+        age = cls._calculate_age(collection.data['meta']['datetime'])
+
+        return collection.data['payload'].pop(), age  # data and age
+
     # --------------------
 
     def __init__(self, provider):
@@ -27,16 +46,12 @@ class LpasCollection:
             raise InvalidInputError("Must be either 'lpa_online_tool_id' or 'sirius_uid'; not both")
 
         elif lpa_online_tool_id is not None:
-            lpa = self._provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
-            if lpa is not None:
-                return lpa['payload']
-            return lpa
+            collection = self._provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
+            return self._prepare_response(collection)
 
         elif sirius_uid is not None:
-            lpa = self._provider.get_lpa_by_sirius_uid(sirius_uid)
-            if lpa is not None:
-                return lpa['payload']
-            return lpa
+            collection = self._provider.get_lpa_by_sirius_uid(sirius_uid)
+            return self._prepare_response(collection)
 
         else:
             raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")

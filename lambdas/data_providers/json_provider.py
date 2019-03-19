@@ -1,5 +1,5 @@
 import json
-from . import get_datetime
+from .model import Response
 
 # --------------------------------------------
 # Responsible for looking up a given LPA from
@@ -20,7 +20,6 @@ class JsonProvider:
 
     def _get_data(self):
         if not isinstance(self._lpas, dict):
-            # path = os.path.join(os.path.dirname(__file__), 'example.json')  # File is relative to this script
             with open(self._data_path) as f:
                 self._lpas = json.load(f)
                 print("Loaded JSON testing data")
@@ -30,18 +29,12 @@ class JsonProvider:
     def get_lpa_by_sirius_uid(self, sirius_uid):
         for lpa in self._get_data():
             if 'uid' in lpa and lpa['uid'] == sirius_uid:
-                return {
-                    'metadata': {'date': get_datetime()},
-                    'payload': lpa
-                }
+                return Response.from_sirius_factory(sirius_uid, json.dumps([lpa]))
 
     def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
         for lpa in self._get_data():
             if 'onlineLpaId' in lpa and lpa['onlineLpaId'] == online_tool_id:
-                return {
-                    'metadata': {'date': get_datetime()},
-                    'payload': lpa
-                }
+                return Response.from_sirius_factory(online_tool_id, json.dumps([lpa]))
 
 
 if __name__ == '__main__':
