@@ -20,9 +20,9 @@ def test_handler(event, context):
 
     print('Auth URL: ' + url)
 
-    r = requests.get(url, verify=False, timeout=(3.05, 5))
+    r = requests.get(membrane_url + '/healthcheck.php', verify=False, headers={'host': 'membrane'})
 
-    if r.status_code == 405:
+    if r.status_code == 200:
         print('Appears we can talk to membrane')
     else:
         print('Unable to access membrane')
@@ -37,7 +37,7 @@ def test_handler(event, context):
 
     data = {'user': json.loads(os.environ['CREDENTIALS'])}
 
-    r = requests.post(url, json=data, verify=False, timeout=(3.05, 5))
+    r = requests.post(url, json=data, verify=False, headers={'host': 'membrane'})
 
     if r.status_code == 201:
         print('Login successful')
