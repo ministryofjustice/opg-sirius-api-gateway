@@ -31,7 +31,7 @@ class SiriusProvider:
 
             url = self._membrane_url + '/api/public/v1/lpas?lpa-online-tool-id=%s' % online_tool_id
 
-            req = Request('GET', url).prepare()
+            req = Request('GET', url, headers={'host': 'membrane'}).prepare()
 
             # Decorate the request with an authentication token
             req = self._authenticator.authorise_request(req)

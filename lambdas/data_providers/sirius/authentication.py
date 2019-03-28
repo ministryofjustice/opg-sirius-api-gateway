@@ -33,7 +33,8 @@ class SiriusAuthenticator:
 
         url = self._membrane_url + '/auth/sessions'
 
-        r = requests.post(url, json=data, allow_redirects=False, verify=False, timeout=(3.05, 5))
+        r = requests.post(url, json=data, allow_redirects=False,
+                          verify=False, timeout=(3.05, 5), headers={'host': 'membrane'})
 
         if r.status_code == 201:
             details = r.json()
