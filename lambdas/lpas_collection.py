@@ -1,8 +1,13 @@
 import includes
 from pprint import pprint
 from rest_collections import InvalidInputError, LpasCollection
+from data_providers import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
 import traceback
 import json
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def id_handler(event, context):
@@ -54,21 +59,34 @@ def id_handler(event, context):
         return response
 
     except InvalidInputError as e:
-        return {
-            'statusCode': 400,
-            'body': {
-                'error': 'Bad request: %s' % e,
-            }
-        }
+        logger.error('InvalidInputError: %s' % e)
+        return {'statusCode': 400, 'body': {
+            'error': 'Bad request: %s' % e
+        }}
+
+    except InternalExceptionError as e:
+        logger.error('InternalExceptionError: %s' % e)
+        return {'statusCode': 500, 'body': {
+            'error': 'An internal exception occurred. See Gateway logs for details.'
+        }}
+
+    except UpstreamExceptionError as e:
+        logger.error('UpstreamExceptionError: %s' % e)
+        return {'statusCode': 502, 'body': {
+            'error': 'The upstream data provider returned an exception. See Gateway logs for details.'
+        }}
+
+    except UpstreamTimeoutError:
+        logger.warning('UpstreamTimeoutError')
+        return {'statusCode': 504, 'body': {
+            'error': 'The upstream data provider timed out'
+        }}
 
     except Exception as e:
         traceback.print_exc()
-        return {
-            'statusCode': 500,
-            'body': {
-                'error': 'An unknown exception occurred',
-            }
-        }
+        return {'statusCode': 500, 'body': {
+            'error': 'An unknown exception occurred'
+        }}
 
 
 if __name__ == '__main__':
@@ -76,6 +94,7 @@ if __name__ == '__main__':
         'pathParameters': {
             # 'sirius_uid': '700000000001',
             'lpa_online_tool_id': 'A00000000001'
-        }
+        },
+        'resource': '/lpa-online-tool',
     }, {})
     pprint(response)

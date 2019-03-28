@@ -33,15 +33,11 @@ class SiriusAuthenticator:
 
         url = self._membrane_url + '/auth/sessions'
 
-        try:
-            r = requests.post(url, json=data, allow_redirects=False, verify=False, timeout=(3.05, 5))
+        r = requests.post(url, json=data, allow_redirects=False, verify=False, timeout=(3.05, 5))
 
-            if r.status_code == 201:
-                details = r.json()
-                if 'authentication_token' in details:
-                    return details['authentication_token']
+        if r.status_code == 201:
+            details = r.json()
+            if 'authentication_token' in details:
+                return details['authentication_token']
 
-            raise SiriusAuthenticationError()
-
-        except requests.exceptions.RequestException:
-            raise SiriusAuthenticationError()
+        raise SiriusAuthenticationError()

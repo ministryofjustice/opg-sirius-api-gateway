@@ -1,7 +1,8 @@
 import os
-from data_providers.sirius import SiriusAuthenticator
-from requests import Request, Session
+from data_providers.sirius import SiriusAuthenticator, SiriusAuthenticationError
+from requests import Request, Session, exceptions
 from .model import Response
+from . import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
 
 # --------------------------------------------
 # Responsible for looking up a given LPA from
@@ -24,16 +25,27 @@ class SiriusProvider:
         pass
 
     def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
-        s = Session()
 
-        url = self._membrane_url + '/api/public/v1/lpas?lpa-online-tool-id=%s' % online_tool_id
+        try:
+            s = Session()
 
-        req = Request('GET', url).prepare()
+            url = self._membrane_url + '/api/public/v1/lpas?lpa-online-tool-id=%s' % online_tool_id
 
-        # Decorate the request with an authentication token
-        req = self._authenticator.authorise_request(req)
+            req = Request('GET', url).prepare()
 
-        resp = s.send(req, verify=False, timeout=(3.05, 5))
+            # Decorate the request with an authentication token
+            req = self._authenticator.authorise_request(req)
 
-        if resp.status_code == 200:
-            return Response.from_sirius_factory(online_tool_id, resp.text)
+            resp = s.send(req, verify=False, timeout=(3.05, 5))
+
+            if resp.status_code == 200:
+                return Response.from_sirius_factory(online_tool_id, resp.text)
+
+        except SiriusAuthenticationError:
+            raise InternalExceptionError('Sirius authentication error')
+
+        except exceptions.Timeout:
+            raise UpstreamTimeoutError
+
+        except exceptions.RequestException as e:
+            raise UpstreamExceptionError(e)
