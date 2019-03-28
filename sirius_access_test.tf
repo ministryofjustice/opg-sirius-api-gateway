@@ -1,4 +1,9 @@
 
+data "aws_security_group" "membrane_client" {
+  name = "membrane-client-feature"
+}
+
+
 module "sirius_access_test_lambda" {
   source = "modules/lambda"
 
@@ -8,6 +13,7 @@ module "sirius_access_test_lambda" {
 
   security_group_ids = [
     "${aws_security_group.lpas_collection.id}",
+    "${data.aws_security_group.membrane_client.id}"
   ]
 
   vpc = "${local.vpc_name}"
