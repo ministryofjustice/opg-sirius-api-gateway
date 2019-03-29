@@ -7,7 +7,7 @@ data "aws_security_group" "membrane_client" {
 module "sirius_access_test_lambda" {
   source = "modules/lambda"
 
-  lambda_name              = "sirius_access_test"
+  lambda_name              = "sirius_access_demo"
   lambda_function_filename = "./lambdas/lpas_collection_lambda.zip"
   lambda_handler           = "test_handler"
 
