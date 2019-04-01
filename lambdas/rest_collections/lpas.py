@@ -1,3 +1,4 @@
+import os
 from . import InvalidInputError
 from data_providers import SiriusProvider, JsonProvider
 from datetime import datetime, timezone
@@ -13,8 +14,10 @@ class LpasCollection:
 
     @staticmethod
     def factory():
-        return LpasCollection(SiriusProvider.factory())
-        #return LpasCollection(JsonProvider.factory())
+        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
+            return LpasCollection(JsonProvider.factory())
+        else:
+            return LpasCollection(SiriusProvider.factory())
 
     @classmethod
     def _calculate_age(cls, str_date):
