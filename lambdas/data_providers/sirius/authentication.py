@@ -15,6 +15,11 @@ class SiriusAuthenticator:
 
     @staticmethod
     def factory():
+        if 'CREDENTIALS' not in os.environ:
+            raise RuntimeError('CREDENTIALS not set')
+        if 'URL_MEMBRANE' not in os.environ:
+            raise RuntimeError('URL_MEMBRANE not set')
+
         credentials = json.loads(os.environ['CREDENTIALS'])
         return SiriusAuthenticator(os.environ['URL_MEMBRANE'], credentials)
 

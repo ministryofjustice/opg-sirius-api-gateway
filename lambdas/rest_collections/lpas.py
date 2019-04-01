@@ -13,8 +13,8 @@ class LpasCollection:
 
     @staticmethod
     def factory():
-        #return LpasCollection(SiriusProvider.factory())
-        return LpasCollection(JsonProvider.factory())
+        return LpasCollection(SiriusProvider.factory())
+        #return LpasCollection(JsonProvider.factory())
 
     @classmethod
     def _calculate_age(cls, str_date):

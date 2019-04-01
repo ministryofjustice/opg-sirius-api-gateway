@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 class Response(object):
 
     @staticmethod
-    def from_sirius_factory(ident, payload_json):
+    def factory(ident, payload_json):
 
         return Response({
             'id': ident,
@@ -24,3 +24,10 @@ class Response(object):
 
     def get_data(self):
         return self.data
+
+    # Determines if the payload response is empty
+    def is_empty(self):
+        return not isinstance(self.data, dict) \
+                or 'payload' not in self.data \
+                or not (isinstance(self.data['payload'], list) or isinstance(self.data['payload'], dict)) \
+                or len(self.data['payload']) == 0

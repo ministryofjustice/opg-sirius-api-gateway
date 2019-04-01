@@ -21,9 +21,6 @@ class SiriusProvider:
         self._authenticator = authenticator
         self._membrane_url = membrane_url
 
-    def get_lpa_by_sirius_uid(self, sirius_uid):
-        pass
-
     def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
 
         try:
@@ -39,7 +36,7 @@ class SiriusProvider:
             resp = s.send(req, verify=False, timeout=(3.05, 5))
 
             if resp.status_code == 200:
-                return Response.from_sirius_factory(online_tool_id, resp.text)
+                return Response.factory(online_tool_id, resp.text)
 
         except SiriusAuthenticationError:
             raise InternalExceptionError('Sirius authentication error')

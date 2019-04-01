@@ -9,8 +9,8 @@ from .model import Response
 class JsonProvider:
 
     @staticmethod
-    def factory():
-        return JsonProvider('test-data.json')
+    def factory(data_path='test-data.json'):
+        return JsonProvider(data_path)
 
     # --------------------
 
@@ -28,17 +28,16 @@ class JsonProvider:
 
     def get_lpa_by_sirius_uid(self, sirius_uid):
         for lpa in self._get_data():
-            if 'uid' in lpa and lpa['uid'] == sirius_uid:
-                return Response.from_sirius_factory(sirius_uid, json.dumps([lpa]))
+            if 'uId' in lpa and lpa['uId'] == sirius_uid:
+                return Response.factory(sirius_uid, json.dumps([lpa]))
+
+        # Sirius returns an empty list if no LPA is found
+        return Response.factory(sirius_uid, json.dumps([]))
 
     def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
         for lpa in self._get_data():
             if 'onlineLpaId' in lpa and lpa['onlineLpaId'] == online_tool_id:
-                return Response.from_sirius_factory(online_tool_id, json.dumps([lpa]))
+                return Response.factory(online_tool_id, json.dumps([lpa]))
 
-
-if __name__ == '__main__':
-    from pprint import pprint
-    provider = JsonProvider()
-    result = provider.get_lpa_by_lpa_online_tool_id('A00000000002')
-    pprint(result)
+        # Sirius returns an empty list if no LPA is found
+        return Response.factory(online_tool_id, json.dumps([]))
