@@ -2,7 +2,7 @@
 module "sirius_access_test_lambda" {
   source = "modules/lambda"
 
-  lambda_name              = "sirius_access_demo"
+  lambda_name              = "simulate_sirius_access"
   lambda_function_filename = "./lambda_artifact.zip"
   lambda_handler           = "test_handler"
 
