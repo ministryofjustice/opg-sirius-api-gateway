@@ -14,19 +14,6 @@ data "aws_secretsmanager_secret_version" "sirius_credentials" {
 //-------------------------------
 // Setup the Lambda
 
-resource "aws_security_group" "lpas_collection" {
-  name        = "lpas_collection"
-  description = "lpas_collection Security Group"
-  vpc_id      = "${data.aws_vpc.vpc.id}"
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 module "lpas_collection_lambda" {
   source = "modules/lambda"
 
@@ -35,7 +22,8 @@ module "lpas_collection_lambda" {
   lambda_handler           = "id_handler"
 
   security_group_ids = [
-    "${aws_security_group.lpas_collection.id}",
+    "${aws_security_group.lambda.id}",
+    "${data.aws_security_group.membrane_client.id}"
   ]
 
   vpc = "${local.vpc_name}"

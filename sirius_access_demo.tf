@@ -1,8 +1,4 @@
 
-data "aws_security_group" "membrane_client" {
-  name = "${local.membrane_client_security_group_name}"
-}
-
 module "sirius_access_test_lambda" {
   source = "modules/lambda"
 
@@ -11,7 +7,7 @@ module "sirius_access_test_lambda" {
   lambda_handler           = "test_handler"
 
   security_group_ids = [
-    "${aws_security_group.lpas_collection.id}",
+    "${aws_security_group.lambda.id}",
     "${data.aws_security_group.membrane_client.id}"
   ]
 
