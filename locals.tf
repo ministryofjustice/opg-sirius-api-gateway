@@ -24,6 +24,14 @@ locals {
 
   vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
 
+  membrane_client_security_groups = {
+    "production"    = "membrane-client-production"
+    "preproduction" = "membrane-client-preprod"
+    "development"   = "membrane-client-feature"
+  }
+
+  membrane_client_security_group_name = "${lookup(local.membrane_client_security_groups, terraform.workspace)}"
+
   target_accounts = {
     "production"    = "649098267436"
     "preproduction" = "649098267436"

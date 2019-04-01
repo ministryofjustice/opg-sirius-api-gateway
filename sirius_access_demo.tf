@@ -1,8 +1,7 @@
 
 data "aws_security_group" "membrane_client" {
-  name = "membrane-client-feature"
+  name = "${local.membrane_client_security_group_name}"
 }
-
 
 module "sirius_access_test_lambda" {
   source = "modules/lambda"
