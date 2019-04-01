@@ -31,7 +31,7 @@ module "lpas_collection_lambda" {
   source = "modules/lambda"
 
   lambda_name              = "lpas_collection"
-  lambda_function_filename = "./lambdas/lambda_artifact.zip"
+  lambda_function_filename = "./lambda_artifact.zip"
   lambda_handler           = "id_handler"
 
   security_group_ids = [

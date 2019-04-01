@@ -5,8 +5,8 @@
 # Virtual Environments
 api-gateway/
 
-# lambda zips
-*.zip
+# lambda zip
+lambda_artifact.zip
 
 # Ruby
 *.lock

@@ -71,7 +71,7 @@ orbs:
           - run:
               name: relocate_lambda_packages
               command: |
-                mv /tmp/*.zip ~/project/lambdas/
+                mv /tmp/*.zip ~/project/
     jobs:
       lint_terraform:
         executor: terraform
