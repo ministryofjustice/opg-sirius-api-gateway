@@ -31,6 +31,7 @@ module "lpas_collection_lambda" {
   environment {
     variables {
       CREDENTIALS = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
+      URL_MEMBRANE = "https://${local.membrane_hostname}"
     }
   }
 
