@@ -3,13 +3,13 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - sirius-api-gateway/package_lpas_collection_lambda:
-          name: package_lpas_collection_lambda
+      - sirius-api-gateway/package_lambda_artifact:
+          name: package_lambda_artifact
       - sirius-api-gateway/build_gem_cache:
           name: build_gem_cache
       - sirius-api-gateway/lint_terraform:
           name: lint_terraform
-          requires: [package_lpas_collection_lambda]
+          requires: [package_lambda_artifact]
       - sirius-api-gateway/build_api_test_file:
           name: build_api_test_file
           requires: [build_gem_cache]
@@ -20,7 +20,7 @@ workflows:
           name: apply_development
           workspace: development
           requires:
-            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+            [lint_terraform, build_gem_cache, package_lambda_artifact]
       - sirius-api-gateway/newman_api_test:
           filters:
             branches:
@@ -81,7 +81,7 @@ orbs:
           - checkout
           - restore_cache:
               keys:
-                - lpas_collection_lambda-{{ .Branch }}
+                - lambda_artifact-{{ .Branch }}
           - relocate_lambda_packages
           - run:
               name: Init Terraform
@@ -119,21 +119,21 @@ orbs:
                 - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
           - restore_cache:
               keys:
-                - lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
+                - lambda_artifact-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
-      package_lpas_collection_lambda:
+      package_lambda_artifact:
         executor: python
         steps:
           - checkout
           - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
-          - run: cd ./lambdas; zip -r9 /tmp/lpas_collection_lambda.zip .
+          - run: cd ./lambdas; zip -r9 /tmp/lambda_artifact.zip .
           - save_cache:
-              key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
+              key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
               paths:
-                - /tmp/lpas_collection_lambda.zip
+                - /tmp/lambda_artifact.zip
       build_api_test_file:
         executor: ruby
         steps:
