@@ -178,6 +178,7 @@ orbs:
         executor: python
         steps:
           - run: pip3 install awscli
+          - run: apk add jq
           - run: aws sts assume-role --role-arn arn:aws:iam::288342028542:role/ci --role-session-name ci
           - run:
               name: Login to AWS
