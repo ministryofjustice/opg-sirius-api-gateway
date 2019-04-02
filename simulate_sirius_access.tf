@@ -8,7 +8,7 @@ module "sirius_access_test_lambda" {
 
   security_group_ids = [
     "${aws_security_group.lambda.id}",
-    "${data.aws_security_group.membrane_client.id}"
+    #"${data.aws_security_group.membrane_client.id}"
   ]
 
   vpc = "${local.vpc_name}"
