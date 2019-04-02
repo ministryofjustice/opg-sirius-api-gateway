@@ -176,6 +176,13 @@ orbs:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
           - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json
       test_sirius_access:
+        parameters:
+          workspace:
+            description: Terraform Workspace name
+            type: string
+            default: development
+        environment:
+          TF_WORKSPACE: "<< parameters.workspace >>"
         executor: python
         steps:
           - run: pip3 install awscli
