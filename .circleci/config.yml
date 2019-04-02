@@ -3,8 +3,11 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
+      - sirius-api-gateway/unittest_lambdas:
+          name: unittest_lambdas
       - sirius-api-gateway/package_lambda_artifact:
           name: package_lambda_artifact
+          requires: [unittest_lambdas]
       - sirius-api-gateway/build_gem_cache:
           name: build_gem_cache
       - sirius-api-gateway/lint_terraform:
@@ -123,6 +126,12 @@ orbs:
           - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
+      unittest_lambdas:
+        executor: python
+        steps:
+          - checkout
+          - run: pip3 install -r lambdas/requirements.txt -r lambdas/requirements-dev.txt --target ./lambdas/vendor
+          - run: cd ./lambdas; python vendor/pytest.py --ignore=./vendor
       package_lambda_artifact:
         executor: python
         steps:
