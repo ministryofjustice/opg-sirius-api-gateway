@@ -56,6 +56,8 @@ orbs:
       terraform:
         docker: [image: hashicorp/terraform]
       python:
+        docker: [image: circleci/python]
+      python-build:
         docker: [image: python:alpine]
       newman:
         docker: [image: postman/newman:alpine]
@@ -130,13 +132,13 @@ orbs:
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
       unit_test_lambdas:
-        executor: python
+        executor: python-build
         steps:
           - checkout
           - run: pip3 install -r lambdas/requirements.txt -r lambdas/requirements-dev.txt --target ./lambdas/vendor
           - run: cd ./lambdas; python vendor/pytest.py --ignore=./vendor
       package_lambda_artifact:
-        executor: python
+        executor: python-build
         steps:
           - checkout
           - run: apk add zip
@@ -177,10 +179,9 @@ orbs:
       test_sirius_access:
         executor: python
         steps:
-          - run: apk add jq
-          - run: pip3 install awscli
+          - run: sudo pip3 install awscli --upgrade
           - run:
-              name: Login to AWS and invoke test lambda
+              name: Invoke simulate_sirius_access lambda
               command: |
                 temp_role=$(aws sts assume-role --role-arn arn:aws:iam::288342028542:role/ci --role-session-name ci)
                 export AWS_ACCESS_KEY_ID=$(echo $temp_role | jq .Credentials.AccessKeyId | xargs)
@@ -188,3 +189,6 @@ orbs:
                 export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
                 aws lambda invoke --invocation-type RequestResponse --function-name simulate_sirius_access --region eu-west-1 --log-type Tail outputfile.txt > lambda-result.json
           - run: cat lambda-result.json
+          - run:
+              name: Lambda output log
+              command: cat lambda-result.json | jq -r '.LogResult' | base64 -D
