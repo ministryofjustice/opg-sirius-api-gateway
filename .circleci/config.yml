@@ -192,3 +192,6 @@ orbs:
           - run:
               name: Lambda output log
               command: cat lambda-result.json | jq -r '.LogResult' | base64 -d
+          - run:
+              name: Test status code
+              command: cat lambda-result.json | jq -r '.StatusCode' | grep 200 | read line || exit 1
