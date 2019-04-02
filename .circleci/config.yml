@@ -188,9 +188,11 @@ orbs:
                 export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)
                 export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
                 aws lambda invoke --invocation-type RequestResponse --function-name simulate_sirius_access --region eu-west-1 --log-type Tail outputfile.txt > lambda-result.json
-          - run: cat lambda-result.json
           - run:
-              name: Lambda output log
+              name: Dump output
+              command: cat lambda-result.json
+          - run:
+              name: Decode lambda log
               command: cat lambda-result.json | jq -r '.LogResult' | base64 -d
           - run:
               name: Test to ensure there was no error

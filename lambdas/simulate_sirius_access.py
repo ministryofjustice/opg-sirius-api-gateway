@@ -20,7 +20,7 @@ def test_handler(event, context):
 
     print('Auth URL: ' + url)
 
-    r = requests.get(membrane_url + '/healthcheck.php', verify=False, headers={'host': 'membrane'})
+    r = requests.get(membrane_url + '/healthcheck.phpp', verify=False, headers={'host': 'membrane'})
 
     if r.status_code == 200:
         print('Appears we can talk to membrane')
