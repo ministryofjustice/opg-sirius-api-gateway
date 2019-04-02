@@ -26,7 +26,8 @@ workflows:
             [lint_terraform, build_gem_cache, package_lambda_artifact]
       - sirius-api-gateway/test_sirius_access:
           name: test_sirius_access
-          requires: [apply_terraform]
+          workspace: development
+          requires: [apply_development]
       - sirius-api-gateway/newman_api_test:
           filters:
             branches:
