@@ -191,4 +191,4 @@ orbs:
           - run: cat lambda-result.json
           - run:
               name: Lambda output log
-              command: cat lambda-result.json | jq -r '.LogResult' | base64 -D
+              command: cat lambda-result.json | jq -r '.LogResult' | base64 -d
