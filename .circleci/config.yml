@@ -26,7 +26,6 @@ workflows:
             [lint_terraform, build_gem_cache, package_lambda_artifact]
       - sirius-api-gateway/test_sirius_access:
           name: test_sirius_access
-          workspace: development
           requires: [apply_development]
       - sirius-api-gateway/newman_api_test:
           filters:
@@ -176,13 +175,6 @@ orbs:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
           - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json
       test_sirius_access:
-        parameters:
-          workspace:
-            description: Terraform Workspace name
-            type: string
-            default: development
-        environment:
-          TF_WORKSPACE: "<< parameters.workspace >>"
         executor: python
         steps:
           - run: pip3 install awscli
