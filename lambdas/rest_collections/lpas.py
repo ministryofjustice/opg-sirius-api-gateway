@@ -1,5 +1,7 @@
+import os
 from . import InvalidInputError
-from data_providers import JsonProvider
+from data_providers import SiriusProvider, JsonProvider
+from datetime import datetime, timezone
 
 # --------------------------------------------
 # Responsible for:
@@ -8,31 +10,52 @@ from data_providers import JsonProvider
 #   Responding with the correctly filtered response
 
 
-def get_lpa(lpa_online_tool_id=None, sirius_uid=None):
+class LpasCollection:
 
-    provider = JsonProvider('test-data.json')
+    @staticmethod
+    def factory():
+        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
+            return LpasCollection(JsonProvider.factory())
+        else:
+            #return LpasCollection(SiriusProvider.factory())
+            return LpasCollection(JsonProvider.factory())
 
-    if lpa_online_tool_id is not None and sirius_uid is not None:
-        # Input violation: Must be one, and only one, of 'lpa_online_tool_id' or 'sirius_uid'
-        raise InvalidInputError("Must be either 'lpa_online_tool_id' or 'sirius_uid'; not both")
+    @classmethod
+    def _calculate_age(cls, str_date):
+        d = datetime.fromisoformat(str_date)
+        return (datetime.utcnow().replace(tzinfo=timezone.utc) - d).seconds
 
-    elif lpa_online_tool_id is not None:
-        lpa = provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
-        if lpa is not None:
-            return lpa['payload']
-        return lpa
+    @classmethod
+    def _prepare_response(cls, collection):
+        # For the LPA collection lookup, we're expecting an array of 1 item back.
+        if collection is None \
+                or 'payload' not in collection.data \
+                or type(collection.data['payload']) is not list \
+                or len(collection.data['payload']) != 1:
+            return None, 0  # (empty) data and (dummy) age
 
-    elif sirius_uid is not None:
-        lpa = provider.get_lpa_by_sirius_uid(sirius_uid)
-        if lpa is not None:
-            return lpa['payload']
-        return lpa
+        age = cls._calculate_age(collection.data['meta']['datetime'])
 
-    else:
-        raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")
+        return collection.data['payload'].pop(), age  # data and age
 
+    # --------------------
 
-if __name__ == '__main__':
-    from pprint import pprint
-    result = get_lpa({'lpa_online_tool_id': 'A00000000001'})
-    pprint(result)
+    def __init__(self, provider):
+        self._provider = provider
+
+    def get_lpa(self, lpa_online_tool_id=None, sirius_uid=None):
+
+        if lpa_online_tool_id is not None and sirius_uid is not None:
+            # Input violation: Must be one, and only one, of 'lpa_online_tool_id' or 'sirius_uid'
+            raise InvalidInputError("Must be either 'lpa_online_tool_id' or 'sirius_uid'; not both")
+
+        elif lpa_online_tool_id is not None:
+            collection = self._provider.get_lpa_by_lpa_online_tool_id(lpa_online_tool_id)
+            return self._prepare_response(collection)
+
+        elif sirius_uid is not None:
+            collection = self._provider.get_lpa_by_sirius_uid(sirius_uid)
+            return self._prepare_response(collection)
+
+        else:
+            raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")

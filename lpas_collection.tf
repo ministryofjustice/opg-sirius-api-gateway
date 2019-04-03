@@ -14,21 +14,16 @@ data "aws_secretsmanager_secret_version" "sirius_credentials" {
 //-------------------------------
 // Setup the Lambda
 
-resource "aws_security_group" "lpas_collection" {
-  name        = "lpas_collection"
-  description = "lpas_collection Security Group"
-  vpc_id      = "${data.aws_vpc.vpc.id}"
-}
-
 module "lpas_collection_lambda" {
   source = "modules/lambda"
 
   lambda_name              = "lpas_collection"
-  lambda_function_filename = "./lambdas/lpas_collection_lambda.zip"
+  lambda_function_filename = "./lambda_artifact.zip"
   lambda_handler           = "id_handler"
 
   security_group_ids = [
-    "${aws_security_group.lpas_collection.id}",
+    "${aws_security_group.lambda.id}",
+    "${data.aws_security_group.membrane_client.id}"
   ]
 
   vpc = "${local.vpc_name}"
@@ -36,6 +31,7 @@ module "lpas_collection_lambda" {
   environment {
     variables {
       CREDENTIALS = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
+      URL_MEMBRANE = "https://${local.membrane_hostname}"
     }
   }
 

@@ -3,13 +3,16 @@ version: 2.1
 workflows:
   path_to_live:
     jobs:
-      - sirius-api-gateway/package_lpas_collection_lambda:
-          name: package_lpas_collection_lambda
+      - sirius-api-gateway/unit_test_lambdas:
+          name: unit_test_lambdas
+      - sirius-api-gateway/package_lambda_artifact:
+          name: package_lambda_artifact
+          requires: [unit_test_lambdas]
       - sirius-api-gateway/build_gem_cache:
           name: build_gem_cache
       - sirius-api-gateway/lint_terraform:
           name: lint_terraform
-          requires: [package_lpas_collection_lambda]
+          requires: [package_lambda_artifact]
       - sirius-api-gateway/build_api_test_file:
           name: build_api_test_file
           requires: [build_gem_cache]
@@ -20,7 +23,11 @@ workflows:
           name: apply_development
           workspace: development
           requires:
-            [lint_terraform, build_gem_cache, package_lpas_collection_lambda]
+            [lint_terraform, build_gem_cache, package_lambda_artifact]
+      - sirius-api-gateway/test_sirius_access:
+          name: test_sirius_access
+          aws-account: '288342028542'         # Sirius dev AWS account
+          requires: [apply_development]
       - sirius-api-gateway/newman_api_test:
           filters:
             branches:
@@ -50,6 +57,8 @@ orbs:
       terraform:
         docker: [image: hashicorp/terraform]
       python:
+        docker: [image: circleci/python]
+      python-build:
         docker: [image: python:alpine]
       newman:
         docker: [image: postman/newman:alpine]
@@ -71,7 +80,7 @@ orbs:
           - run:
               name: relocate_lambda_packages
               command: |
-                mv /tmp/*.zip ~/project/lambdas/
+                mv /tmp/*.zip ~/project/
     jobs:
       lint_terraform:
         executor: terraform
@@ -81,7 +90,7 @@ orbs:
           - checkout
           - restore_cache:
               keys:
-                - lpas_collection_lambda-{{ .Branch }}
+                - lambda_artifact-{{ .Branch }}
           - relocate_lambda_packages
           - run:
               name: Init Terraform
@@ -119,21 +128,31 @@ orbs:
                 - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
           - restore_cache:
               keys:
-                - lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
+                - lambda_artifact-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake terraform:apply
-      package_lpas_collection_lambda:
-        executor: python
+      unit_test_lambdas:
+        #
+        # Runs the unit tests packaged with the lambda
+        #   We do this separately to `package_lambda_artifact` due to the extra requirements that are installed.
+        #
+        executor: python-build
+        steps:
+          - checkout
+          - run: pip3 install -r lambdas/requirements.txt -r lambdas/requirements-dev.txt --target ./lambdas/vendor
+          - run: cd ./lambdas; python vendor/pytest.py --ignore=./vendor
+      package_lambda_artifact:
+        executor: python-build
         steps:
           - checkout
           - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
-          - run: cd ./lambdas; zip -r9 /tmp/lpas_collection_lambda.zip .
+          - run: cd ./lambdas; zip -r9 /tmp/lambda_artifact.zip .
           - save_cache:
-              key: lpas_collection_lambda-{{ .Branch }}-{{ .Revision }}
+              key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
               paths:
-                - /tmp/lpas_collection_lambda.zip
+                - /tmp/lambda_artifact.zip
       build_api_test_file:
         executor: ruby
         steps:
@@ -162,3 +181,39 @@ orbs:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
           - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json
+      test_sirius_access:
+        #
+        # Tests if the provisioned lambda can communicate with the Sirius membrane.
+        #   - Does it get a positive response from the health check; and
+        #   - Does it get a positive response from an authentication attempt.
+        #
+        parameters:
+          aws-account:
+            description: AWS account teh lambda is deployed to
+            type: string
+        executor: python
+        steps:
+          - run: sudo pip3 install awscli --upgrade
+          - run:
+              # Assume the needed role and invoke the lambda
+              name: Invoke simulate_sirius_access lambda
+              command: |
+                temp_role=$(aws sts assume-role --role-arn arn:aws:iam::<< parameters.aws-account >>:role/ci --role-session-name ci)
+                export AWS_ACCESS_KEY_ID=$(echo $temp_role | jq .Credentials.AccessKeyId | xargs)
+                export AWS_SECRET_ACCESS_KEY=$(echo $temp_role | jq .Credentials.SecretAccessKey | xargs)
+                export AWS_SESSION_TOKEN=$(echo $temp_role | jq .Credentials.SessionToken | xargs)
+                aws lambda invoke --invocation-type RequestResponse --function-name simulate_sirius_access --region eu-west-1 --log-type Tail outputfile.txt > lambda-result.json
+          - run:
+              # Output the result in full to aid in fault finding
+              name: Dump output
+              command: cat lambda-result.json
+          - run:
+              # Decode the base64 element to aid in fault finding
+              name: Decode lambda log
+              command: cat lambda-result.json | jq -r '.LogResult' | base64 -d
+          - run:
+              # Result an error from this step if an error was thrown by the lambda
+              name: Test to ensure there was no error
+              # There's an error if the 'FunctionError' key is within the response
+              # If has() does not return false, an empty line is returned, thus `read line || exit 1` executes the latter.
+              command: cat lambda-result.json | jq -r 'has("FunctionError")' | grep false | read line || exit 1
