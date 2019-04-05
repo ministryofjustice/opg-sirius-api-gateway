@@ -21,4 +21,4 @@ __pycache__
 .DS_Store
 
 # Test environment
-tests/generated.postman_environment.json
+*generated.postman_environment.json
