@@ -23,7 +23,7 @@ workflows:
           name: apply_development
           workspace: development
           requires:
-            [lint_terraform, build_gem_cache, package_lambda_artifact]
+            [lint_terraform, package_lambda_artifact]
       - sirius-api-gateway/test_sirius_access:
           name: test_sirius_access
           aws-account: '288342028542'         # Sirius dev AWS account
@@ -41,7 +41,7 @@ workflows:
               only: [master]
           name: apply_production
           workspace: production
-          requires: [lint_terraform, build_gem_cache]
+          requires: [lint_terraform]
       - sirius-api-gateway/newman_api_test:
           filters:
             branches:
@@ -63,18 +63,6 @@ orbs:
       newman:
         docker: [image: postman/newman:alpine]
     commands:
-      install_terraform:
-        steps:
-          - run:
-              name: install_terraform
-              command: |
-                export TERRAFORM_VERSION=0.11.11
-                export TERRAFORM_SHA256SUM=94504f4a67bad612b5c8e3a4b7ce6ca2772b3c1559630dfd71e9c519e3d6149c
-                curl https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip > terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-                echo "${TERRAFORM_SHA256SUM}  terraform_${TERRAFORM_VERSION}_linux_amd64.zip" > terraform_${TERRAFORM_VERSION}_SHA256SUMS
-                sha256sum -c --status terraform_${TERRAFORM_VERSION}_SHA256SUMS
-                sudo unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
-                rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
       relocate_lambda_packages:
         steps:
           - run:
@@ -119,19 +107,15 @@ orbs:
             default: development
         environment:
           TF_WORKSPACE: "<< parameters.workspace >>"
-        executor: ruby
+        executor: terraform
         steps:
           - checkout
-          - install_terraform
-          - restore_cache:
-              keys:
-                - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
           - restore_cache:
               keys:
                 - lambda_artifact-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
-          - run: bundle install --path vendor/bundle --quiet
-          - run: bundle exec rake terraform:apply
+          - run: terraform init
+          - run: terraform apply -auto-approve | ./redact_output.sh
       unit_test_lambdas:
         #
         # Runs the unit tests packaged with the lambda

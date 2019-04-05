@@ -5,7 +5,7 @@ namespace :lambda do
   desc 'Lambda: package lambda function'
   task :package do
     sh 'pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor'
-    sh 'cd ./lambdas; zip -r9 ./lpas_collection_lambda.zip .'
+    sh 'cd ./lambdas; zip -r9 ../lambda_artifact.zip .'
     sh 'rm -r ./lambdas/vendor'
   end
   desc 'Lambda: build api tests env file'
@@ -22,17 +22,13 @@ end
 
 namespace :terraform do
   task :init do
-    if ENV['CI']
       sh 'terraform init'
-    else
-      sh 'terraform init -backend-config="role_arn=arn:aws:iam::311462405659:role/management-admin"'
-    end
   end
   desc 'Terraform: plan'
   task :plan do
     Rake::Task['terraform:init'].invoke
     sh 'terraform workspace select development'
-    sh 'terraform plan | ./redact_output.sh'
+    sh 'terraform plan'
   end
   desc 'Terraform: apply'
   task :apply do
