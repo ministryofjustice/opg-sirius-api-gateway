@@ -4,6 +4,7 @@
 .vs
 # Virtual Environments
 api-gateway/
+.venv
 
 # lambda zip
 lambda_artifact.zip
