@@ -11,61 +11,47 @@ locals {
   }
 
   account_names = {
-    "production" = "sirius-production"
-
-    # "preproduction" = "sirius-production"
+    "production"  = "sirius-production"
     "development" = "sirius-development"
   }
 
   vpcs = {
-    "production" = "prod-vpc"
-
-    # "preproduction" = "prod-vpc"
+    "production"  = "prod-vpc"
     "development" = "dev-vpc"
   }
 
   vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
 
   membrane_client_security_groups = {
-    "production" = "membrane-client-production"
-
-    # "preproduction" = "membrane-client-preprod"
+    "production"  = "membrane-client-production"
     "development" = "membrane-client-feature"
   }
 
   membrane_client_security_group_name = "${lookup(local.membrane_client_security_groups, terraform.workspace)}"
 
   membrane_hostnames = {
-    "production" = "membrane.production.internal"
-
-    # "preproduction" = "membrane.preprod.internal"
+    "production"  = "membrane.production.internal"
     "development" = "membrane.feature.internal"
   }
 
   membrane_hostname = "${lookup(local.membrane_hostnames, terraform.workspace)}"
 
   target_accounts = {
-    "production" = "649098267436"
-
-    # "preproduction" = "649098267436"
+    "production"  = "649098267436"
     "development" = "288342028542"
   }
 
   target_account = "${lookup(local.target_accounts, terraform.workspace)}"
 
   opg_sirius_hosted_zones = {
-    "production" = "sirius.opg.digital"
-
-    # "preproduction" = "sirius.opg.digital"
+    "production"  = "sirius.opg.digital"
     "development" = "dev.sirius.opg.digital"
   }
 
   opg_sirius_hosted_zone = "${lookup(local.opg_sirius_hosted_zones, terraform.workspace)}"
 
   is_production = {
-    "production" = "true"
-
-    # "preproduction" = "false"
+    "production"  = "true"
     "development" = "false"
   }
 
