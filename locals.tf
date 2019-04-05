@@ -55,10 +55,22 @@ locals {
     "development" = "false"
   }
 
-  lpa_sources_dev  = ["arn:aws:iam::001780581745:role/api2.qa", "arn:aws:iam::001780581745:role/api2.staging04"]
-  lpa_sources_prod = ["arn:aws:iam::001780581745:role/api2.production04", "arn:aws:iam::001780581745:role/api2.preprod"]
+  development_api_gateway_allowed_roles = [
+    "arn:aws:iam::001780581745:role/api2.qa",
+    "arn:aws:iam::001780581745:role/api2.staging04",
+  ]
 
-  lpa_tool_api2_role = "${split(",", terraform.workspace == "development" ? join(",", local.lpa_sources_dev) : join(",", local.lpa_sources_prod))}"
+  production_api_gateway_allowed_roles = [
+    "arn:aws:iam::001780581745:role/api2.production04",
+    "arn:aws:iam::001780581745:role/api2.preprod",
+  ]
+
+  api_gateway_allowed_roles = "${split(",", terraform.workspace == "development" ? join(",", local.development_api_gateway_allowed_roles) : join(",", local.production_api_gateway_allowed_roles))}"
+
+  api_gateway_allowed_users = [
+    "arn:aws:iam::631181914621:user/andrew.pearce",
+    "arn:aws:iam::631181914621:user/neil.smith",
+  ]
 
   default_tags = {
     business-unit          = "OPG"
