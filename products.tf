@@ -22,10 +22,7 @@ data "aws_iam_policy_document" "lpa_online_tool_role_cross_account_policy" {
 
       identifiers = [
         "${local.lpa_tool_api2_role}",
-
-        # "${local.lpa_sources_dev}",
         "arn:aws:iam::631181914621:user/andrew.pearce",
-
         "arn:aws:iam::631181914621:user/neil.smith",
       ]
     }
