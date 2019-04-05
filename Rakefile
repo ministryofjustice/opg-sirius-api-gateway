@@ -28,7 +28,7 @@ namespace :terraform do
   task :plan do
     Rake::Task['terraform:init'].invoke
     sh 'terraform workspace select development'
-    sh 'terraform plan | ./redact_output.sh'
+    sh 'terraform plan'
   end
   desc 'Terraform: apply'
   task :apply do
