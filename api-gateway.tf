@@ -45,18 +45,19 @@ resource "aws_api_gateway_rest_api" "opg_api_gateway" {
 
 data "aws_iam_policy_document" "resource_policy" {
   statement {
+    sid    = "onlinelpaaccess"
     effect = "Allow"
 
     principals {
       identifiers = [
-        "${local.api_gateway_allowed_roles}",
+        "${local.api_gateway_allowed_roles_online_lpa_tool}",
       ]
 
       type = "AWS"
     }
 
     actions   = ["execute-api:Invoke"]
-    resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*/*/*"]
+    resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*/GET/lpa-online-tool/lpas/*"]
   }
 }
 
