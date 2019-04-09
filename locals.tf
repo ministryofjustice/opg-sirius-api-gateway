@@ -55,17 +55,17 @@ locals {
     "development" = "false"
   }
 
-  development_api_gateway_allowed_roles = [
+  online_lpa_tool_development_api_gateway_allowed_roles = [
     "arn:aws:iam::001780581745:role/api2.qa",
     "arn:aws:iam::001780581745:role/api2.staging04",
   ]
 
-  production_api_gateway_allowed_roles = [
+  online_lpa_tool_production_api_gateway_allowed_roles = [
     "arn:aws:iam::001780581745:role/api2.production04",
     "arn:aws:iam::001780581745:role/api2.preprod",
   ]
 
-  api_gateway_allowed_roles = "${split(",", terraform.workspace == "development" ? join(",", local.development_api_gateway_allowed_roles) : join(",", local.production_api_gateway_allowed_roles))}"
+  api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
 
   api_gateway_allowed_users = [
     "arn:aws:iam::631181914621:user/andrew.pearce",
