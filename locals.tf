@@ -11,56 +11,66 @@ locals {
   }
 
   account_names = {
-    "production"    = "sirius-production"
-    "preproduction" = "sirius-production"
-    "development"   = "sirius-development"
+    "production"  = "sirius-production"
+    "development" = "sirius-development"
   }
 
   vpcs = {
-    "production"    = "prod-vpc"
-    "preproduction" = "prod-vpc"
-    "development"   = "dev-vpc"
+    "production"  = "prod-vpc"
+    "development" = "dev-vpc"
   }
 
   vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
 
   membrane_client_security_groups = {
-    "production"    = "membrane-client-production"
-    "preproduction" = "membrane-client-preprod"
-    "development"   = "membrane-client-feature"
+    "production"  = "membrane-client-production"
+    "development" = "membrane-client-feature"
   }
 
   membrane_client_security_group_name = "${lookup(local.membrane_client_security_groups, terraform.workspace)}"
 
   membrane_hostnames = {
-    "production"    = "membrane.production.internal"
-    "preproduction" = "membrane.preprod.internal"
-    "development"   = "membrane.feature.internal"
+    "production"  = "membrane.production.internal"
+    "development" = "membrane.feature.internal"
   }
 
   membrane_hostname = "${lookup(local.membrane_hostnames, terraform.workspace)}"
 
   target_accounts = {
-    "production"    = "649098267436"
-    "preproduction" = "649098267436"
-    "development"   = "288342028542"
+    "production"  = "649098267436"
+    "development" = "288342028542"
   }
 
   target_account = "${lookup(local.target_accounts, terraform.workspace)}"
 
   opg_sirius_hosted_zones = {
-    "production"    = "sirius.opg.digital"
-    "preproduction" = "sirius.opg.digital"
-    "development"   = "dev.sirius.opg.digital"
+    "production"  = "sirius.opg.digital"
+    "development" = "dev.sirius.opg.digital"
   }
 
   opg_sirius_hosted_zone = "${lookup(local.opg_sirius_hosted_zones, terraform.workspace)}"
 
   is_production = {
-    "production"    = "true"
-    "preproduction" = "false"
-    "development"   = "false"
+    "production"  = "true"
+    "development" = "false"
   }
+
+  online_lpa_tool_development_api_gateway_allowed_roles = [
+    "arn:aws:iam::001780581745:role/api2.qa",
+    "arn:aws:iam::001780581745:role/api2.staging04",
+  ]
+
+  online_lpa_tool_production_api_gateway_allowed_roles = [
+    "arn:aws:iam::001780581745:role/api2.production04",
+    "arn:aws:iam::001780581745:role/api2.preprod",
+  ]
+
+  api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
+
+  api_gateway_allowed_users = [
+    "arn:aws:iam::631181914621:user/andrew.pearce",
+    "arn:aws:iam::631181914621:user/neil.smith",
+  ]
 
   default_tags = {
     business-unit          = "OPG"

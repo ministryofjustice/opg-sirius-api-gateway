@@ -36,9 +36,28 @@ resource "aws_iam_role_policy_attachment" "log_to_cloudwatch" {
 resource "aws_api_gateway_rest_api" "opg_api_gateway" {
   name        = "opg-sirius-api-gateway-${terraform.workspace}"
   description = "OPG Sirius API Gateway - ${terraform.workspace}"
+  policy      = "${data.aws_iam_policy_document.resource_policy.json}"
 
   endpoint_configuration {
     types = ["REGIONAL"]
+  }
+}
+
+data "aws_iam_policy_document" "resource_policy" {
+  statement {
+    sid    = "onlinelpaaccess"
+    effect = "Allow"
+
+    principals {
+      identifiers = [
+        "${local.api_gateway_allowed_roles_online_lpa_tool}",
+      ]
+
+      type = "AWS"
+    }
+
+    actions   = ["execute-api:Invoke"]
+    resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*/GET/lpa-online-tool/lpas/*"]
   }
 }
 

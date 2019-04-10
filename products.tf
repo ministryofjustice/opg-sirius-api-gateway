@@ -21,9 +21,7 @@ data "aws_iam_policy_document" "lpa_online_tool_role_cross_account_policy" {
       type = "AWS"
 
       identifiers = [
-        "arn:aws:iam::${lookup(local.accounts, "lpa-development")}:role/api2.staging04",
-        "arn:aws:iam::631181914621:user/andrew.pearce",
-        "arn:aws:iam::631181914621:user/neil.smith",
+        "${local.api_gateway_allowed_users}",
       ]
     }
   }
