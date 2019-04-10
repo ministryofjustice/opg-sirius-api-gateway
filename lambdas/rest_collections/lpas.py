@@ -17,8 +17,7 @@ class LpasCollection:
         if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
             return LpasCollection(JsonProvider.factory())
         else:
-            #return LpasCollection(SiriusProvider.factory())
-            return LpasCollection(JsonProvider.factory())
+            return LpasCollection(SiriusProvider.factory())
 
     @classmethod
     def _calculate_age(cls, str_date):
