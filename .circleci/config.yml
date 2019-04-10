@@ -51,7 +51,7 @@ workflows:
           workspace: production
           requires: [build_api_test_file, apply_production]
       - sirius-api-gateway/test_sirius_access:
-          name: test_sirius_access
+          name: test_sirius_access_production
           aws-account: '649098267436'         # Sirius Prod AWS account
           requires: [apply_production]
 
