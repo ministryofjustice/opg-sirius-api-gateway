@@ -5,7 +5,7 @@ OPG API Gateway into Sirius: Managed by opg-org-infra &amp; Terraform
 [![CircleCI](https://circleci.com/gh/ministryofjustice/opg-sirius-api-gateway/tree/master.svg?style=svg)](https://circleci.com/gh/ministryofjustice/opg-sirius-api-gateway/tree/master)
 
 
-## Working localling with Terraform
+## Working locally with Terraform
 
 ### Setting Env Vars
 
@@ -110,3 +110,19 @@ Run a test against development
 ```bash
 aws-vault exec identity -- bundle exec rake lambda:testlpas
 ```
+
+#Setup for local development
+
+For testing _with_ the full local Sirius stack, you need to bring OPG Gateway up at the same time as Sirius.
+Ensure that `opg-sirius-api-gateway` is cloned into the same root direct as `opgs-sirius`.
+
+Then **from within `opgs-sirius`**, run:
+
+```bash
+docker-compose -f docker-compose.yml \
+-f docker-compose.override.yml \
+-f ../opg-sirius-api-gateway/docker-compose.yml \
+-f ../opg-sirius-api-gateway/docker-compose-sirius.yml up
+```
+
+This will give you the normal Sirius stack, plus OPG Gateway (and its dependencies).
