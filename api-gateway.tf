@@ -58,7 +58,8 @@ data "aws_iam_policy_document" "resource_policy" {
     }
 
     actions   = ["execute-api:Invoke"]
-    resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*/GET/lpa-online-tool/lpas/*"]
+    //resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*/GET/lpa-online-tool/lpas/*"]
+    resources = ["${aws_api_gateway_rest_api.opg_api_gateway.execution_arn}:*/*/GET/lpa-online-tool/lpas/*"]
   }
 }
 
