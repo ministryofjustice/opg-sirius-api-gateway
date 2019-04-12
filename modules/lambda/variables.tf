@@ -30,3 +30,7 @@ variable "environment" {
   type        = "map"
   default     = {}
 }
+
+variable "dynamodb_auth_cache_table" {
+  description = "The ARN of the DynamoDb table in which we cache auth tokens"
+}
