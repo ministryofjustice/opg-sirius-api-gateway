@@ -58,7 +58,7 @@ data "aws_iam_policy_document" "resource_policy" {
 
     actions   = ["execute-api:Invoke"]
 
-    // API Gateway will add all of teh result of the ARN details in for us. Provents a circular dependency.
+    // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
     resources = ["execute-api:/*/GET/lpa-online-tool/*"]
   }
 }
