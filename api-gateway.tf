@@ -58,7 +58,8 @@ data "aws_iam_policy_document" "resource_policy" {
     }
 
     actions   = ["execute-api:Invoke"]
-    resources = ["arn:aws:execute-api:eu-west-1:288342028542:3d9iqi6bq9/*/*/lpa-online-tool/*"]
+    resources = ["execute-api:/*/GET/lpa-online-tool/*"]
+    //resources = ["arn:aws:execute-api:eu-west-1:288342028542:3d9iqi6bq9/*/*/lpa-online-tool/*"]
     //resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*"]
     //resources = ["${aws_api_gateway_rest_api.opg_api_gateway.execution_arn}:*/*/GET/lpa-online-tool/lpas/*"]
     //resources = ["arn:aws:execute-api:region:account-id-1:api-id/stage/GET/pets"]
