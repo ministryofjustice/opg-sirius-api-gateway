@@ -57,16 +57,18 @@ data "aws_iam_policy_document" "resource_policy" {
     }
 
     actions   = ["execute-api:Invoke"]
-    resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*/GET/lpa-online-tool/lpas/*"]
+
+    // API Gateway will add all of teh result of the ARN details in for us. Provents a circular dependency.
+    resources = ["execute-api:/*/GET/lpa-online-tool/*"]
   }
 }
 
 //------------------------------------
 // Deploy the gateway
 
-resource "aws_api_gateway_deployment" "deployment" {
+resource "aws_api_gateway_deployment" "deployment_v1" {
   rest_api_id = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
-  stage_name  = "testing"
+  stage_name  = "v1"
 
   // The policy is dependent on the module completing, so we can depend on that to mean everything is in place
   depends_on = ["aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy"]
@@ -86,7 +88,7 @@ resource "aws_api_gateway_deployment" "deployment" {
 
 resource "aws_api_gateway_method_settings" "global_gateway_settings" {
   rest_api_id = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
-  stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
+  stage_name  = "${aws_api_gateway_deployment.deployment_v1.stage_name}"
   method_path = "*/*"
 
   settings {
@@ -106,9 +108,9 @@ resource "aws_api_gateway_domain_name" "opg_api_gateway" {
 
 resource "aws_api_gateway_base_path_mapping" "mapping" {
   api_id      = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
-  stage_name  = "${aws_api_gateway_deployment.deployment.stage_name}"
+  stage_name  = "${aws_api_gateway_deployment.deployment_v1.stage_name}"
   domain_name = "${aws_api_gateway_domain_name.opg_api_gateway.domain_name}"
-  base_path   = "${aws_api_gateway_deployment.deployment.stage_name}"
+  base_path   = "${aws_api_gateway_deployment.deployment_v1.stage_name}"
 }
 
 data "aws_route53_zone" "sirius_opg_digital" {

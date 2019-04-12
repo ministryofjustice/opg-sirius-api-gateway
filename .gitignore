@@ -6,7 +6,8 @@
 api-gateway/
 .venv
 
-# lambda zip
+# lambda stuff
+/lambdas/vendor
 lambda_artifact.zip
 
 # Ruby
@@ -22,3 +23,4 @@ __pycache__
 
 # Test environment
 *generated.postman_environment.json
+
