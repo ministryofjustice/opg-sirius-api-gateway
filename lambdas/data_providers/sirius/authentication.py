@@ -64,8 +64,7 @@ class SiriusAuthenticator:
             Whenever a new token is generated, it is stored in the cache.
         """
 
-        session = boto3.Session()
-        dynamodb = session.resource('dynamodb', endpoint_url=self._dynamodb_endpoint_url)
+        dynamodb = boto3.resource('dynamodb', endpoint_url=self._dynamodb_endpoint_url)
         cache_table = dynamodb.Table(self._dynamodb_cache_table)  # Is lazy
 
         if accept_cached_token is True:

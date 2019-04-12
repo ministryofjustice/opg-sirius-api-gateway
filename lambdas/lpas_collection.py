@@ -7,7 +7,7 @@ import json
 import logging
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 def id_handler(event, context):
