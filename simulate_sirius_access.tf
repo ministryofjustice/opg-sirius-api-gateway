@@ -13,6 +13,8 @@ module "sirius_access_test_lambda" {
 
   vpc = "${local.vpc_name}"
 
+  dynamodb_auth_cache_table = "${aws_dynamodb_table.auth_cache.arn}"
+
   environment {
     variables {
       CREDENTIALS = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"

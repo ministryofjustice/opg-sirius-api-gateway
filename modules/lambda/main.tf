@@ -35,6 +35,24 @@ resource "aws_iam_role_policy_attachment" "aws_lambda_vpc_access_execution_role"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+data "aws_iam_policy_document" "iam_for_lambda_inline_execution_role" {
+  statement {
+    actions = [
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+    ]
+    resources = [
+      "${var.dynamodb_auth_cache_table}",
+    ]
+  }
+}
+
+resource "aws_iam_role_policy" "iam_for_lambda_inline_execution_role" {
+  name = "ViewerApplicationPermissions"
+  policy = "${data.aws_iam_policy_document.iam_for_lambda_inline_execution_role.json}"
+  role   = "${aws_iam_role.iam_for_lambda.id}"
+}
+
 data "aws_iam_policy_document" "lambda_assume" {
   statement {
     sid = "OPGAPIGatewayLambdaInvoke"
