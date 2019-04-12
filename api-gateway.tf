@@ -51,18 +51,15 @@ data "aws_iam_policy_document" "resource_policy" {
     principals {
       identifiers = [
         "${local.api_gateway_allowed_roles_online_lpa_tool}",
-        "arn:aws:iam::631181914621:user/neil.smith",
       ]
 
       type = "AWS"
     }
 
     actions   = ["execute-api:Invoke"]
+
+    // API Gateway will add all of teh result of the ARN details in for us. Provents a circular dependency.
     resources = ["execute-api:/*/GET/lpa-online-tool/*"]
-    //resources = ["arn:aws:execute-api:eu-west-1:288342028542:3d9iqi6bq9/*/*/lpa-online-tool/*"]
-    //resources = ["arn:aws:execute-api:${data.aws_region.current.name}:${local.target_account}:*/*"]
-    //resources = ["${aws_api_gateway_rest_api.opg_api_gateway.execution_arn}:*/*/GET/lpa-online-tool/lpas/*"]
-    //resources = ["arn:aws:execute-api:region:account-id-1:api-id/stage/GET/pets"]
   }
 }
 
