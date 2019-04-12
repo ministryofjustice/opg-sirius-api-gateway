@@ -51,6 +51,7 @@ data "aws_iam_policy_document" "resource_policy" {
     principals {
       identifiers = [
         "${local.api_gateway_allowed_roles_online_lpa_tool}",
+        "arn:aws:iam::631181914621:user/neil.smith",
       ]
 
       type = "AWS"
