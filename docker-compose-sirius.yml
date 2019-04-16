@@ -1,0 +1,21 @@
+version: '2.1'
+
+services:
+  gateway:
+    volumes:
+      - ../opg-sirius-api-gateway/docker:/srv/docker:cached
+      - ../opg-sirius-api-gateway/lambdas:/srv/lambdas:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      LAMBDAS_PATH: ${PWD}/../opg-sirius-api-gateway/lambdas
+      # Keys starting 'PASSTHROUGH' are passed (sans 'PASSTHROUGH') to the actual Lambda.
+      PASSTHROUGH_URL_MEMBRANE: https://membrane
+      # Non-secret credentials, deliberately committed.
+      PASSTHROUGH_CREDENTIALS: '{"email": "publicapi@opgtest.com","password": "Password1"}'
+
+  localstack-config:
+    build:
+      context: ../opg-sirius-api-gateway/
+    volumes:
+      - ../opg-sirius-api-gateway/localstack-config:/config
+

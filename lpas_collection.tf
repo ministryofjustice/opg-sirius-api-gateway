@@ -28,10 +28,13 @@ module "lpas_collection_lambda" {
 
   vpc = "${local.vpc_name}"
 
+  dynamodb_auth_cache_table = "${aws_dynamodb_table.auth_cache.arn}"
+
   environment {
     variables {
       CREDENTIALS  = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
       URL_MEMBRANE = "https://${local.membrane_hostname}"
+      DYNAMODB_AUTH_CACHE_TABE_NAME = "${aws_dynamodb_table.auth_cache.name}"
     }
   }
 

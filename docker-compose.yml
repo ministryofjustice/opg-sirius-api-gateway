@@ -1,4 +1,4 @@
-version: '3'
+version: '2.1'
 
 services:
   gateway:
@@ -13,7 +13,28 @@ services:
     ports:
       - 5000:5000
     environment:
-      - LAMBDAS_PATH=${PWD}/lambdas
+      LAMBDAS_PATH: ${PWD}/lambdas
+      # Keys starting 'PASSTHROUGH' are passed (sans 'PASSTHROUGH') to the actual Lambda.
+      PASSTHROUGH_DYNAMODB_AUTH_CACHE_TABE_NAME: opg-gateway-cache-auth
+      PASSTHROUGH_AWS_ENDPOINT_DYNAMODB: http://gateway-localstack:4569
+
+  gateway-localstack:
+    image: localstack/localstack
+    ports:
+      - 4569:4569
+    environment:
+      - SERVICES=dynamodb:4569
+      - DEFAULT_REGION=eu-west-1
+      - HOSTNAME=gateway-localstack
+
+  localstack-config:
+    build:
+      context: .
+      dockerfile: localstack-config/Dockerfile
+    volumes:
+      - ./localstack-config:/config
+    depends_on:
+      - gateway-localstack
 
   lambci:
     container_name: lambci-python
