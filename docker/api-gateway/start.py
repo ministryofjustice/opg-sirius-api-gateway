@@ -27,10 +27,10 @@ def route_lpa_online_tool_lookup(lpa_online_tool_id):
     return lpa_lookup(event)
 
 
-@app.route('/v1/use-my-lpa/lpas/<sirius_uid>')
-def route_use_my_lpa_lookup(sirius_uid):
+@app.route('/v1/use-an-lpa/lpas/<sirius_uid>')
+def route_use_an_lpa_lookup(sirius_uid):
     event = generate_event_payload_lpa_lookup(
-        resource='/use-my-lpa/lpas/{sirius_uid}',
+        resource='/use-an-lpa/lpas/{sirius_uid}',
         path=request.path,
         method=request.method,
         headers=request.headers,
