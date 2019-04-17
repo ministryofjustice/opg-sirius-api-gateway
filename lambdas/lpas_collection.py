@@ -62,30 +62,30 @@ def id_handler(event, context):
 
     except InvalidInputError as e:
         logging.error('InvalidInputError: %s' % e)
-        return {'statusCode': 400, 'body': {
+        return {'statusCode': 400, 'body': json.dumps({
             'error': 'Bad request: %s' % e
-        }}
+        })}
 
     except InternalExceptionError as e:
         logging.error('InternalExceptionError: %s' % e)
-        return {'statusCode': 500, 'body': {
+        return {'statusCode': 500, 'body': json.dumps({
             'error': 'An internal exception occurred. See Gateway logs for details.'
-        }}
+        })}
 
     except UpstreamExceptionError as e:
         logging.error('UpstreamExceptionError: %s' % e)
-        return {'statusCode': 502, 'body': {
+        return {'statusCode': 502, 'body': json.dumps({
             'error': 'The upstream data provider returned an exception. See Gateway logs for details.'
-        }}
+        })}
 
     except UpstreamTimeoutError:
         logging.warning('UpstreamTimeoutError')
-        return {'statusCode': 504, 'body': {
+        return {'statusCode': 504, 'body': json.dumps({
             'error': 'The upstream data provider timed out'
-        }}
+        })}
 
     except Exception:
         traceback.print_exc()
-        return {'statusCode': 500, 'body': {
+        return {'statusCode': 500, 'body': json.dumps({
             'error': 'An unknown exception occurred'
-        }}
+        })}
