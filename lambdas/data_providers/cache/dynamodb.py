@@ -145,7 +145,7 @@ class CacheProviderWrapper:
         if isinstance(result, Response):
 
             # When should DynamoDB expire the item
-            expires = datetime.today() + relativedelta(months=1)
+            expires = datetime.today() + relativedelta(hours=1)
 
             expression = 'SET cached=:datatime, expires=:expires'
             expression_attribute_values = {
