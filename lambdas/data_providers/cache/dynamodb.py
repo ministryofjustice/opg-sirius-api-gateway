@@ -76,22 +76,34 @@ class CacheProviderWrapper:
 
         result = None
 
+        # Returned if something completely unknown happens.
+        exception = ValueError('Unable to perform the request, or get it from the cache, or catch a know exception')
+
         try:
             # Pass the request to the actual data provider
             result = lookup_function()
 
         # Catch the following and allow a cached version
-        except UpstreamTimeoutError:
+        except UpstreamTimeoutError as e:
+            exception = e
             pass
-        except UpstreamExceptionError:
+        except UpstreamExceptionError as e:
+            exception = e
             pass
-        except InternalExceptionError:
+        except InternalExceptionError as e:
+            exception = e
             pass
 
-        # If something went wrong, and we have a cached version, return that
-        if result is None and isinstance(current_cache_item, Response):
-            logging.warning('Error processing request; returning item from cache: %s', current_cache_item.ident)
-            return current_cache_item
+        # If something went wrong...
+        if result is None:
+            if isinstance(current_cache_item, Response):
+                # If we have a cached version
+                logging.warning('Error processing request; returning item from cache: %s', current_cache_item.ident)
+                return current_cache_item
+
+            else:
+                # Else re-raise the exception
+                raise exception
 
         # -----------------------------------------------
         # Handle the response
@@ -106,7 +118,7 @@ class CacheProviderWrapper:
                 logging.debug('%s found in cache', cache_id)
 
                 # And the hashes match
-                if result.meta_hash == current_cache_item.meta_hash:
+                if result.payload_hash == current_cache_item.payload_hash:
                     # Then we only need to update the meta-data
                     meta_data_only = True
 
@@ -127,11 +139,11 @@ class CacheProviderWrapper:
         if 'Item' in response:
             response = response['Item']
 
-            if 'payload' in response and 'meta_hash' in response and 'cached' in response:
+            if 'payload' in response and 'payload_hash' in response and 'cached' in response:
                 return Response(
                     ident=cache_id,
-                    meta_hash=response['meta_hash'],
-                    meta_datetime=response['cached'],
+                    payload_hash=response['payload_hash'],
+                    generated_datetime=response['cached'],
                     payload=json.loads(response['payload']),
                 )
 
@@ -149,16 +161,16 @@ class CacheProviderWrapper:
 
             expression = 'SET cached=:datatime, expires=:expires'
             expression_attribute_values = {
-                ':datatime': result.meta_datetime,
+                ':datatime': result.generated_datetime,
                 ':expires': math.floor(expires.timestamp()),
             }
 
             # If we're pushing everything, add teh additional fields
             if not meta_data_only:
                 logging.debug('Putting item in cache %s', result.ident)
-                expression += ', meta_hash=:hash, payload=:payload'
+                expression += ', payload_hash=:hash, payload=:payload'
 
-                expression_attribute_values[':hash'] = result.meta_hash
+                expression_attribute_values[':hash'] = result.payload_hash
                 expression_attribute_values[':payload'] = json.dumps(result.payload)
             else:
                 logging.debug('Updating cached item %s', result.ident)

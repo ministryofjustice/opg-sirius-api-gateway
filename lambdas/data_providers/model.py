@@ -11,25 +11,25 @@ class Response(object):
         return Response(
             ident=ident,
             payload=json.loads(payload_json),
-            meta_datetime=datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
-            meta_hash=hashlib.sha1(payload_json.encode()).hexdigest()
+            payload_hash=hashlib.sha1(payload_json.encode()).hexdigest(),
+            generated_datetime=datetime.utcnow().replace(tzinfo=timezone.utc).isoformat()
         )
 
     # --------------------------------
 
-    def __init__(self, ident, payload, meta_datetime, meta_hash):
+    def __init__(self, ident, payload, generated_datetime, payload_hash):
         self.ident = ident
         self.payload = payload
-        self.meta_datetime = meta_datetime
-        self.meta_hash = meta_hash
+        self.generated_datetime = generated_datetime
+        self.payload_hash = payload_hash
 
     def get_data(self):
         return {
             'id': self.ident,
             'payload': self.payload,
             'meta': {
-                'hash': self.meta_hash,
-                'datetime': self.meta_datetime,
+                'hash': self.payload_hash,
+                'datetime': self.generated_datetime,
             }
         }
 

@@ -26,7 +26,7 @@ class LpasCollection:
         if not isinstance(collection, Response) or collection.is_empty():
             return None, 0  # (empty) data and (dummy) age
 
-        age = cls._calculate_age(collection.meta_datetime)
+        age = cls._calculate_age(collection.generated_datetime)
 
         return collection.payload.pop(), age  # data and age
 
