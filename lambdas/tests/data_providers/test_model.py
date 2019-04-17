@@ -10,8 +10,8 @@ class TestProviderResponse(object):
         r = Response(
             ident='abc',
             payload=None,
-            meta_datetime=datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
-            meta_hash=hashlib.sha1('fake-json'.encode()).hexdigest()
+            generated_datetime=datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
+            payload_hash=hashlib.sha1('fake-json'.encode()).hexdigest()
         )
         assert r.is_empty()
 
