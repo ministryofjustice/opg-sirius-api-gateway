@@ -32,5 +32,9 @@ variable "environment" {
 }
 
 variable "dynamodb_auth_cache_table" {
-  description = "The ARN of the DynamoDb table in which we cache auth tokens"
+  description = "The ARN of the DynamoDB table in which we cache auth tokens"
+}
+
+variable "dynamodb_data_cache_table" {
+  description = "The ARN of the DynamoDB table in which we cache payload data"
 }
