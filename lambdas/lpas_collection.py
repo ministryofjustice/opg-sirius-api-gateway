@@ -22,7 +22,7 @@ def id_handler(event, context):
         # -------------------------------------
         # Lookup LPA
 
-        c = LpasCollection.factory()
+        c = LpasCollection()
         lpa, age = c.get_lpa(**event['pathParameters'])
 
         # -------------------------------------

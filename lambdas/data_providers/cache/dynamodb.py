@@ -90,7 +90,7 @@ class CacheProviderWrapper:
 
         # If something went wrong, and we have a cached version, return that
         if result is None and isinstance(current_cache_item, Response):
-            logging.info('Error processing request; returning item from cache: %s', current_cache_item)
+            logging.warning('Error processing request; returning item from cache: %s', current_cache_item.ident)
             return current_cache_item
 
         # -----------------------------------------------

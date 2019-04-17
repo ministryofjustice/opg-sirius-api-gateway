@@ -1,4 +1,5 @@
 import os
+import logging
 from . import InvalidInputError
 from data_providers import SiriusProvider, JsonProvider,Response
 from data_providers.cache import CacheProviderWrapper
@@ -12,13 +13,6 @@ from datetime import datetime, timezone
 
 
 class LpasCollection:
-
-    @staticmethod
-    def factory():
-        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
-            return LpasCollection(JsonProvider.factory())
-        else:
-            return LpasCollection(CacheProviderWrapper(SiriusProvider.factory()))
 
     @classmethod
     def _calculate_age(cls, str_date):
@@ -38,8 +32,16 @@ class LpasCollection:
 
     # --------------------
 
-    def __init__(self, provider):
-        self._provider = provider
+    def __init__(self):
+        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
+            self._provider = JsonProvider.factory()
+        else:
+            self._provider = SiriusProvider.factory()
+
+        if 'DISABLE_DATA_CACHE' in os.environ:
+            logging.warning('Data caching is disabled')
+        else:
+            self._provider = CacheProviderWrapper(self._provider)
 
     def get_lpa(self, lpa_online_tool_id=None, sirius_uid=None):
 
