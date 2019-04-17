@@ -1,6 +1,7 @@
 import os
 from . import InvalidInputError
-from data_providers import SiriusProvider, JsonProvider
+from data_providers import SiriusProvider, JsonProvider,Response
+from data_providers.cache import CacheProviderWrapper
 from datetime import datetime, timezone
 
 # --------------------------------------------
@@ -17,7 +18,7 @@ class LpasCollection:
         if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
             return LpasCollection(JsonProvider.factory())
         else:
-            return LpasCollection(SiriusProvider.factory())
+            return LpasCollection(CacheProviderWrapper(SiriusProvider.factory()))
 
     @classmethod
     def _calculate_age(cls, str_date):
@@ -26,16 +27,14 @@ class LpasCollection:
 
     @classmethod
     def _prepare_response(cls, collection):
-        # For the LPA collection lookup, we're expecting an array of 1 item back.
-        if collection is None \
-                or 'payload' not in collection.data \
-                or type(collection.data['payload']) is not list \
-                or len(collection.data['payload']) != 1:
+
+        # If we don't get a 'Response' back, or the response is empty
+        if not isinstance(collection, Response) or collection.is_empty():
             return None, 0  # (empty) data and (dummy) age
 
-        age = cls._calculate_age(collection.data['meta']['datetime'])
+        age = cls._calculate_age(collection.meta_datetime)
 
-        return collection.data['payload'].pop(), age  # data and age
+        return collection.payload.pop(), age  # data and age
 
     # --------------------
 

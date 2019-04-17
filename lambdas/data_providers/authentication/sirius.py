@@ -25,8 +25,8 @@ class SiriusAuthenticator:
         if 'URL_MEMBRANE' not in os.environ:
             raise RuntimeError('URL_MEMBRANE not set')
 
-        if 'DYNAMODB_AUTH_CACHE_TABE_NAME' not in os.environ:
-            raise RuntimeError('DYNAMODB_AUTH_CACHE_TABE_NAME not set')
+        if 'DYNAMODB_AUTH_CACHE_TABLE_NAME' not in os.environ:
+            raise RuntimeError('DYNAMODB_AUTH_CACHE_TABLE_NAME not set')
 
         if 'AWS_ENDPOINT_DYNAMODB' in os.environ:
             # For local development
@@ -40,7 +40,7 @@ class SiriusAuthenticator:
 
         return SiriusAuthenticator(os.environ['URL_MEMBRANE'],
                                    credentials,
-                                   os.environ['DYNAMODB_AUTH_CACHE_TABE_NAME'],
+                                   os.environ['DYNAMODB_AUTH_CACHE_TABLE_NAME'],
                                    dynamodb_endpoint_url)
 
     # ----------------------------------------------

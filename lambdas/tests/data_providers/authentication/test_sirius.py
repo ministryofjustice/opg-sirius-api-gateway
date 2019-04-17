@@ -13,12 +13,12 @@ class TestSiriusAuthenticator(object):
     # Factory tests
 
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     def test_factory_without_credentials(self):
         with pytest.raises(RuntimeError, match=r'.*CREDENTIALS.*'):
             SiriusAuthenticator.factory()
 
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_factory_without_url(self):
         with pytest.raises(RuntimeError, match=r'.*URL_MEMBRANE.*'):
@@ -27,7 +27,7 @@ class TestSiriusAuthenticator(object):
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_factory_db_table_name(self):
-        with pytest.raises(RuntimeError, match=r'.*DYNAMODB_AUTH_CACHE_TABE_NAME.*'):
+        with pytest.raises(RuntimeError, match=r'.*DYNAMODB_AUTH_CACHE_TABLE_NAME.*'):
             SiriusAuthenticator.factory()
 
     # -------------------------------------
@@ -35,7 +35,7 @@ class TestSiriusAuthenticator(object):
 
     @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_valid_creds_fresh_token(self, mock_boto3):
 
@@ -73,7 +73,7 @@ class TestSiriusAuthenticator(object):
 
     @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_invalid_creds_fresh_token(self,mock_boto3):
 
@@ -100,7 +100,7 @@ class TestSiriusAuthenticator(object):
 
     @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_invalid_creds_cache_miss_token(self,mock_boto3):
 
@@ -131,7 +131,7 @@ class TestSiriusAuthenticator(object):
 
     @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_valid_creds_cache_miss_token(self,mock_boto3):
 
@@ -171,7 +171,7 @@ class TestSiriusAuthenticator(object):
 
     @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_cache_hit_token(self,mock_boto3):
 

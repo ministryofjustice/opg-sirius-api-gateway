@@ -34,7 +34,7 @@ module "lpas_collection_lambda" {
     variables {
       CREDENTIALS  = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
       URL_MEMBRANE = "https://${local.membrane_hostname}"
-      DYNAMODB_AUTH_CACHE_TABE_NAME = "${aws_dynamodb_table.auth_cache.name}"
+      DYNAMODB_AUTH_CACHE_TABLE_NAME = "${aws_dynamodb_table.auth_cache.name}"
     }
   }
 
