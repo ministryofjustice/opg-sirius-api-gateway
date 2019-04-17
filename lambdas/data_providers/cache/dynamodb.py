@@ -3,6 +3,7 @@ import boto3
 import json
 import math
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from data_providers import Response, UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
@@ -41,7 +42,7 @@ class CacheProviderWrapper:
 
     # ---------------------------------------------------------------------
     # Concrete methods that map to those in the upstream providers
-    #   If a method should never be cached, don't route it via _lookup_with_cache()
+    #   If a method's result should never be cached, don't route it via _lookup_with_cache()
 
     def get_lpa_by_sirius_uid(self, sirius_uid):
         def f():    # Map to the real method
@@ -69,7 +70,10 @@ class CacheProviderWrapper:
         :return: Response or None
         """
 
-        current_cache_item = self._lookup_in_cache(cache_id)
+        thread_pool = ThreadPoolExecutor(1)
+
+        # Perform the DynamoDB lookup in a thread
+        current_cache_item_task = thread_pool.submit(self._lookup_in_cache, cache_id)
 
         # -----------------------------------------------
         # Perform the lookup against the real provider
@@ -93,6 +97,9 @@ class CacheProviderWrapper:
         except InternalExceptionError as e:
             exception = e
             pass
+
+        # Pull the result out of the thread
+        current_cache_item = current_cache_item_task.result()
 
         # If something went wrong...
         if result is None:
@@ -122,6 +129,7 @@ class CacheProviderWrapper:
                     # Then we only need to update the meta-data
                     meta_data_only = True
 
+            # Cache the result
             self._cache_result(result, meta_data_only=meta_data_only)
 
         return result
