@@ -1,5 +1,5 @@
 import os
-from data_providers.sirius import SiriusAuthenticator, SiriusAuthenticationError
+from data_providers.authentication import SiriusAuthenticator, SiriusAuthenticationError
 from requests import Request, Session, exceptions
 from .model import Response
 from . import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
