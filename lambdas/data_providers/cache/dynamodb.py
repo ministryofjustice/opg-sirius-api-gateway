@@ -9,6 +9,16 @@ from data_providers import Response, UpstreamExceptionError, UpstreamTimeoutErro
 
 
 class CacheProviderWrapper:
+    """
+    Wraps around a data provider, providing a caching layer.
+
+    *A cached result is only returned if the upstream provided return an error.*
+
+    The original version of this class used `def __getattr__(self, name)` as opposed to explicitly
+    defining all of the methods on a data provider. The end result however seemed overaly 'magic', with
+    no simply way to control if/when/how different methods on the provider would use the cache.
+
+    """
 
     def __init__(self, data_provider):
         self._data_provider = data_provider
@@ -16,7 +26,7 @@ class CacheProviderWrapper:
         if 'AWS_ENDPOINT_DYNAMODB' in os.environ:
             # For local development
             dynamodb_endpoint_url = os.environ['AWS_ENDPOINT_DYNAMODB']
-            logging.debug('AWS_ENDPOINT_DYNAMODB set %s' % self._dynamodb_endpoint_url)
+            logging.debug('AWS_ENDPOINT_DYNAMODB set %s' % dynamodb_endpoint_url)
         else:
             # Should be none in AWS
             dynamodb_endpoint_url = None
@@ -29,64 +39,87 @@ class CacheProviderWrapper:
         dynamodb = boto3.resource('dynamodb', endpoint_url=dynamodb_endpoint_url)
         self.cache_table = dynamodb.Table(dynamodb_cache_table)  # Is lazy
 
-    def __getattr__(self, name):
+    # ---------------------------------------------------------------------
+    # Concrete methods that map to those in the upstream providers
+    #   If a method should never be cached, don't route it via _lookup_with_cache()
+
+    def get_lpa_by_sirius_uid(self, sirius_uid):
+        def f():    # Map to the real method
+            return self._data_provider.get_lpa_by_sirius_uid(sirius_uid)
+        return self._lookup_with_cache(sirius_uid, f)
+
+    def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
+        def f():    # Map to the real method
+            return self._data_provider.get_lpa_by_lpa_online_tool_id(online_tool_id)
+        return self._lookup_with_cache(online_tool_id, f)
+
+    # ---------------------------------------------------------------------
+
+    def _lookup_with_cache(self, cache_id, lookup_function):
         """
-        Proxies the request on to the real data provider.
+        Performs the lookup using teh passed function `lookup_function`.
+
+        If an exception is thrown upstream that matches one of those
+        allowed, we will return a cached result, if we have one.
+
+        Every successful result returned from the upstream provider will be put into the cache.
+
+        :param cache_id: A string that uniquely represents the lookup being performed.
+        :param lookup_function: The function that performs the 'real' lookup
+        :return: Response or None
         """
-        def method(*args):
 
-            if isinstance(args, tuple) and len(args) > 0:
-                # args[0] is the string that represents the item being looked up
-                current_cache_item = self._lookup_in_cache(args[0])
-            else:
-                raise ValueError('Missing ident passed to caching wrapper')
+        current_cache_item = self._lookup_in_cache(cache_id)
 
-            # -----------------------------------------------
-            # Perform the lookup against the real provider
+        # -----------------------------------------------
+        # Perform the lookup against the real provider
 
-            result = None
+        result = None
 
-            try:
-                # Pass the request to the actual data provider
-                result = getattr(self._data_provider, name)(*args)
+        try:
+            # Pass the request to the actual data provider
+            result = lookup_function()
 
-            # Catch the following and allow a cached version
-            except UpstreamTimeoutError:
-                pass
-            except UpstreamExceptionError:
-                pass
-            except InternalExceptionError:
-                pass
+        # Catch the following and allow a cached version
+        except UpstreamTimeoutError:
+            pass
+        except UpstreamExceptionError:
+            pass
+        except InternalExceptionError:
+            pass
 
-            # If something went wrong, and we have a cached version, return that
-            if result is None and isinstance(current_cache_item, Response):
-                logging.info('Error processing request; returning item from cache: %s', current_cache_item)
-                return current_cache_item
+        # If something went wrong, and we have a cached version, return that
+        if result is None and isinstance(current_cache_item, Response):
+            logging.info('Error processing request; returning item from cache: %s', current_cache_item)
+            return current_cache_item
 
-            # -----------------------------------------------
-            # Handle the response
+        # -----------------------------------------------
+        # Handle the response
 
-            # If we got a Response back from the request
-            if isinstance(result, Response):
+        # If we got a Response back from the request
+        if isinstance(result, Response):
 
-                meta_data_only = False
+            meta_data_only = False
 
-                # If we also got a Response from the cache
-                if isinstance(current_cache_item, Response):
-                    logging.debug('%s found in cache', args[0])
+            # If we also got a Response from the cache
+            if isinstance(current_cache_item, Response):
+                logging.debug('%s found in cache', cache_id)
 
-                    # And the hashes match
-                    if result.meta_hash == current_cache_item.meta_hash:
-                        # Then we only need to update the meta-data
-                        meta_data_only = True
+                # And the hashes match
+                if result.meta_hash == current_cache_item.meta_hash:
+                    # Then we only need to update the meta-data
+                    meta_data_only = True
 
-                self._cache_result(result, meta_data_only=meta_data_only)
+            self._cache_result(result, meta_data_only=meta_data_only)
 
-            return result
-
-        return method
+        return result
 
     def _lookup_in_cache(self, cache_id):
+        """
+        Looks up the given `cache_id` in DynamoDB
+
+        :return: Response
+        """
         response = self.cache_table.get_item(
             Key={'id': cache_id}
         )
@@ -103,6 +136,12 @@ class CacheProviderWrapper:
                 )
 
     def _cache_result(self, result, meta_data_only):
+        """
+        Stores the passed `Response` object in DynamoDB
+
+        :param result: The Response object to be cached
+        :param meta_data_only: True iff only the meta data needs updating. Otherwise the whole Response is stored
+        """
         if isinstance(result, Response):
 
             # When should DynamoDB expire the item
