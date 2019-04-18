@@ -21,6 +21,10 @@ class CacheProviderWrapper:
 
     """
 
+    # TTL used for DynamoDB
+    # Note DynamoDB doesn't guarantee it'll be deleted exactly as the TTL expires; just soon after.
+    CACHE_TTL = relativedelta(hours=1)
+
     def __init__(self, data_provider):
         self._data_provider = data_provider
 
@@ -165,7 +169,7 @@ class CacheProviderWrapper:
         if isinstance(result, Response):
 
             # When should DynamoDB expire the item
-            expires = datetime.today() + relativedelta(hours=1)
+            expires = datetime.now() + self.CACHE_TTL
 
             expression = 'SET cached=:datatime, expires=:expires'
             expression_attribute_values = {
