@@ -44,3 +44,4 @@ def test_handler(event, context):
     else:
         print('Login failed')
         pprint.pprint(r.text)
+        exit(4)
