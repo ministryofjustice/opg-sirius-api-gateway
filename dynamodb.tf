@@ -9,6 +9,8 @@ resource "aws_dynamodb_table" "auth_cache" {
     name = "id"
     type = "S"
   }
+
+  tags = "${local.default_tags}"
 }
 
 resource "aws_dynamodb_table" "data_cache" {
@@ -26,4 +28,6 @@ resource "aws_dynamodb_table" "data_cache" {
     attribute_name = "expires"
     enabled = true
   }
+
+  tags = "${local.default_tags}"
 }
