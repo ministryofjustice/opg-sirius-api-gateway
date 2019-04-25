@@ -94,13 +94,10 @@ class CacheProviderWrapper:
         # Catch the following and allow a cached version
         except UpstreamTimeoutError as e:
             exception = e
-            pass
         except UpstreamExceptionError as e:
             exception = e
-            pass
         except InternalExceptionError as e:
             exception = e
-            pass
 
         # Pull the result out of the thread
         current_cache_item = current_cache_item_task.result()
