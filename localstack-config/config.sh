@@ -15,4 +15,18 @@ else
     --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 \
     --region eu-west-1 \
     --endpoint http://gateway-localstack:4569
+
+    aws dynamodb create-table \
+    --attribute-definitions AttributeName=id,AttributeType=S \
+    --table-name opg-gateway-cache-data \
+    --key-schema AttributeName=id,KeyType=HASH \
+    --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 \
+    --region eu-west-1 \
+    --endpoint http://gateway-localstack:4569
+
+    aws dynamodb update-time-to-live \
+    --table-name opg-gateway-cache-data \
+    --time-to-live-specification "Enabled=true, AttributeName=expires" \
+    --region eu-west-1 \
+    --endpoint http://gateway-localstack:4569
 fi

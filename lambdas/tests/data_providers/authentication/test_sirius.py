@@ -4,7 +4,7 @@ import pytest
 import responses
 from unittest import mock
 from requests import Request
-from data_providers.sirius import SiriusAuthenticator, SiriusAuthenticationError
+from data_providers.authentication import SiriusAuthenticator, SiriusAuthenticationError
 
 
 class TestSiriusAuthenticator(object):
@@ -13,12 +13,12 @@ class TestSiriusAuthenticator(object):
     # Factory tests
 
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     def test_factory_without_credentials(self):
         with pytest.raises(RuntimeError, match=r'.*CREDENTIALS.*'):
             SiriusAuthenticator.factory()
 
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_factory_without_url(self):
         with pytest.raises(RuntimeError, match=r'.*URL_MEMBRANE.*'):
@@ -27,15 +27,15 @@ class TestSiriusAuthenticator(object):
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_factory_db_table_name(self):
-        with pytest.raises(RuntimeError, match=r'.*DYNAMODB_AUTH_CACHE_TABE_NAME.*'):
+        with pytest.raises(RuntimeError, match=r'.*DYNAMODB_AUTH_CACHE_TABLE_NAME.*'):
             SiriusAuthenticator.factory()
 
     # -------------------------------------
     # Object tests
 
-    @mock.patch('data_providers.sirius.authentication.boto3', autospec=True)
+    @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_valid_creds_fresh_token(self, mock_boto3):
 
@@ -71,9 +71,9 @@ class TestSiriusAuthenticator(object):
                 Item={'id': 'token','token': test_token}
             )
 
-    @mock.patch('data_providers.sirius.authentication.boto3', autospec=True)
+    @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_invalid_creds_fresh_token(self,mock_boto3):
 
@@ -98,9 +98,9 @@ class TestSiriusAuthenticator(object):
             mock_boto3.resource.return_value.Table.return_value.get_item.assert_not_called()
             mock_boto3.resource.return_value.Table.return_value.put_item.assert_not_called()
 
-    @mock.patch('data_providers.sirius.authentication.boto3', autospec=True)
+    @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_invalid_creds_cache_miss_token(self,mock_boto3):
 
@@ -129,9 +129,9 @@ class TestSiriusAuthenticator(object):
             # But as that fails, we don't try and add anything to the cache.
             mock_boto3.resource.return_value.Table.return_value.put_item.assert_not_called()
 
-    @mock.patch('data_providers.sirius.authentication.boto3', autospec=True)
+    @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_valid_creds_cache_miss_token(self,mock_boto3):
 
@@ -169,9 +169,9 @@ class TestSiriusAuthenticator(object):
             assert 'HTTP-SECURE-TOKEN' in r.headers
             assert r.headers['HTTP-SECURE-TOKEN'] == test_token
 
-    @mock.patch('data_providers.sirius.authentication.boto3', autospec=True)
+    @mock.patch('data_providers.authentication.sirius.boto3', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
-    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABE_NAME': 'tabme-name'})
+    @mock.patch.dict('os.environ', {'DYNAMODB_AUTH_CACHE_TABLE_NAME': 'tabme-name'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_cache_hit_token(self,mock_boto3):
 

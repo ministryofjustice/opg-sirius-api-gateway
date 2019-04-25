@@ -1,6 +1,8 @@
 import os
+import logging
 from . import InvalidInputError
-from data_providers import SiriusProvider, JsonProvider
+from data_providers import SiriusProvider, JsonProvider, Response
+from data_providers.cache import CacheProviderWrapper
 from datetime import datetime, timezone
 
 # --------------------------------------------
@@ -12,13 +14,6 @@ from datetime import datetime, timezone
 
 class LpasCollection:
 
-    @staticmethod
-    def factory():
-        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
-            return LpasCollection(JsonProvider.factory())
-        else:
-            return LpasCollection(SiriusProvider.factory())
-
     @classmethod
     def _calculate_age(cls, str_date):
         d = datetime.fromisoformat(str_date)
@@ -26,21 +21,27 @@ class LpasCollection:
 
     @classmethod
     def _prepare_response(cls, collection):
-        # For the LPA collection lookup, we're expecting an array of 1 item back.
-        if collection is None \
-                or 'payload' not in collection.data \
-                or type(collection.data['payload']) is not list \
-                or len(collection.data['payload']) != 1:
+
+        # If we don't get a 'Response' back, or the response is empty
+        if not isinstance(collection, Response) or collection.is_empty():
             return None, 0  # (empty) data and (dummy) age
 
-        age = cls._calculate_age(collection.data['meta']['datetime'])
+        age = cls._calculate_age(collection.generated_datetime)
 
-        return collection.data['payload'].pop(), age  # data and age
+        return collection.payload.pop(), age  # data and age
 
     # --------------------
 
-    def __init__(self, provider):
-        self._provider = provider
+    def __init__(self):
+        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
+            self._provider = JsonProvider.factory()
+        else:
+            self._provider = SiriusProvider.factory()
+
+        if 'DISABLE_DATA_CACHE' in os.environ:
+            logging.warning('Data caching is disabled')
+        else:
+            self._provider = CacheProviderWrapper(self._provider)
 
     def get_lpa(self, lpa_online_tool_id=None, sirius_uid=None):
 

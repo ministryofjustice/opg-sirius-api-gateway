@@ -1,5 +1,5 @@
 import os
-from data_providers.sirius import SiriusAuthenticator, SiriusAuthenticationError
+from data_providers.authentication import SiriusAuthenticator, SiriusAuthenticationError
 from requests import Request, Session, exceptions
 from .model import Response
 from . import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
@@ -22,13 +22,25 @@ class SiriusProvider:
         self._authenticator = authenticator
         self._membrane_url = membrane_url
 
-    def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
+    def get_lpa_by_sirius_uid(self, sirius_uid):
+        url = self._membrane_url + '/api/public/v1/lpas?uid=%s' % sirius_uid
+        return self._get_lpa(sirius_uid, url)
 
-        logging.info("Sirius lookup of %s" % online_tool_id)
+    def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
+        url = self._membrane_url + '/api/public/v1/lpas?lpa-online-tool-id=%s' % online_tool_id
+        return self._get_lpa(online_tool_id, url)
+
+    def _get_lpa(self, id_value, url):
+        """
+        Performs the lookup of the requested LPA.
+
+        If the first look fails with a 401 Unauthorised, and the attempt was made with a cached auto token,
+        we make one further attempt with a fresh auth token.
+        """
+
+        logging.info("Sirius lookup of %s" % id_value)
 
         try:
-            url = self._membrane_url + '/api/public/v1/lpas?lpa-online-tool-id=%s' % online_tool_id
-
             resp, cached_token = self._attempt_get(url=url, accept_cached_token=True)
 
             # If we get a 401 Unauthorized, try again with the cached token
@@ -36,9 +48,9 @@ class SiriusProvider:
                 logging.warning('Lookup failed with cached token. Refreshing token.')
                 resp, cached_token = self._attempt_get(url=url, accept_cached_token=False)
 
-            # If we get a 200, all is good. Return teh result.
+            # If we get a 200, all is good. Return the result.
             if resp.status_code == 200:
-                return Response.factory(online_tool_id, resp.text)
+                return Response.factory(id_value, resp.text)
 
             # If we reach here, all has failed.
             raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s', resp.status_code, resp.text)

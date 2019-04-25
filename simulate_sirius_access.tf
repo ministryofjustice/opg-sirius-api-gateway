@@ -14,6 +14,7 @@ module "sirius_access_test_lambda" {
   vpc = "${local.vpc_name}"
 
   dynamodb_auth_cache_table = "${aws_dynamodb_table.auth_cache.arn}"
+  dynamodb_data_cache_table = "${aws_dynamodb_table.data_cache.arn}"
 
   environment {
     variables {

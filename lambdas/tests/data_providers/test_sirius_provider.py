@@ -8,7 +8,7 @@ from unittest import mock
 
 class TestSiriusProvider(object):
 
-    @mock.patch('data_providers.sirius.SiriusAuthenticator', autospec=True)
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_get_lpa_by_lpa_online_tool_id_with_first_time_valid_token(self, mock_authenticator):
@@ -46,7 +46,7 @@ class TestSiriusProvider(object):
             assert result.is_empty()
             mock_authenticator.authorise_request.assert_called_once()
 
-    @mock.patch('data_providers.sirius.SiriusAuthenticator', autospec=True)
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_get_lpa_by_lpa_online_tool_id_with_second_time_valid_token(self, mock_authenticator):
@@ -100,7 +100,7 @@ class TestSiriusProvider(object):
             assert result.is_empty()
             assert mock_authenticator.authorise_request.call_count == 2
 
-    @mock.patch('data_providers.sirius.SiriusAuthenticator', autospec=True)
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_get_lpa_by_lpa_online_tool_id_with_no_valid_token(self, mock_authenticator):
@@ -148,7 +148,7 @@ class TestSiriusProvider(object):
             # We expect two attempts at getting a valid session
             assert mock_authenticator.authorise_request.call_count == 2
 
-    @mock.patch('data_providers.sirius.SiriusAuthenticator', autospec=True)
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
     @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
     @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
     def test_get_lpa_by_lpa_online_tool_id_with_no_valid_token_and_no_cached_token(self, mock_authenticator):

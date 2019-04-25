@@ -40,9 +40,11 @@ data "aws_iam_policy_document" "iam_for_lambda_inline_execution_role" {
     actions = [
       "dynamodb:GetItem",
       "dynamodb:PutItem",
+      "dynamodb:UpdateItem",
     ]
     resources = [
       "${var.dynamodb_auth_cache_table}",
+      "${var.dynamodb_data_cache_table}",
     ]
   }
 }

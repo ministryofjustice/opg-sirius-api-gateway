@@ -20,20 +20,9 @@ def id_handler(event, context):
             raise InvalidInputError("'pathParameters' missing from event")
 
         # -------------------------------------
-        # Determine what fields the service can return
-
-        fields = []
-
-        if event['resource'].startswith('/lpa-online-tool'):
-            fields = ['onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
-
-        elif event['resource'].startswith('/use-my-lpa'):
-            fields = ['uId']
-
-        # -------------------------------------
         # Lookup LPA
 
-        c = LpasCollection.factory()
+        c = LpasCollection()
         lpa, age = c.get_lpa(**event['pathParameters'])
 
         # -------------------------------------
@@ -45,8 +34,21 @@ def id_handler(event, context):
             response["statusCode"] = 404
             response["body"] = {}
         else:
+            # -------------------------------------
+            # Determine if / what fields the service can return
+
+            fields = []
+
+            if event['resource'].startswith('/lpa-online-tool'):
+                fields = ['onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
+
+            # TODO: Determine if we want to filter /use-an-lpa at all
+            # elif event['resource'].startswith('/use-an-lpa'):
+            #    fields = ['uId']
+
             # Filter the return fields
-            lpa = {k: lpa[k] for k in fields if k in lpa}
+            if len(fields) > 0:
+                lpa = {k: lpa[k] for k in fields if k in lpa}
 
             response["statusCode"] = 200
             response["body"] = lpa
@@ -60,41 +62,30 @@ def id_handler(event, context):
 
     except InvalidInputError as e:
         logging.error('InvalidInputError: %s' % e)
-        return {'statusCode': 400, 'body': {
+        return {'statusCode': 400, 'body': json.dumps({
             'error': 'Bad request: %s' % e
-        }}
+        })}
 
     except InternalExceptionError as e:
         logging.error('InternalExceptionError: %s' % e)
-        return {'statusCode': 500, 'body': {
+        return {'statusCode': 500, 'body': json.dumps({
             'error': 'An internal exception occurred. See Gateway logs for details.'
-        }}
+        })}
 
     except UpstreamExceptionError as e:
         logging.error('UpstreamExceptionError: %s' % e)
-        return {'statusCode': 502, 'body': {
+        return {'statusCode': 502, 'body': json.dumps({
             'error': 'The upstream data provider returned an exception. See Gateway logs for details.'
-        }}
+        })}
 
     except UpstreamTimeoutError:
         logging.warning('UpstreamTimeoutError')
-        return {'statusCode': 504, 'body': {
+        return {'statusCode': 504, 'body': json.dumps({
             'error': 'The upstream data provider timed out'
-        }}
+        })}
 
-    except Exception as e:
+    except Exception:
         traceback.print_exc()
-        return {'statusCode': 500, 'body': {
+        return {'statusCode': 500, 'body': json.dumps({
             'error': 'An unknown exception occurred'
-        }}
-
-
-if __name__ == '__main__':
-    response = id_handler({
-        'pathParameters': {
-            # 'sirius_uid': '700000000001',
-            'lpa_online_tool_id': 'A00000000001'
-        },
-        'resource': '/lpa-online-tool',
-    }, {})
-    pprint(response)
+        })}
