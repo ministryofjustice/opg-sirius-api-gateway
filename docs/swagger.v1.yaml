@@ -87,7 +87,7 @@ paths:
         '502':
           description: The Sirius data provider returned an exception
         '504':
-          description: The Sirius data providertimed out
+          description: The Sirius data provider timed out
 components:
   securitySchemes:
     sigv4:
