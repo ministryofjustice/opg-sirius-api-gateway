@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  version: '1.0.0'
+  title: 'OPG Sirius API Gateway'
+  description: |
+    The OPG Sirius API Gateway provides an entry point for OPG owned services to ingergrate with Sirius.
+    This API follows Semantic Versioning (https://semver.org/), with the MAJOR version being represented at the first part of the API's path.
+servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/nsmith/OPG_Sirius_Gateway_API/1.0.0
+- description: OPG API Gateway Production
+  url: "https://api.sirius.opg.digital/v1"
+- description: OPG API Gateway Development
+  url: "https://api.dev.sirius.opg.digital/v1"
+paths:
+  /lpa-online-tool/lpas/{lpa_online_tool_id}:
+    get:
+      security:
+      - sigv4: []
+      parameters:
+        - in: path
+          name: lpa_online_tool_id
+          schema:
+            type: string
+            pattern: '^A\d{11}$'
+          required: true
+          description: Online Tool ID. E.g. A12345678987
+      responses:
+        '200':
+          description: LPA details returned for the requested ID
+          headers:
+            Age:
+              schema:
+                type: integer
+              description: |
+                The time elapsed, measured in seconds, since the returned response body was retrieved from Sirius.
+                Under normal circumstances this will be zero (0), indicating the response represents the current 'live' state within Sirius.
+                In the case that the Gateway was unable to retrieve an up to date response from Sirius, it will make best efforts to return a cached version.
+                It's up to the consumer of the API to determine if they wish to use a response based on its age.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - onlineLpaId
+                  - receiptDate
+                  - registrationDate
+                  - rejectedDate
+                  - status
+                properties:
+                  onlineLpaId:
+                    type: string
+                    example: A22486562341
+                    pattern: '^A\d{11}$'
+                  receiptDate:
+                    type: string
+                    format: date
+                    description: The date the LPA was created
+                    example: '2018-06-30'
+                  rejectedDate:
+                    type: string
+                    format: date
+                    nullable: true
+                    description: The date the LPA was rejected
+                    example: '2018-06-30'
+                  registrationDate:
+                    type: string
+                    format: date
+                    nullable: true
+                    description: The date the LPA was registered
+                    example: '2018-06-30'
+                  status:
+                    type: string
+                    enum: [Cancelled, Imperfect, Invalid, Pending, Perfect, Rejected, Revoked, Withdrawn]
+        '404':
+          description: An LPA with the passed ID Not Found
+        '400':
+          description: Bad request
+        '403':
+          description: Authentication failed
+        '429':
+          description: API Gateway throttling limit exceeded
+        '500':
+          description: Unhandeled internal exception within OPG Gateway
+        '502':
+          description: The Sirius data provider returned an exception
+        '504':
+          description: The Sirius data providertimed out
+components:
+  securitySchemes:
+    sigv4:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "awsSigv4"
