@@ -11,6 +11,10 @@ resource "aws_dynamodb_table" "auth_cache" {
   }
 
   tags = "${local.default_tags}"
+
+  server_side_encryption {
+    enabled = true
+  }
 }
 
 resource "aws_dynamodb_table" "data_cache" {
@@ -30,4 +34,8 @@ resource "aws_dynamodb_table" "data_cache" {
   }
 
   tags = "${local.default_tags}"
+
+  server_side_encryption {
+    enabled = true
+  }
 }
