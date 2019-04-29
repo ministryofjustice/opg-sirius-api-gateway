@@ -25,7 +25,8 @@ paths:
             type: string
             pattern: '^A\d{11}$'
           required: true
-          description: Online Tool ID. E.g. A12345678987
+          description: Online Tool ID
+          example: A12345678987
       responses:
         '200':
           description: LPA details returned for the requested ID
