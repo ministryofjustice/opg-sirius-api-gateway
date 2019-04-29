@@ -11,6 +11,8 @@ logger = logging.getLogger()
 
 if 'ENABLE_DEBUG' in os.environ and os.environ['ENABLE_DEBUG'] == 'true':
     logger.setLevel(logging.DEBUG)
+else:
+    logger.setLevel(logging.INFO)
 
 
 def id_handler(event, context):
