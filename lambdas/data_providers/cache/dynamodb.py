@@ -23,7 +23,7 @@ class CacheProviderWrapper:
 
     # TTL used for DynamoDB
     # Note DynamoDB doesn't guarantee it'll be deleted exactly as the TTL expires; just soon after.
-    CACHE_TTL = relativedelta(hours=1)
+    CACHE_TTL = relativedelta(hours=48)
 
     def __init__(self, data_provider):
         self._data_provider = data_provider

@@ -4,10 +4,13 @@ from rest_collections import InvalidInputError, LpasCollection
 from data_providers import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
 import traceback
 import json
+import os
 import logging
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+
+if 'ENABLE_DEBUG' in os.environ and os.environ['ENABLE_DEBUG'] == 'true':
+    logger.setLevel(logging.DEBUG)
 
 
 def id_handler(event, context):
