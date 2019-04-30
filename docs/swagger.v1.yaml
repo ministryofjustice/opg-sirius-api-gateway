@@ -73,7 +73,7 @@ paths:
                     example: '2018-06-30'
                   status:
                     type: string
-                    enum: [Cancelled, Imperfect, Invalid, Pending, Perfect, Rejected, Revoked, Withdrawn]
+                    enum: [Cancelled, Imperfect, Invalid, Pending, Perfect, Rejected, Revoked, Withdrawn, Registered]
         '404':
           description: An LPA with the passed ID Not Found
         '400':
