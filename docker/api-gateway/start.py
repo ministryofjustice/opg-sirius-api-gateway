@@ -41,7 +41,7 @@ def route_use_an_lpa_lookup(sirius_uid):
 
 
 def lpa_lookup(event):
-    result = invoke_lambda('lpas_collection.id_handler', event)
+    result = invoke_lambda('LpasCollectionHandler.id_handler', event)
     return map_lambda_response(result)
 
 
