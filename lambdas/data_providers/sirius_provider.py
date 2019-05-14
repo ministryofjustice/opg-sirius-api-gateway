@@ -50,7 +50,7 @@ class SiriusProvider:
 
             # If we get a 200, all is good. Return the result.
             if resp.status_code == 200:
-                return Response.factory(id_value, resp.text)
+                return Response.factory(id_value, resp.status_code, resp.text)
 
             # If we reach here, all has failed.
             raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s', resp.status_code, resp.text)

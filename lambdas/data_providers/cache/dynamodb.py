@@ -126,7 +126,7 @@ class CacheProviderWrapper:
                 logging.debug('%s found in cache', cache_id)
 
                 # And the hashes match
-                if result.payload_hash == current_cache_item.payload_hash:
+                if result.response_hash == current_cache_item.response_hash:
                     # Then we only need to update the meta-data
                     meta_data_only = True
 
@@ -148,10 +148,15 @@ class CacheProviderWrapper:
         if 'Item' in response:
             response = response['Item']
 
-            if 'payload' in response and 'payload_hash' in response and 'cached' in response:
+            if 'payload' in response \
+                    and 'response_hash' in response \
+                    and 'cached' in response \
+                    and 'response_code' in response:
+
                 return Response(
                     ident=cache_id,
-                    payload_hash=response['payload_hash'],
+                    code=response['response_code'],
+                    response_hash=response['response_hash'],
                     generated_datetime=response['cached'],
                     payload=json.loads(response['payload']),
                 )
@@ -177,9 +182,10 @@ class CacheProviderWrapper:
             # If we're pushing everything, add teh additional fields
             if not meta_data_only:
                 logging.debug('Putting item in cache %s', result.ident)
-                expression += ', payload_hash=:hash, payload=:payload'
+                expression += ', response_code=:code, response_hash=:hash, payload=:payload'
 
-                expression_attribute_values[':hash'] = result.payload_hash
+                expression_attribute_values[':code'] = result.code
+                expression_attribute_values[':hash'] = result.response_hash
                 expression_attribute_values[':payload'] = json.dumps(result.payload)
             else:
                 logging.debug('Updating cached item %s', result.ident)
