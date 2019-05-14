@@ -12,4 +12,4 @@ class UpstreamTimeoutError(Exception):
 
 from .json_provider import JsonProvider
 from .sirius_provider import SiriusProvider
-from .model import Response
+from .response import Response

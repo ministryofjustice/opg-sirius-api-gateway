@@ -2,7 +2,6 @@ version: '2.1'
 
 services:
   gateway:
-    container_name: opg-api-gateway
     build: ./
     depends_on:
       - lambci
@@ -38,6 +37,5 @@ services:
       - gateway-localstack
 
   lambci:
-    container_name: lambci-python
     image: lambci/lambda:python3.7
     entrypoint: bash

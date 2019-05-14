@@ -1,5 +1,5 @@
 import json
-from .model import Response
+from .response import Response
 
 # --------------------------------------------
 # Responsible for looking up a given LPA from

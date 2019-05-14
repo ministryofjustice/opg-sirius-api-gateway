@@ -31,6 +31,12 @@ source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
 ```
 
+To run the unit tests:
+```bash
+source .venv/bin/activate
+pytest
+```
+
 ### Getting secrets into your Lambda function
 
 Secrets can be kept in AWS Secrets Manager.
