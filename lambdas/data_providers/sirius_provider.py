@@ -53,7 +53,7 @@ class SiriusProvider:
                 return Response.factory(id_value, resp.status_code, resp.text)
 
             # If we reach here, all has failed.
-            raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s', resp.status_code, resp.text)
+            raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s' % (resp.status_code, resp.text))
 
         except SiriusAuthenticationError:
             raise InternalExceptionError('Sirius authentication error')
