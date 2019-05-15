@@ -213,7 +213,7 @@ class CacheProviderWrapper:
                 ':expires': math.floor(expires.timestamp()),
             }
 
-            # If we're pushing everything, add teh additional fields
+            # If we're pushing everything, add the additional fields
             if not meta_data_only:
                 logging.debug('Putting item in cache %s', result.ident)
                 expression += ', response_code=:code, response_hash=:hash, payload=:payload'

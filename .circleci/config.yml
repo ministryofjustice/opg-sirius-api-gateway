@@ -180,7 +180,7 @@ orbs:
         #
         parameters:
           aws-account:
-            description: AWS account teh lambda is deployed to
+            description: AWS account the lambda is deployed to
             type: string
         executor: python
         steps:
