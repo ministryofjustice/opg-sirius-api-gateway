@@ -2,8 +2,15 @@ import os
 import json
 import logging
 import traceback
-from rest_collections import InvalidInputError
-from data_providers import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
+from datetime import datetime, timezone
+from wsgiref.handlers import format_date_time
+from data_providers import UpstreamExceptionError, UpstreamTimeoutError, \
+                InternalExceptionError, SiriusProvider, JsonProvider, Response
+from data_providers.cache import CacheProviderWrapper
+
+
+class InvalidInputError(Exception):
+    pass
 
 
 class HandlerBase(object):
@@ -30,7 +37,34 @@ class HandlerBase(object):
 
         def handler(event, context):
             try:
-                return cls(*args, **kwargs).handle(event, context)
+                # Sense check we have the expected inputs
+                if 'resource' not in event:
+                    raise InvalidInputError("'resource' missing from event")
+
+                if 'pathParameters' not in event:
+                    raise InvalidInputError("'pathParameters' missing from event")
+
+                # Calls `handle(event, context)` on the instance
+                response = cls(*args, **kwargs).handle(event, context)
+
+                # Ensure we get the expected Response object
+                if not isinstance(response, Response):
+                    raise ValueError
+
+                # Calculate the Age header.
+                date = datetime.fromisoformat(response.generated_datetime)
+                age = (datetime.utcnow().replace(tzinfo=timezone.utc) - date).seconds
+
+                # Map the response into what the API Gateway expects.
+                return {
+                    'statusCode': response.code,
+                    'body': json.dumps(response.payload),
+                    'headers': {
+                        'Age': age,
+                        'Date': format_date_time(date.timestamp()),
+                    },
+                }
+
             except InvalidInputError as e:
                 logging.error('InvalidInputError: %s' % e)
                 return {'statusCode': 400, 'body': json.dumps({
@@ -65,3 +99,18 @@ class HandlerBase(object):
 
     def handle(self, event, context):
         raise NotImplementedError
+
+    @classmethod
+    def get_data_provider(cls):
+        if 'DATA_PROVIDER' in os.environ and os.environ['DATA_PROVIDER'] == 'json':
+            return JsonProvider.factory()
+        else:
+            return SiriusProvider.factory()
+
+    @classmethod
+    def get_data_provider_with_cache(cls):
+        if 'DISABLE_DATA_CACHE' in os.environ:
+            logging.warning('Data caching is disabled; returning data provider without cache')
+            return cls.get_data_provider()
+        else:
+            return CacheProviderWrapper(cls.get_data_provider())

@@ -1,7 +1,6 @@
 import includes
-from rest_collections import InvalidInputError, LpasCollection
-from HandlerBase import HandlerBase
-import json
+from HandlerBase import HandlerBase, InvalidInputError
+import response_formatters
 
 
 class LpasCollectionHandler(HandlerBase):
@@ -10,52 +9,25 @@ class LpasCollectionHandler(HandlerBase):
     """
 
     def handle(self, event, context):
-        if 'resource' not in event:
-            raise InvalidInputError("'resource' missing from event")
 
-        if 'pathParameters' not in event:
-            raise InvalidInputError("'pathParameters' missing from event")
+        if 'lpa_online_tool_id' in event['pathParameters']:
 
-        # -------------------------------------
-        # Lookup LPA
+            response = self.get_data_provider_with_cache().get_lpa_by_lpa_online_tool_id(
+                event['pathParameters']['lpa_online_tool_id']
+            )
 
-        c = LpasCollection()
-        lpa, age = c.get_lpa(**event['pathParameters'])
+            return response_formatters.format_lpa_collection_by_id(event, response)
 
-        # -------------------------------------
-        # Respond
+        elif 'sirius_uid' in event['pathParameters']:
 
-        response = {}
+            response = self.get_data_provider_with_cache().get_lpa_by_sirius_uid(
+                event['pathParameters']['sirius_uid']
+            )
 
-        if lpa is None:
-            response["statusCode"] = 404
-            response["body"] = {}
+            return response_formatters.format_lpa_collection_by_id(event, response)
+
         else:
-            # -------------------------------------
-            # Determine if / what fields the service can return
-
-            fields = []
-
-            if event['resource'].startswith('/lpa-online-tool'):
-                fields = ['onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
-
-            # TODO: Determine if we want to filter /use-an-lpa at all
-            # elif event['resource'].startswith('/use-an-lpa'):
-            #    fields = ['uId']
-
-            # Filter the return fields
-            if len(fields) > 0:
-                lpa = {k: lpa[k] for k in fields if k in lpa}
-
-            response["statusCode"] = 200
-            response["body"] = lpa
-            response["headers"] = {'Age': age}
-
-        # ---
-
-        response["body"] = json.dumps(response["body"])
-
-        return response
+            raise InvalidInputError("Either 'lpa_online_tool_id' or 'sirius_uid' is required")
 
 
 id_handler = LpasCollectionHandler.get_handler()
