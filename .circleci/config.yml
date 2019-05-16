@@ -123,6 +123,7 @@ orbs:
           - relocate_lambda_packages
           - run: terraform init
           - run: terraform apply -auto-approve | ./redact_output.sh
+
       unit_test_lambdas:
         #
         # Runs the unit tests packaged with the lambda
@@ -144,7 +145,12 @@ orbs:
               key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
               paths:
                 - /tmp/lambda_artifact.zip
+
+
       build_api_test_file:
+        #
+        # Builds the API test files
+        #
         executor: ruby
         steps:
           - checkout
@@ -156,7 +162,12 @@ orbs:
           - save_cache:
               key: api_test_config-{{ .Branch }}-{{ .Revision }}
               paths: /tmp/generated.postman_environment.json
+
+
       newman_api_test:
+        #
+        # Runs Postman integration tests via Newman
+        #
         parameters:
           workspace:
             description: Terraform Workspace name
@@ -171,7 +182,9 @@ orbs:
           - restore_cache:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
-          - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json
+          - run: newman run tests/opg-sirius-api-gateway-development.postman_collection.json -e /tmp/generated.postman_environment.json
+
+
       test_sirius_access:
         #
         # Tests if the provisioned lambda can communicate with the Sirius membrane.
