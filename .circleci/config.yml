@@ -33,9 +33,10 @@ workflows:
           filters:
             branches:
               ignore: [master]
-          name: test_lpas_collection_endpoint_development
+          name: newman_development
           workspace: development
           requires: [build_api_test_file, apply_development]
+
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -47,9 +48,10 @@ workflows:
           filters:
             branches:
               only: [master]
-          name: test_lpas_collection_endpoint_production
+          name: newman_production
           workspace: production
           requires: [build_api_test_file, apply_production]
+
       - sirius-api-gateway/test_sirius_access:
           name: test_sirius_access_production
           aws-account: '649098267436'         # Sirius Prod AWS account
