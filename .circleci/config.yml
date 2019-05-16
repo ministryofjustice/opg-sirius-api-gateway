@@ -182,7 +182,7 @@ orbs:
           - restore_cache:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
-          - run: newman run tests/opg-sirius-api-gateway-development.postman_collection.json -e /tmp/generated.postman_environment.json
+          - run: newman run tests/gateway-tests.postman_collection.json -e /tmp/generated.postman_environment.json
 
 
       test_sirius_access:
