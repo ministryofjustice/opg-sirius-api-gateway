@@ -15,6 +15,7 @@ def format_lpa_collection_by_id(event, response):
     # Filter the return fields
     if len(fields) > 0:
         lpa = {k: lpa[k] for k in fields if k in lpa}
-        response.payload = lpa
+
+    response.payload = lpa
 
     return response
