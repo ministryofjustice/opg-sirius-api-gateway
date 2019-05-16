@@ -10,8 +10,6 @@ class LpasCollectionHandler(HandlerBase):
 
     def handle(self, event, context):
 
-        raise InvalidInputError
-
         if 'lpa_online_tool_id' in event['pathParameters']:
 
             response = self.get_data_provider_with_cache().get_lpa_by_lpa_online_tool_id(
