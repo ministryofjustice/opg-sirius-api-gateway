@@ -95,7 +95,19 @@
 								"exec": [
 									"pm.test(\"Status code is 403 as the request in not authorised\", function () {",
 									"    pm.response.to.have.status(403);",
-									"});"
+									"});",
+									"",
+									"pm.test(\"The response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test(\"Check the response only includes 'message'\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(Object.keys(jsonData)).to.have.lengthOf(1);",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									""
 								],
 								"type": "text/javascript"
 							}
