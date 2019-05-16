@@ -178,13 +178,10 @@ orbs:
         executor: newman
         steps:
           - checkout
-          - run: apk add ca-certificates ruby
+          - run: apk add ca-certificates -q
           - restore_cache:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
-                - gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}
-          - run: bundle install --path vendor/bundle --quiet
-          - run: bundle exec rake lambda:buildapitestfile
           - run: newman run tests/opg-sirius-api-gateway-development.postman_collection.json -e /tmp/generated.postman_environment.json
 
 
