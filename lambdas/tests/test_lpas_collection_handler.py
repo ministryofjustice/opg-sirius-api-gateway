@@ -37,7 +37,7 @@ class TestLpasCollectionHandler(object):
         response_formatter.assert_called_once()
 
     @mock.patch('response_formatters.format_lpa_collection_by_id', autospec=True)
-    def test_with_a_lpa_online_tool_id(self, response_formatter):
+    def test_with_a_sirius_uid(self, response_formatter):
         """
         We expect the correct functions on the data provider and formatter to be called for a sirius_uid.
         """
