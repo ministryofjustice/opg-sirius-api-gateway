@@ -30,7 +30,7 @@
 * We decorate the lookup request object’s headers with the authentication token.
 
 ### Step 7
-* We send the lookup request to Sirius.
+* We send the lookup request to Sirius Membrane.
 
 ### Step 8
 * Sirius performs the lookup and returns a response.
