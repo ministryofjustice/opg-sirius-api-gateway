@@ -109,7 +109,7 @@ class HandlerBase(object):
 
     @classmethod
     def get_data_provider_with_cache(cls):
-        if 'DISABLE_DATA_CACHE' in os.environ:
+        if 'DISABLE_DATA_CACHE' in os.environ and os.environ['DISABLE_DATA_CACHE'] == 'true':
             logging.warning('Data caching is disabled; returning data provider without cache')
             return cls.get_data_provider()
         else:
