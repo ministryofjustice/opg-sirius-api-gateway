@@ -1,6 +1,6 @@
 # Lambda Flow
 
-![Diagram](OPG Gateway Lambda Flow.png)
+![Diagram](diagram.png)
 
 ### Step 1
 * We received the request from AWS API Gateway.
