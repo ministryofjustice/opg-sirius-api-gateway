@@ -86,7 +86,7 @@ class HandlerBase(object):
             except UpstreamTimeoutError:
                 logging.warning('UpstreamTimeoutError')
                 return {'statusCode': 504, 'body': json.dumps({
-                    'error': 'The upstream data provider timed out'
+                    'error': 'The upstream data provider timed out.'
                 })}
 
             except Exception:
