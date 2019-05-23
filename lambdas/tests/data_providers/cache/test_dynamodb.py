@@ -19,6 +19,7 @@ class TestCacheProviderWrapper(object):
 
         test_response = Response.factory(
             ident='700098765432',
+            code=200,
             payload_json=json.dumps({'Testing': 'One'})
         )
 
@@ -46,6 +47,7 @@ class TestCacheProviderWrapper(object):
 
         test_response = Response.factory(
             ident='700098765432',
+            code=200,
             payload_json=json.dumps({'Testing': 'One'})
         )
 
@@ -76,14 +78,16 @@ class TestCacheProviderWrapper(object):
 
         test_id = '700012348745'
         payload = {'Testing': True}
-        payload_hash = 'xxx'
+        response_hash = 'xxx'
         cached = '2019-04-17T20:08:50.349878+00:00'
+        code = 200
 
         mock_boto3.resource.return_value.Table.return_value.get_item.return_value = {
             'Item': {
                 'payload': json.dumps(payload),
-                'payload_hash': payload_hash,
+                'response_hash': response_hash,
                 'cached': cached,
+                'response_code': code,
             }
         }
 
@@ -97,8 +101,9 @@ class TestCacheProviderWrapper(object):
         assert isinstance(result, Response)
         assert result.ident == test_id
         assert result.payload == payload
-        assert result.payload_hash == payload_hash
+        assert result.response_hash == response_hash
         assert result.generated_datetime == cached
+        assert result.code == code
 
         # This should still have been called
         mock_sirius_provider.get_lpa_by_sirius_uid.assert_called_once_with(test_id)
@@ -107,7 +112,7 @@ class TestCacheProviderWrapper(object):
     @mock.patch.dict('os.environ', {'DYNAMODB_DATA_CACHE_TABLE_NAME': 'dynamodb-table'})
     def test_failing_data_provider_and_unsuccessful_cache_lookup(self, mock_boto3):
         """
-        If neither the data provider of teh cache can return a result, and exception is thrown.
+        If neither the data provider of the cache can return a result, and exception is thrown.
 
         Note: Even if an LPA is not found, the data provider should still return a valid result.
                 It returning anything other than a `Response` is an exception.
@@ -137,6 +142,7 @@ class TestCacheProviderWrapper(object):
 
         test_response = Response.factory(
             ident='700098765432',
+            code=200,
             payload_json=json.dumps({'Testing': 'One'})
         )
 
@@ -147,13 +153,13 @@ class TestCacheProviderWrapper(object):
 
         test_id = '700012348745'
         payload = {'Testing': 'Two'}
-        payload_hash = 'xxx'
+        response_hash = 'xxx'
         cached = '2019-04-17T20:08:50.349878+00:00'
 
         mock_boto3.resource.return_value.Table.return_value.get_item.return_value = {
             'Item': {
                 'payload': json.dumps(payload),
-                'payload_hash': payload_hash,
+                'response_hash': response_hash,
                 'cached': cached,
             }
         }
@@ -170,13 +176,13 @@ class TestCacheProviderWrapper(object):
         # Response should match the one from the real data provider
         assert result.ident == test_response.ident
         assert result.payload == test_response.payload
-        assert result.payload_hash == test_response.payload_hash
+        assert result.response_hash == test_response.response_hash
         assert result.generated_datetime == test_response.generated_datetime
 
         # And not the one from the cache
         assert not result.ident == test_id
         assert not result.payload == payload
-        assert not result.payload_hash == payload_hash
+        assert not result.response_hash == response_hash
         assert not result.generated_datetime == cached
 
         # These should have been called
@@ -243,6 +249,7 @@ class TestCacheProviderWrapper(object):
 
         test_response = Response.factory(
             ident='700098765432',
+            code=200,
             payload_json=json.dumps({'Testing': 'One'})
         )
 
@@ -260,13 +267,14 @@ class TestCacheProviderWrapper(object):
         expression_attribute_values = {
             ':datatime': test_response.generated_datetime,
             ':expires': math.floor((zeroed_timestamp + CacheProviderWrapper.CACHE_TTL).timestamp()),
-            ':hash': test_response.payload_hash,
+            ':code': 200,
+            ':hash': test_response.response_hash,
             ':payload': json.dumps(test_response.payload),
         }
 
         mock_boto3.resource.return_value.Table.return_value.update_item.assert_called_once_with(
             Key={'id': test_response.ident},
-            UpdateExpression='SET cached=:datatime, expires=:expires, payload_hash=:hash, payload=:payload',
+            UpdateExpression='SET cached=:datatime, expires=:expires, response_code=:code, response_hash=:hash, payload=:payload',
             ExpressionAttributeValues=expression_attribute_values
         )
 
@@ -288,6 +296,7 @@ class TestCacheProviderWrapper(object):
 
         test_response = Response.factory(
             ident='700098765432',
+            code=200,
             payload_json=json.dumps({'Testing': 'One'})
         )
 
@@ -301,8 +310,9 @@ class TestCacheProviderWrapper(object):
         mock_boto3.resource.return_value.Table.return_value.get_item.return_value = {
             'Item': {
                 'payload': json.dumps({'Testing': 'Two'}),
-                'payload_hash': test_response.payload_hash,         # Note we ensure the hashes match
+                'response_hash': test_response.response_hash,         # Note we ensure the hashes match
                 'cached': '2019-04-17T20:08:50.349878+00:00',
+                'response_code': 200,
             }
         }
 

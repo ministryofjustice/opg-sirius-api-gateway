@@ -113,6 +113,8 @@ aws-vault exec identity -- bundle exec rake lambda:testlpas
 
 #Setup for local development
 
+## With Sirius
+
 For testing _with_ the full local Sirius stack, you need to bring OPG Gateway up at the same time as Sirius.
 Ensure that `opg-sirius-api-gateway` is cloned into the same root direct as `opgs-sirius`.
 
@@ -122,7 +124,22 @@ Then **from within `opgs-sirius`**, run:
 docker-compose -f docker-compose.yml \
 -f docker-compose.override.yml \
 -f ../opg-sirius-api-gateway/docker-compose.yml \
--f ../opg-sirius-api-gateway/docker-compose-sirius.yml up
+-f ../opg-sirius-api-gateway/docker-compose-integration.yml up
+```
+
+This will give you the normal Sirius stack, plus OPG Gateway (and its dependencies).
+
+## With LPA Online Tool
+
+For testing _with_ the full local LPA stack, you need to bring OPG Gateway up at the same time as the tool.
+Ensure that `opg-sirius-api-gateway` is cloned into the same root direct as `opg-lpa-docker`.
+
+Then **from within `opg-lpa-docker`**, run:
+
+```bash
+docker-compose -f docker-compose.yml \
+-f ../opg-sirius-api-gateway/docker-compose.yml \
+-f ../opg-sirius-api-gateway/docker-compose-integration.yml up
 ```
 
 This will give you the normal Sirius stack, plus OPG Gateway (and its dependencies).

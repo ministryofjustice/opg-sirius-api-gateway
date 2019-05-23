@@ -19,6 +19,8 @@ class CacheProviderWrapper:
     defining all of the methods on a data provider. The end result however seemed overaly 'magic', with
     no simply way to control if/when/how different methods on the provider would use the cache.
 
+    If this class is used, we assume we want a result to be cached.
+    For requests we don't want to be cached, e.g. POSTs, use the data provider directly.
     """
 
     # TTL used for DynamoDB
@@ -45,24 +47,56 @@ class CacheProviderWrapper:
         self.cache_table = dynamodb.Table(dynamodb_cache_table)  # Is lazy
 
     # ---------------------------------------------------------------------
-    # Concrete methods that map to those in the upstream providers
-    #   If a method's result should never be cached, don't route it via _lookup_with_cache()
+    # We use `__getattr__` to catch all method calls to the cache wrapper
 
-    def get_lpa_by_sirius_uid(self, sirius_uid):
-        def f():    # Map to the real method
-            return self._data_provider.get_lpa_by_sirius_uid(sirius_uid)
-        return self._lookup_with_cache(sirius_uid, f)
+    def __getattr__(self, method_name):
+        """
+        THis catches all function calls to this class, where the function name isn't defined.
 
-    def get_lpa_by_lpa_online_tool_id(self, online_tool_id):
-        def f():    # Map to the real method
-            return self._data_provider.get_lpa_by_lpa_online_tool_id(online_tool_id)
-        return self._lookup_with_cache(online_tool_id, f)
+        We take the requested function and proxy it on to the real data provider.
+        This classes then cached the Response, before passing that Response onto the calling code.
+        If the real data provider throws an exception, and this class has a suitable cached response, that is returned.
+
+        This method allows new methods to be added to the data provider without having to
+        explicitly define them here.
+
+        :param method_name:
+        :return: Response
+        """
+
+        # Checks the the request we've caught maps to a method on the data provider
+        if not callable(getattr(self._data_provider, method_name, None)):
+            raise Exception("Class '%s' has no function '%s'" % (type(self._data_provider), method_name))
+
+        # We return a method which the calling code invokes.
+        # This allows the calling code to be identical whether or not it's calling the data
+        # provider directly, or via this cache wrapper.
+        #
+        # args contains a tuple of the arguments passed to the data provider by the calling code.
+        def method(*args):
+
+            # We use the first parameter as the cache id.
+            # The assumption being that this is a ID, or a query string.
+            if isinstance(args, tuple) and len(args) > 0:
+
+                # To limit the complexity of using a magic function call system, we wrap the
+                # actual proxying logic within another function. This function is what's passed to
+                # `_lookup_with_cache`, which therefore doesn't need any concept of how that function works.
+                def f():
+                    return getattr(self._data_provider, method_name)(*args)
+
+                return self._lookup_with_cache(args[0], f)
+
+            else:
+                raise ValueError('Missing cache_id')
+
+        return method
 
     # ---------------------------------------------------------------------
 
     def _lookup_with_cache(self, cache_id, lookup_function):
         """
-        Performs the lookup using teh passed function `lookup_function`.
+        Performs the lookup using the passed function `lookup_function`.
 
         If an exception is thrown upstream that matches one of those
         allowed, we will return a cached result, if we have one.
@@ -126,7 +160,7 @@ class CacheProviderWrapper:
                 logging.debug('%s found in cache', cache_id)
 
                 # And the hashes match
-                if result.payload_hash == current_cache_item.payload_hash:
+                if result.response_hash == current_cache_item.response_hash:
                     # Then we only need to update the meta-data
                     meta_data_only = True
 
@@ -148,10 +182,15 @@ class CacheProviderWrapper:
         if 'Item' in response:
             response = response['Item']
 
-            if 'payload' in response and 'payload_hash' in response and 'cached' in response:
+            if 'payload' in response \
+                    and 'response_hash' in response \
+                    and 'cached' in response \
+                    and 'response_code' in response:
+
                 return Response(
                     ident=cache_id,
-                    payload_hash=response['payload_hash'],
+                    code=response['response_code'],
+                    response_hash=response['response_hash'],
                     generated_datetime=response['cached'],
                     payload=json.loads(response['payload']),
                 )
@@ -174,12 +213,13 @@ class CacheProviderWrapper:
                 ':expires': math.floor(expires.timestamp()),
             }
 
-            # If we're pushing everything, add teh additional fields
+            # If we're pushing everything, add the additional fields
             if not meta_data_only:
                 logging.debug('Putting item in cache %s', result.ident)
-                expression += ', payload_hash=:hash, payload=:payload'
+                expression += ', response_code=:code, response_hash=:hash, payload=:payload'
 
-                expression_attribute_values[':hash'] = result.payload_hash
+                expression_attribute_values[':code'] = result.code
+                expression_attribute_values[':hash'] = result.response_hash
                 expression_attribute_values[':payload'] = json.dumps(result.payload)
             else:
                 logging.debug('Updating cached item %s', result.ident)

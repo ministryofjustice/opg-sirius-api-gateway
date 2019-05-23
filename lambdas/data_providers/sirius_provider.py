@@ -1,7 +1,7 @@
 import os
 from data_providers.authentication import SiriusAuthenticator, SiriusAuthenticationError
 from requests import Request, Session, exceptions
-from .model import Response
+from .response import Response
 from . import UpstreamExceptionError, UpstreamTimeoutError, InternalExceptionError
 import logging
 
@@ -50,10 +50,10 @@ class SiriusProvider:
 
             # If we get a 200, all is good. Return the result.
             if resp.status_code == 200:
-                return Response.factory(id_value, resp.text)
+                return Response.factory(id_value, resp.status_code, resp.text)
 
             # If we reach here, all has failed.
-            raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s', resp.status_code, resp.text)
+            raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s' % (resp.status_code, resp.text))
 
         except SiriusAuthenticationError:
             raise InternalExceptionError('Sirius authentication error')

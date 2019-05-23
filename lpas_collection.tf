@@ -17,7 +17,7 @@ data "aws_secretsmanager_secret_version" "sirius_credentials" {
 module "lpas_collection_lambda" {
   source = "modules/lambda"
 
-  lambda_name              = "lpas_collection"
+  lambda_name              = "LpasCollectionHandler"
   lambda_function_filename = "./lambda_artifact.zip"
   lambda_handler           = "id_handler"
 

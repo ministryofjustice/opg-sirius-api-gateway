@@ -184,5 +184,5 @@ class TestSiriusProvider(object):
             with pytest.raises(UpstreamExceptionError):
                 p.get_lpa_by_lpa_online_tool_id(ident)
 
-            # We expect only one attempt as teh first token returned was 'fresh'.
+            # We expect only one attempt as the first token returned was 'fresh'.
             assert mock_authenticator.authorise_request.call_count == 1

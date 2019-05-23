@@ -33,9 +33,10 @@ workflows:
           filters:
             branches:
               ignore: [master]
-          name: test_lpas_collection_endpoint_development
+          name: newman_development
           workspace: development
           requires: [build_api_test_file, apply_development]
+
       - sirius-api-gateway/apply_terraform:
           filters:
             branches:
@@ -47,9 +48,10 @@ workflows:
           filters:
             branches:
               only: [master]
-          name: test_lpas_collection_endpoint_production
+          name: newman_production
           workspace: production
           requires: [build_api_test_file, apply_production]
+
       - sirius-api-gateway/test_sirius_access:
           name: test_sirius_access_production
           aws-account: '649098267436'         # Sirius Prod AWS account
@@ -62,7 +64,7 @@ orbs:
       ruby:
         docker: [image: circleci/ruby:latest-browsers]
       terraform:
-        docker: [image: hashicorp/terraform]
+        docker: [image: hashicorp/terraform:0.11.14]
       python:
         docker: [image: circleci/python]
       python-build:
@@ -94,6 +96,7 @@ orbs:
           - run:
               name: Lint Terraform
               command: |
+                terraform --version
                 terraform validate
       build_gem_cache:
         executor: ruby
@@ -123,6 +126,7 @@ orbs:
           - relocate_lambda_packages
           - run: terraform init
           - run: terraform apply -auto-approve | ./redact_output.sh
+
       unit_test_lambdas:
         #
         # Runs the unit tests packaged with the lambda
@@ -144,7 +148,12 @@ orbs:
               key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
               paths:
                 - /tmp/lambda_artifact.zip
+
+
       build_api_test_file:
+        #
+        # Builds the API test files
+        #
         executor: ruby
         steps:
           - checkout
@@ -156,7 +165,12 @@ orbs:
           - save_cache:
               key: api_test_config-{{ .Branch }}-{{ .Revision }}
               paths: /tmp/generated.postman_environment.json
+
+
       newman_api_test:
+        #
+        # Runs Postman integration tests via Newman
+        #
         parameters:
           workspace:
             description: Terraform Workspace name
@@ -171,7 +185,9 @@ orbs:
           - restore_cache:
               keys:
                 - api_test_config-{{ .Branch }}-{{ .Revision }}
-          - run: newman run https://www.getpostman.com/collections/c85538a8e4fb4f19b892 -e /tmp/generated.postman_environment.json
+          - run: newman run tests/gateway-tests.postman_collection.json -e /tmp/generated.postman_environment.json
+
+
       test_sirius_access:
         #
         # Tests if the provisioned lambda can communicate with the Sirius membrane.
@@ -180,7 +196,7 @@ orbs:
         #
         parameters:
           aws-account:
-            description: AWS account teh lambda is deployed to
+            description: AWS account the lambda is deployed to
             type: string
         executor: python
         steps:

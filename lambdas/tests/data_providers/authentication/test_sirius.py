@@ -199,5 +199,5 @@ class TestSiriusAuthenticator(object):
             assert 'HTTP-SECURE-TOKEN' in r.headers
             assert r.headers['HTTP-SECURE-TOKEN'] == test_token
 
-            # Nothing new should have tried to be put into teh cache
+            # Nothing new should have tried to be put into the cache
             mock_boto3.resource.return_value.Table.return_value.put_item.assert_not_called()

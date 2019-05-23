@@ -12,6 +12,7 @@ services:
       PASSTHROUGH_URL_MEMBRANE: https://membrane
       # Non-secret credentials, deliberately committed.
       PASSTHROUGH_CREDENTIALS: '{"email": "publicapi@opgtest.com","password": "Password1"}'
+      PASSTHROUGH_ENABLE_DEBUG: 'true'
 
   localstack-config:
     build:

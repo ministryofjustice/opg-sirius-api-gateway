@@ -5,8 +5,8 @@
     "development": "288342028542"
   },
   "endpoint_domain_name": {
-    "production": "https://api.sirius.opg.digital/testing",
-    "preproduction": "https://api.sirius.opg.digital/testing",
-    "development": "https://api.dev.sirius.opg.digital/testing"
+    "production": "https://api.sirius.opg.digital/v1",
+    "preproduction": "https://api.sirius.opg.digital/v1",
+    "development": "https://api.dev.sirius.opg.digital/v1"
   }
 }

@@ -2,7 +2,6 @@ version: '2.1'
 
 services:
   gateway:
-    container_name: opg-api-gateway
     build: ./
     depends_on:
       - lambci
@@ -17,14 +16,14 @@ services:
       # Keys starting 'PASSTHROUGH' are passed (sans 'PASSTHROUGH') to the actual Lambda.
       PASSTHROUGH_DYNAMODB_DATA_CACHE_TABLE_NAME: opg-gateway-cache-data
       PASSTHROUGH_DYNAMODB_AUTH_CACHE_TABLE_NAME: opg-gateway-cache-auth
-      PASSTHROUGH_AWS_ENDPOINT_DYNAMODB: http://gateway-localstack:4569
+      PASSTHROUGH_AWS_ENDPOINT_DYNAMODB: http://gateway-localstack:14569
 
   gateway-localstack:
     image: localstack/localstack
     ports:
-      - 4569:4569
+      - 14569:14569
     environment:
-      - SERVICES=dynamodb:4569
+      - SERVICES=dynamodb:14569
       - DEFAULT_REGION=eu-west-1
       - HOSTNAME=gateway-localstack
 
@@ -38,6 +37,5 @@ services:
       - gateway-localstack
 
   lambci:
-    container_name: lambci-python
     image: lambci/lambda:python3.7
     entrypoint: bash

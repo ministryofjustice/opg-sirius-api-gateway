@@ -1,0 +1,9 @@
+{
+    "name": "opg-gateway/php-client-examples",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "aws/aws-sdk-php": "^3.87",
+        "guzzlehttp/guzzle": "^6.3"
+    }
+}
