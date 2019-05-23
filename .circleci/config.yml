@@ -87,13 +87,6 @@ orbs:
           - checkout
           - attach_workspace:
               at: /tmp
-          # - restore_cache:
-          #     keys:
-          #       - lambda_artifact-{{ .Branch }}
-          - run:
-              name: check what is in the workspace
-              command: |
-                ls /tmp
           - relocate_lambda_packages
           - run:
               name: Init Terraform
@@ -128,13 +121,6 @@ orbs:
           - checkout
           - attach_workspace:
               at: /tmp
-          - run:
-              name: check what is in the workspace
-              command: |
-                ls /tmp
-          # - restore_cache:
-          #     keys:
-          #       - lambda_artifact-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
           - run: terraform init
           - run: terraform apply -auto-approve | ./redact_output.sh
@@ -160,10 +146,6 @@ orbs:
               root: /tmp
               paths:
                 - lambda_artifact.zip
-          # - save_cache:
-          #     key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
-          #     paths:
-          #       - /tmp/lambda_artifact.zip
 
 
       build_api_test_file:
@@ -182,9 +164,6 @@ orbs:
               root: /tmp
               paths:
                 - generated.postman_environment.json
-          # - save_cache:
-          #     key: api_test_config-{{ .Branch }}-{{ .Revision }}
-          #     paths: /tmp/generated.postman_environment.json
 
 
       newman_api_test:
@@ -204,13 +183,6 @@ orbs:
           - run: apk add ca-certificates -q
           - attach_workspace:
               at: /tmp
-          - run:
-              name: check what is in the workspace
-              command: |
-                ls /tmp
-          # - restore_cache:
-          #     keys:
-          #       - api_test_config-{{ .Branch }}-{{ .Revision }}
           - run: newman run tests/gateway-tests.postman_collection.json -e /tmp/generated.postman_environment.json
 
 
