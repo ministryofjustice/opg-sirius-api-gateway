@@ -85,9 +85,11 @@ orbs:
           TF_WORKSPACE: "development"
         steps:
           - checkout
-          - restore_cache:
-              keys:
-                - lambda_artifact-{{ .Branch }}
+          - attach_workspace:
+              at: /tmp
+          # - restore_cache:
+          #     keys:
+          #       - lambda_artifact-{{ .Branch }}
           - relocate_lambda_packages
           - run:
               name: Init Terraform
@@ -120,9 +122,11 @@ orbs:
         executor: terraform
         steps:
           - checkout
-          - restore_cache:
-              keys:
-                - lambda_artifact-{{ .Branch }}-{{ .Revision }}
+          - attach_workspace:
+              at: /tmp
+          # - restore_cache:
+          #     keys:
+          #       - lambda_artifact-{{ .Branch }}-{{ .Revision }}
           - relocate_lambda_packages
           - run: terraform init
           - run: terraform apply -auto-approve | ./redact_output.sh
@@ -144,10 +148,14 @@ orbs:
           - run: apk add zip
           - run: pip3 install -r lambdas/requirements.txt  --target ./lambdas/vendor
           - run: cd ./lambdas; zip -r9 /tmp/lambda_artifact.zip .
-          - save_cache:
-              key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
+          - persist_to_workspace:
+              root: /tmp
               paths:
-                - /tmp/lambda_artifact.zip
+                - lambda_artifact.zip
+          # - save_cache:
+          #     key: lambda_artifact-{{ .Branch }}-{{ .Revision }}
+          #     paths:
+          #       - /tmp/lambda_artifact.zip
 
 
       build_api_test_file:
@@ -162,9 +170,13 @@ orbs:
                 ['gem-cache-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile" }}']
           - run: bundle install --path vendor/bundle --quiet
           - run: bundle exec rake lambda:buildapitestfile
-          - save_cache:
-              key: api_test_config-{{ .Branch }}-{{ .Revision }}
-              paths: /tmp/generated.postman_environment.json
+          - persist_to_workspace:
+              root: /tmp
+              paths:
+                - generated.postman_environment.json
+          # - save_cache:
+          #     key: api_test_config-{{ .Branch }}-{{ .Revision }}
+          #     paths: /tmp/generated.postman_environment.json
 
 
       newman_api_test:
@@ -182,9 +194,11 @@ orbs:
         steps:
           - checkout
           - run: apk add ca-certificates -q
-          - restore_cache:
-              keys:
-                - api_test_config-{{ .Branch }}-{{ .Revision }}
+          - attach_workspace:
+              at: /tmp
+          # - restore_cache:
+          #     keys:
+          #       - api_test_config-{{ .Branch }}-{{ .Revision }}
           - run: newman run tests/gateway-tests.postman_collection.json -e /tmp/generated.postman_environment.json
 
 
