@@ -90,6 +90,10 @@ orbs:
           # - restore_cache:
           #     keys:
           #       - lambda_artifact-{{ .Branch }}
+          - run:
+              name: check what is in the workspace
+              command: |
+                ls /tmp
           - relocate_lambda_packages
           - run:
               name: Init Terraform
@@ -124,6 +128,10 @@ orbs:
           - checkout
           - attach_workspace:
               at: /tmp
+          - run:
+              name: check what is in the workspace
+              command: |
+                ls /tmp
           # - restore_cache:
           #     keys:
           #       - lambda_artifact-{{ .Branch }}-{{ .Revision }}
@@ -196,6 +204,10 @@ orbs:
           - run: apk add ca-certificates -q
           - attach_workspace:
               at: /tmp
+          - run:
+              name: check what is in the workspace
+              command: |
+                ls /tmp
           # - restore_cache:
           #     keys:
           #       - api_test_config-{{ .Branch }}-{{ .Revision }}
