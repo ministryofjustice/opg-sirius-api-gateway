@@ -70,6 +70,7 @@ locals {
   api_gateway_allowed_users = [
     "arn:aws:iam::631181914621:user/andrew.pearce",
     "arn:aws:iam::631181914621:user/neil.smith",
+    "arn:aws:iam::631181914621:user/adam.cooper",
   ]
 
   default_tags = {
