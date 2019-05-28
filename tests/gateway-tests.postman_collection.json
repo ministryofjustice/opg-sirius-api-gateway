@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "18173c86-db21-473c-865f-e144fae0e988",
+		"_postman_id": "afbbc50c-7e34-41d0-b001-f7b363155383",
 		"name": "gateway-tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -67,10 +67,6 @@
 								"value": "application/json"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{endpoint_domain_name}}/lpa-online-tool/lpas/A00000000000",
 							"host": [
@@ -124,10 +120,6 @@
 								"value": "application/json"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "{{endpoint_domain_name}}/lpa-online-tool/lpas/A00000000000",
 							"host": [
@@ -137,6 +129,138 @@
 								"lpa-online-tool",
 								"lpas",
 								"A00000000000"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Folder for lpa-online-tool"
+		},
+		{
+			"name": "use-an-lpa",
+			"item": [
+				{
+					"name": "Authenticated / A00000000000",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5acdba8d-7231-4764-8e8f-293afd419816",
+								"exec": [
+									"pm.test(\"Status code is 404 as the ID was not found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "awsv4",
+							"awsv4": [
+								{
+									"key": "service",
+									"value": "execute-api",
+									"type": "string"
+								},
+								{
+									"key": "sessionToken",
+									"value": "{{aws_session_token}}",
+									"type": "string"
+								},
+								{
+									"key": "region",
+									"value": "eu-west-1",
+									"type": "string"
+								},
+								{
+									"key": "saveHelper",
+									"value": true,
+									"type": "boolean"
+								},
+								{
+									"key": "secretKey",
+									"value": "{{aws_secret_access_key}}",
+									"type": "string"
+								},
+								{
+									"key": "accessKey",
+									"value": "{{aws_access_key_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint_domain_name}}/use-an-lpa/lpas/700000000000",
+							"host": [
+								"{{endpoint_domain_name}}"
+							],
+							"path": [
+								"use-an-lpa",
+								"lpas",
+								"700000000000"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unauthenticated / A00000000000",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5acdba8d-7231-4764-8e8f-293afd419816",
+								"exec": [
+									"pm.test(\"Status code is 403 as the request in not authorised\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"pm.test(\"The response is JSON\", function () {",
+									"    pm.response.to.be.json;",
+									"});",
+									"",
+									"pm.test(\"Check the response only includes 'message'\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(Object.keys(jsonData)).to.have.lengthOf(1);",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{endpoint_domain_name}}/use-an-lpa/lpas/700000000000",
+							"host": [
+								"{{endpoint_domain_name}}"
+							],
+							"path": [
+								"use-an-lpa",
+								"lpas",
+								"700000000000"
 							]
 						}
 					},
