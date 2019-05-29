@@ -2,6 +2,8 @@ version: '2.1'
 
 services:
   gateway:
+    build:
+      context: ../opg-sirius-api-gateway/
     volumes:
       - ../opg-sirius-api-gateway/docker:/srv/docker:cached
       - ../opg-sirius-api-gateway/lambdas:/srv/lambdas:cached
