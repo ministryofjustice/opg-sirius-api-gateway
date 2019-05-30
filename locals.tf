@@ -71,7 +71,7 @@ locals {
     "arn:aws:iam::367815980639:root", // Dev
   ]
 
-  use_an_lpa__production_api_gateway_allowed_roles = [
+  use_an_lpa_production_api_gateway_allowed_roles = [
     "arn:aws:iam::888228022356:root", // Preprod
     "arn:aws:iam::690083044361:root", // Prod
   ]
