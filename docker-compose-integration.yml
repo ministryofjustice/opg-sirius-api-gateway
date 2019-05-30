@@ -15,6 +15,7 @@ services:
       # Non-secret credentials, deliberately committed.
       PASSTHROUGH_CREDENTIALS: '{"email": "publicapi@opgtest.com","password": "Password1"}'
       PASSTHROUGH_ENABLE_DEBUG: 'true'
+      PASSTHROUGH_DATA_PROVIDER: json
 
   localstack-config:
     build:
