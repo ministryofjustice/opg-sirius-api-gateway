@@ -61,6 +61,24 @@ data "aws_iam_policy_document" "resource_policy" {
     // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
     resources = ["execute-api:/*/GET/lpa-online-tool/*"]
   }
+
+  statement {
+    sid    = "useanlpaaccess"
+    effect = "Allow"
+
+    principals {
+      identifiers = [
+        "${local.api_gateway_allowed_roles_use_an_lpa}",
+      ]
+
+      type = "AWS"
+    }
+
+    actions   = ["execute-api:Invoke"]
+
+    // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
+    resources = ["execute-api:/*/GET/use-an-lpa/*"]
+  }
 }
 
 //------------------------------------
