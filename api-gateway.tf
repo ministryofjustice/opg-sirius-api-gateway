@@ -61,6 +61,24 @@ data "aws_iam_policy_document" "resource_policy" {
     // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
     resources = ["execute-api:/*/GET/lpa-online-tool/*"]
   }
+
+  statement {
+    sid    = "useanlpaaccess"
+    effect = "Allow"
+
+    principals {
+      identifiers = [
+        "${local.api_gateway_allowed_roles_use_an_lpa}",
+      ]
+
+      type = "AWS"
+    }
+
+    actions   = ["execute-api:Invoke"]
+
+    // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
+    resources = ["execute-api:/*/GET/use-an-lpa/*"]
+  }
 }
 
 //------------------------------------
@@ -71,7 +89,10 @@ resource "aws_api_gateway_deployment" "deployment_v1" {
   stage_name  = "v1"
 
   // The policy is dependent on the module completing, so we can depend on that to mean everything is in place
-  depends_on = ["aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy"]
+  depends_on = [
+    "aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy",
+    "aws_iam_role_policy_attachment.use_an_lpa_get_sirius_uid_access_policy"
+  ]
 
   variables {
     // Force a deploy on every apply.

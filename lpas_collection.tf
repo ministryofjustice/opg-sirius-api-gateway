@@ -70,6 +70,24 @@ resource "aws_iam_role_policy_attachment" "lpa_online_tool_get_lpas_id_access_po
 //----------------------------------------------
 // Setup Use my LPA gateway endpoint
 
+module "use_an_lpa_get_sirius_uid" {
+  source = "modules/api_gateway_get_collection_id"
 
-// TODO
+  api_gateway_id               = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
+  api_gateway_root_resource_id = "${aws_api_gateway_rest_api.opg_api_gateway.root_resource_id}"
+  api_gateway_execution_arn    = "${aws_api_gateway_rest_api.opg_api_gateway.execution_arn}"
+
+  gateway_path_product    = "use-an-lpa"
+  gateway_path_collection = "lpas"
+  gateway_path_id_name    = "{sirius_uid}"
+
+  lambda_arn  = "${module.lpas_collection_lambda.lambda_arn}"
+  lambda_name = "${module.lpas_collection_lambda.lambda_name}"
+}
+
+// Give access to the relevant roles
+resource "aws_iam_role_policy_attachment" "use_an_lpa_get_sirius_uid_access_policy" {
+  role       = "${aws_iam_role.use_an_lpa_role.name}"
+  policy_arn = "${module.use_an_lpa_get_sirius_uid.access_policy_arn}"
+}
 

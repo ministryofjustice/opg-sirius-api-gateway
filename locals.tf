@@ -67,9 +67,22 @@ locals {
 
   api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
 
+  use_an_lpa_development_api_gateway_allowed_roles = [
+    "arn:aws:iam::367815980639:root", // Dev
+  ]
+
+  use_an_lpa_production_api_gateway_allowed_roles = [
+    "arn:aws:iam::888228022356:root", // Preprod
+    "arn:aws:iam::690083044361:root", // Prod
+  ]
+
+  api_gateway_allowed_roles_use_an_lpa = "${split(",", terraform.workspace == "development" ? join(",", local.use_an_lpa_development_api_gateway_allowed_roles) : join(",", local.use_an_lpa_production_api_gateway_allowed_roles))}"
+
+
   api_gateway_allowed_users = [
     "arn:aws:iam::631181914621:user/andrew.pearce",
     "arn:aws:iam::631181914621:user/neil.smith",
+    "arn:aws:iam::631181914621:user/adam.cooper",
   ]
 
   default_tags = {

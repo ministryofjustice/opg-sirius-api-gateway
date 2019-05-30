@@ -26,3 +26,30 @@ data "aws_iam_policy_document" "lpa_online_tool_role_cross_account_policy" {
     }
   }
 }
+
+//----------------------------------------------
+// Use my LPA 
+
+resource "aws_iam_role" "use_an_lpa_role" {
+  name               = "sirius-api-gateway-access-use-an-lpa"
+  assume_role_policy = "${data.aws_iam_policy_document.use_an_lpa_role_cross_account_policy.json}"
+}
+
+// Access policy, defining who and assume this role
+data "aws_iam_policy_document" "use_an_lpa_role_cross_account_policy" {
+  statement {
+    sid = "CrossAccountApiGatewayAccessPolicy"
+
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type = "AWS"
+
+      identifiers = [
+        "${local.api_gateway_allowed_users}",
+      ]
+    }
+  }
+}
