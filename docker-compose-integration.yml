@@ -2,6 +2,8 @@ version: '2.1'
 
 services:
   gateway:
+    build:
+      context: ../opg-sirius-api-gateway/
     volumes:
       - ../opg-sirius-api-gateway/docker:/srv/docker:cached
       - ../opg-sirius-api-gateway/lambdas:/srv/lambdas:cached
@@ -12,7 +14,8 @@ services:
       PASSTHROUGH_URL_MEMBRANE: https://membrane
       # Non-secret credentials, deliberately committed.
       PASSTHROUGH_CREDENTIALS: '{"email": "publicapi@opgtest.com","password": "Password1"}'
-      PASSTHROUGH_ENABLE_DEBUG: 'true'
+      PASSTHROUGH_ENABLE_DEBUG: 'false'
+      PASSTHROUGH_DATA_PROVIDER: json
 
   localstack-config:
     build:
