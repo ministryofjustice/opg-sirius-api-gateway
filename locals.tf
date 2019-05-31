@@ -56,8 +56,7 @@ locals {
   }
 
   online_lpa_tool_development_api_gateway_allowed_roles = [
-    "arn:aws:iam::001780581745:role/api2.qa",
-    "arn:aws:iam::001780581745:role/api2.staging04",
+    "arn:aws:iam::001780581745:root",
   ]
 
   online_lpa_tool_production_api_gateway_allowed_roles = [
