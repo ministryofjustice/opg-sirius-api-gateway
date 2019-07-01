@@ -24,14 +24,14 @@ locals {
 
   membrane_client_security_groups = {
     "production"  = "membrane-client-production"
-    "development" = "membrane-client-feature1"
+    "development" = "membrane-client-integration"
   }
 
   membrane_client_security_group_name = "${lookup(local.membrane_client_security_groups, terraform.workspace)}"
 
   membrane_hostnames = {
     "production"  = "membrane.production.internal"
-    "development" = "membrane.feature1.internal"
+    "development" = "membrane.integration.internal"
   }
 
   membrane_hostname = "${lookup(local.membrane_hostnames, terraform.workspace)}"
