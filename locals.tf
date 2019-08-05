@@ -57,11 +57,14 @@ locals {
 
   online_lpa_tool_development_api_gateway_allowed_roles = [
     "arn:aws:iam::001780581745:root",
+    "arn:aws:iam::050256574573:root",
   ]
 
   online_lpa_tool_production_api_gateway_allowed_roles = [
     "arn:aws:iam::550790013665:role/api2.production04",
     "arn:aws:iam::550790013665:role/api2.preprod",
+    "arn:aws:iam::987830934591:root",
+    "arn:aws:iam::980242665824:root",
   ]
 
   api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
