@@ -43,7 +43,8 @@ class SiriusProvider:
         logging.info("Sirius lookup of %s" % id_value)
 
         if self._force_return_upstream_exception_error:
-            logging.warning("The Sirius data provider is currently set to always return None. Returning straight away.")
+            logging.warning("The Sirius data provider is currently set to always return an UpstreamExceptionError. "
+                            "Returning straight away.")
             raise UpstreamExceptionError('Provider disabled.')
 
         try:
