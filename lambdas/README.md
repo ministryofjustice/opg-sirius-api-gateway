@@ -17,6 +17,7 @@ Each function should have its own Python file in the root of this directory.
 * `DYNAMODB_DATA_CACHE_TABLE_NAME`: Required if `DISABLE_DATA_CACHE` is false. The name of the DynamoDB table in which to cache responses.
 * `DYNAMODB_AUTH_CACHE_TABLE_NAME`: Required if `DATA_PROVIDER` is 'sirius'. The name of the DynamoDB table in which to cache authentication tokens.
 * `AWS_ENDPOINT_DYNAMODB`: Optional. For use when testing locally. Set the value to the URL for Localstack's DynamoDB. Defaults to AWS's SDK's defaults.
+* `DISABLE_SIRIUS_LOOKUP`: Optional. If set to `'true'`, the Sirius data provider will always return an Upstream Exception. Defaults to `'false'`.
 
 ### Packaging for deployment to Lambda
 
