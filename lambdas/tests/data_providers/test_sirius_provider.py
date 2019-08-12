@@ -38,7 +38,7 @@ class TestSiriusProvider(object):
 
             # ---
 
-            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'])
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
             result = p.get_lpa_by_lpa_online_tool_id(ident)
 
@@ -92,7 +92,7 @@ class TestSiriusProvider(object):
 
             # ---
 
-            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'])
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
             result = p.get_lpa_by_lpa_online_tool_id(ident)
 
@@ -139,7 +139,7 @@ class TestSiriusProvider(object):
 
             # ---
 
-            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'])
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
             # We expect an exception to be throw
             with pytest.raises(UpstreamExceptionError):
@@ -178,7 +178,7 @@ class TestSiriusProvider(object):
 
             # ---
 
-            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'])
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
             # We expect an exception to be throw
             with pytest.raises(UpstreamExceptionError):
@@ -186,3 +186,25 @@ class TestSiriusProvider(object):
 
             # We expect only one attempt as the first token returned was 'fresh'.
             assert mock_authenticator.authorise_request.call_count == 1
+
+
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
+    @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
+    @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
+    def test_when_force_return_none_is_true(self, mock_authenticator):
+
+        """
+        If `force_return_upstream_exception_error` is True, no attempt should be made to contact Sirius.
+        None should be returned from the lookup method straight away.
+        """
+
+        mock_authenticator.authorise_request = mock.MagicMock()
+
+        p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], force_return_upstream_exception_error=True)
+
+        with pytest.raises(UpstreamExceptionError):
+            p.get_lpa_by_lpa_online_tool_id("A00000000001")
+
+        # No attempt should be made to acquire an auth token.
+        # (And thus no attempt will be made to use it)
+        assert mock_authenticator.authorise_request.call_count == 0

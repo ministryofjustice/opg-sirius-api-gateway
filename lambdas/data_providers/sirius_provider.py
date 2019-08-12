@@ -14,13 +14,15 @@ class SiriusProvider:
 
     @staticmethod
     def factory():
-        return SiriusProvider(SiriusAuthenticator.factory(), os.environ['URL_MEMBRANE'])
+        disable_lookup = 'DISABLE_SIRIUS_LOOKUP' in os.environ and os.environ['DISABLE_SIRIUS_LOOKUP'] == 'true'
+        return SiriusProvider(SiriusAuthenticator.factory(), os.environ['URL_MEMBRANE'], disable_lookup)
 
     # --------------------
 
-    def __init__(self, authenticator, membrane_url):
+    def __init__(self, authenticator, membrane_url, force_return_upstream_exception_error):
         self._authenticator = authenticator
         self._membrane_url = membrane_url
+        self._force_return_upstream_exception_error = force_return_upstream_exception_error
 
     def get_lpa_by_sirius_uid(self, sirius_uid):
         url = self._membrane_url + '/api/public/v1/lpas?uid=%s' % sirius_uid
@@ -39,6 +41,10 @@ class SiriusProvider:
         """
 
         logging.info("Sirius lookup of %s" % id_value)
+
+        if self._force_return_upstream_exception_error:
+            logging.warning("The Sirius data provider is currently set to always return None. Returning straight away.")
+            raise UpstreamExceptionError('Provider disabled.')
 
         try:
             resp, cached_token = self._attempt_get(url=url, accept_cached_token=True)
