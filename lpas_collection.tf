@@ -37,6 +37,7 @@ module "lpas_collection_lambda" {
       URL_MEMBRANE = "https://${local.membrane_hostname}"
       DYNAMODB_AUTH_CACHE_TABLE_NAME = "${aws_dynamodb_table.auth_cache.name}"
       DYNAMODB_DATA_CACHE_TABLE_NAME = "${aws_dynamodb_table.data_cache.name}"
+      DISABLE_SIRIUS_LOOKUP = "true"
     }
   }
 
