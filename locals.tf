@@ -83,6 +83,9 @@ locals {
     "arn:aws:iam::631181914621:user/neil.smith",
     "arn:aws:iam::631181914621:user/adam.cooper",
     "arn:aws:iam::631181914621:user/richard.mchale",
+    "arn:aws:iam::631181914621:user/steven.taylor",
+    "arn:aws:iam::631181914621:user/seema.menon",
+    "arn:aws:iam::631181914621:user/gemma.taylor",
   ]
 
   default_tags = {
