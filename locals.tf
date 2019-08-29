@@ -61,8 +61,6 @@ locals {
   ]
 
   online_lpa_tool_production_api_gateway_allowed_roles = [
-    "arn:aws:iam::550790013665:role/api2.production04",
-    "arn:aws:iam::550790013665:role/api2.preprod",
     "arn:aws:iam::987830934591:role/preproduction-api-task-role", // ecs lpa preprod
     "arn:aws:iam::980242665824:role/production-api-task-role",    // ecs lpa prod
   ]
@@ -79,7 +77,6 @@ locals {
   ]
 
   api_gateway_allowed_roles_use_an_lpa = "${split(",", terraform.workspace == "development" ? join(",", local.use_an_lpa_development_api_gateway_allowed_roles) : join(",", local.use_an_lpa_production_api_gateway_allowed_roles))}"
-
 
   api_gateway_allowed_users = [
     "arn:aws:iam::631181914621:user/andrew.pearce",
