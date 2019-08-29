@@ -85,6 +85,7 @@ locals {
     "arn:aws:iam::631181914621:user/andrew.pearce",
     "arn:aws:iam::631181914621:user/neil.smith",
     "arn:aws:iam::631181914621:user/adam.cooper",
+    "arn:aws:iam::631181914621:user/richard.mchale",
   ]
 
   default_tags = {
