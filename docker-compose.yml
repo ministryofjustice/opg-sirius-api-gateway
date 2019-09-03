@@ -13,11 +13,17 @@ services:
       - 5000:5000
     environment:
       LAMBDAS_PATH: ${PWD}/lambdas
+
       # Keys starting 'PASSTHROUGH' are passed (sans 'PASSTHROUGH') to the actual Lambda.
       PASSTHROUGH_DYNAMODB_DATA_CACHE_TABLE_NAME: opg-gateway-cache-data
       PASSTHROUGH_DYNAMODB_AUTH_CACHE_TABLE_NAME: opg-gateway-cache-auth
       PASSTHROUGH_AWS_ENDPOINT_DYNAMODB: http://gateway-localstack:14569
       PASSTHROUGH_ENABLE_DEBUG: 'true'
+
+      PASSTHROUGH_URL_MEMBRANE: https://membrane
+      PASSTHROUGH_CREDENTIALS: '{"email": "publicapi@opgtest.com","password": "Password1"}' # Non-secret credentials, deliberately committed.
+      PASSTHROUGH_ENABLE_DEBUG: 'false'
+      #PASSTHROUGH_DATA_PROVIDER: json  # Uncomment to use the JSON provider.
 
   gateway-localstack:
     image: localstack/localstack

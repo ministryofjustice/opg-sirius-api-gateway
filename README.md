@@ -132,9 +132,9 @@ This will give you the normal Sirius stack, plus OPG Gateway (and its dependenci
 ## With LPA Online Tool
 
 For testing _with_ the full local LPA stack, you need to bring OPG Gateway up at the same time as the tool.
-Ensure that `opg-sirius-api-gateway` is cloned into the same root direct as `opg-lpa-docker`.
+Ensure that `opg-sirius-api-gateway` is cloned into the same root direct as `opg-lpa`.
 
-Then **from within `opg-lpa-docker`**, run:
+Then **from within `opg-lpa`**, run:
 
 ```bash
 docker-compose -f docker-compose.yml \
@@ -142,4 +142,19 @@ docker-compose -f docker-compose.yml \
 -f ../opg-sirius-api-gateway/docker-compose-integration.yml up
 ```
 
-This will give you the normal Sirius stack, plus OPG Gateway (and its dependencies).
+This will give you the normal LPA stack, plus OPG Gateway (and its dependencies).
+
+## With Use an LPA
+
+For testing _with_ the Use an LPA, you need to bring OPG Gateway up at the same time as the service.
+Ensure that `opg-sirius-api-gateway` is cloned into the same root direct as `opg-use-an-lpa`.
+
+Then **from within `opg-use-an-lpa`**, run:
+
+```bash
+docker-compose -f docker-compose.yml \
+-f ../opg-sirius-api-gateway/docker-compose.yml \
+-f ../opg-sirius-api-gateway/docker-compose-integration.yml up
+```
+
+This will give you the normal UaLPA stack, plus OPG Gateway (and its dependencies).
