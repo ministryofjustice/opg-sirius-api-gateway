@@ -118,7 +118,14 @@ def invoke_lambda(handler, event):
     # This is used so we connect lambci/lambda to the same network
     container_id = os.environ['HOSTNAME']
 
-    lambda_path_on_host = os.environ['LAMBDAS_PATH']
+    volumes = {
+        # Mouth the volume on the host system which contains the lambda function
+        os.environ['LAMBDAS_PATH']: {'bind': '/var/task', 'mode': 'ro'}
+    }
+
+    if 'LAMBDAS_JSON_PROVIDER_PATH' in  os.environ:
+        volumes[os.environ['LAMBDAS_JSON_PROVIDER_PATH']] = {'bind': '/var/task/test-data.json', 'mode': 'ro'}
+        app.logger.info("Using custom JSON data path: %s" % os.environ['LAMBDAS_JSON_PROVIDER_PATH'])
 
     # Any env variable prefixed with `PASSTHROUGH_` is to be passed through to the lambda container
     # This extracts all such vars into their own dictionary, and removes the `PASSTHROUGH_` prefix
@@ -129,7 +136,7 @@ def invoke_lambda(handler, event):
     container = dockerClient.containers.run(
         image="lambci/lambda:python3.7",
         command=[handler, json.dumps(event)],
-        volumes={lambda_path_on_host: {'bind': '/var/task', 'mode': 'ro'}},
+        volumes=volumes,
         network_mode='container:'+container_id,
         environment=envs_for_lambda_container,
         stderr=True,
