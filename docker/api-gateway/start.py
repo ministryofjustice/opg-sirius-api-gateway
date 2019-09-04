@@ -119,7 +119,7 @@ def invoke_lambda(handler, event):
     container_id = os.environ['HOSTNAME']
 
     volumes = {
-        # Mouth the volume on the host system which contains the lambda function
+        # Mount the volume on the host system which contains the lambda function
         os.environ['LAMBDAS_PATH']: {'bind': '/var/task', 'mode': 'ro'}
     }
 
