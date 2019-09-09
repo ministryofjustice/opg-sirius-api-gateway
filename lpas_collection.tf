@@ -23,7 +23,6 @@ module "lpas_collection_lambda" {
 
   security_group_ids = [
     "${aws_security_group.lambda.id}",
-    "${data.aws_security_group.membrane_client.id}",
   ]
 
   vpc = "${local.vpc_name}"
@@ -33,11 +32,11 @@ module "lpas_collection_lambda" {
 
   environment {
     variables {
-      CREDENTIALS  = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
-      URL_MEMBRANE = "https://${local.membrane_hostname}"
+      CREDENTIALS                    = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
+      URL_MEMBRANE                   = "http://${local.membrane_hostname}"
       DYNAMODB_AUTH_CACHE_TABLE_NAME = "${aws_dynamodb_table.auth_cache.name}"
       DYNAMODB_DATA_CACHE_TABLE_NAME = "${aws_dynamodb_table.data_cache.name}"
-      DISABLE_SIRIUS_LOOKUP = "false" // true to disable Sirius.
+      DISABLE_SIRIUS_LOOKUP          = "false"                                                                      // true to disable Sirius.
     }
   }
 
@@ -91,4 +90,3 @@ resource "aws_iam_role_policy_attachment" "use_an_lpa_get_sirius_uid_access_poli
   role       = "${aws_iam_role.use_an_lpa_role.name}"
   policy_arn = "${module.use_an_lpa_get_sirius_uid.access_policy_arn}"
 }
-

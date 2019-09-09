@@ -1,8 +1,4 @@
-
 // Identifies all clients that can talk to the Membrane ELB
-data "aws_security_group" "membrane_client" {
-  name = "${local.membrane_client_security_group_name}"
-}
 
 resource "aws_security_group" "lambda" {
   name        = "opg-sirius-api-gateway-lambdas"
