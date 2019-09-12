@@ -22,16 +22,12 @@ locals {
 
   vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
 
-  membrane_client_security_groups = {
-    "production"  = "membrane-client-production"
-    "development" = "membrane-client-integration"
-  }
-
-  membrane_client_security_group_name = "${lookup(local.membrane_client_security_groups, terraform.workspace)}"
-
   membrane_hostnames = {
     "production"  = "membrane.production.internal"
     "development" = "membrane.integration.internal"
+
+    # "production"  = "membrane.production.ecs"
+    # "development" = "membrane.integration.ecs"
   }
 
   membrane_hostname = "${lookup(local.membrane_hostnames, terraform.workspace)}"
@@ -86,6 +82,7 @@ locals {
     "arn:aws:iam::631181914621:user/steven.taylor",
     "arn:aws:iam::631181914621:user/seema.menon",
     "arn:aws:iam::631181914621:user/gemma.taylor",
+    "arn:aws:iam::631181914621:user/pam.crosby",
   ]
 
   default_tags = {
