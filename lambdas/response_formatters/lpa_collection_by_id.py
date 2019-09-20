@@ -29,6 +29,9 @@ def format_sirius_uid(lpas):
     for k, v in lpas.items():
         if isinstance(v, dict):
             lpas[k] = format_sirius_uid(v)
+        elif isinstance(v, list):
+            for i, j in enumerate(v):
+                v[i] = format_sirius_uid(j)
         elif k == 'uId':
-            lpas[k] = v.replace('-','')
+            lpas[k] = v.replace('-', '')
     return lpas
