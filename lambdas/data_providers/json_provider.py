@@ -28,7 +28,9 @@ class JsonProvider:
 
     def get_lpa_by_sirius_uid(self, sirius_uid):
         for lpa in self._get_data():
-            if 'uId' in lpa and lpa['uId'] == sirius_uid:
+            # Sirius expects the lookup to be sans dashes.
+            # So we strip out the dashes if there are any when looking for a match.
+            if 'uId' in lpa and lpa['uId'].replace('-', '') == sirius_uid:
                 return Response.factory(sirius_uid, 200, json.dumps([lpa]))
 
         # Sirius returns an empty list if no LPA is found
