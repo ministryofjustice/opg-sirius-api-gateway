@@ -1,1 +1,1 @@
-from .lpa_online_tool import *
+from .lpa_collection_by_id import *

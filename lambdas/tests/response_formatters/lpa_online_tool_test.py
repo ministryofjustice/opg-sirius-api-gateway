@@ -1,6 +1,6 @@
 from unittest import mock
 import response_formatters
-
+import copy
 
 @mock.patch('data_providers.Response', autospec=True)
 def test_format_lpa_collection_by_id_with_empty_response(response):
@@ -44,6 +44,8 @@ def test_format_lpa_collection_by_id_with_only_results_expected_fields(response)
         'should-not-be-returned-2': 'test',
     }
 
+    test_case = copy.deepcopy(test_data)
+
     payload = mock.PropertyMock()
     type(response).payload = payload
 
@@ -55,9 +57,52 @@ def test_format_lpa_collection_by_id_with_only_results_expected_fields(response)
     }, response)
 
     # Theses two items should have been removed
-    del test_data['should-not-be-returned-1']
-    del test_data['should-not-be-returned-2']
+    del test_case['should-not-be-returned-1']
+    del test_case['should-not-be-returned-2']
 
     assert result is response
-    payload.assert_called_with(test_data)
+    payload.assert_called_with(test_case)
+    assert 2 == payload.call_count
+
+
+@mock.patch('data_providers.Response', autospec=True)
+def test_format_lpa_collection_by_id_with_sirius_uids(response):
+    response.is_empty.return_value = False
+
+    test_data = {
+        'onlineLpaId': 'test',
+        'receiptDate': 'test',
+        'registrationDate': 'test',
+        'rejectedDate': 'test',
+        'status': 'test',
+        'uId': '7000-8423-8541',
+        'attorneys': [
+            {
+                'uId': '7000-8423-4136',
+            }
+        ],
+        'donor': {
+            'uId': '7000-8423-9674',
+        }
+    }
+
+    test_case = copy.deepcopy(test_data)
+
+    payload = mock.PropertyMock()
+    type(response).payload = payload
+
+    # We expect the payload to be wrapped in an array
+    payload.return_value = [test_data]
+
+    result = response_formatters.format_lpa_collection_by_id({
+        'resource': '/use-an-lpa',
+    }, response)
+
+    # Amend test case to that's expected
+    test_case['uId'] = '700084238541'
+    test_case['donor']['uId'] = '700084239674'
+    test_case['attorneys'][0]['uId'] = '700084234136'
+
+    assert result is response
+    payload.assert_called_with(test_case)
     assert 2 == payload.call_count
