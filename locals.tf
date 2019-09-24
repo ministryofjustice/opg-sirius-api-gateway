@@ -23,11 +23,8 @@ locals {
   vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
 
   membrane_hostnames = {
-    "production"  = "membrane.production.internal"
-    "development" = "membrane.integration.internal"
-
-    # "production"  = "membrane.production.ecs"
-    # "development" = "membrane.integration.ecs"
+    "production"  = "membrane.production.ecs"
+    "development" = "membrane.integration.ecs"
   }
 
   membrane_hostname = "${lookup(local.membrane_hostnames, terraform.workspace)}"
