@@ -73,10 +73,8 @@ locals {
 
   api_gateway_allowed_users = [
     "arn:aws:iam::631181914621:user/andrew.pearce",
-    "arn:aws:iam::631181914621:user/neil.smith",
     "arn:aws:iam::631181914621:user/adam.cooper",
     "arn:aws:iam::631181914621:user/richard.mchale",
-    "arn:aws:iam::631181914621:user/steven.taylor",
     "arn:aws:iam::631181914621:user/seema.menon",
     "arn:aws:iam::631181914621:user/gemma.taylor",
     "arn:aws:iam::631181914621:user/pam.crosby",

@@ -14,9 +14,9 @@ data "aws_subnet" "private" {
     name = "tag:Name"
 
     values = [
-      "private-1a.${var.vpc}",
-      "private-1b.${var.vpc}",
-      "private-1c.${var.vpc}",
+      "private-eu-west-1a",
+      "private-eu-west-1b",
+      "private-eu-west-1c",
     ]
   }
 }
@@ -50,7 +50,7 @@ data "aws_iam_policy_document" "iam_for_lambda_inline_execution_role" {
 }
 
 resource "aws_iam_role_policy" "iam_for_lambda_inline_execution_role" {
-  name = "ViewerApplicationPermissions"
+  name   = "ViewerApplicationPermissions"
   policy = "${data.aws_iam_policy_document.iam_for_lambda_inline_execution_role.json}"
   role   = "${aws_iam_role.iam_for_lambda.id}"
 }
@@ -92,6 +92,6 @@ resource "aws_lambda_function" "lambda_function" {
     security_group_ids = ["${var.security_group_ids}"]
   }
 
-  environment = ["${slice( list(var.environment), 0, length(var.environment) == 0 ? 0 : 1 )}"]
+  environment = ["${slice(list(var.environment), 0, length(var.environment) == 0 ? 0 : 1)}"]
   tags        = "${var.tags}"
 }
