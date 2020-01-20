@@ -12,8 +12,8 @@ The OPG-Data API must implement versioning. Must be RESTful, and offer as much f
 
 There is no real consensus as there are several methods of versioning used by major players
 
-###TL;DR 
-####OPG-data Proposed Versioning Strategy (borrows the best bits from around the web)
+### TL;DR 
+#### OPG-data Proposed Versioning Strategy (borrows the best bits from around the web)
 * We will be using semantic versioning [https://semver.org](https://semver.org) see below for more
 * We will implement versioning via the Content Negotiation using the Accept header, as per option 5, below. This seems the most future proof, most RESTful solution. 
 * This necessitates our own vendor content type. Examples:
@@ -28,12 +28,12 @@ There is no real consensus as there are several methods of versioning used by ma
 * All API responses will contain a x-current-api-version which will be set to the current version of the API in addition to an x-api-warn header when calling any deprecated API endpoints.
 * A Versions Timeline Document kept up to date with all changes and presented at an endpoint `api/release-info` from within the API itself
 
-###OPG-data API Versioning Strategy
+### OPG-data API Versioning Strategy
 Regardless of how well planned an API is, it's a sure bet that business requirements WILL eventually dictate that backwards-incompatible changes will be made to the API. Versioning the API is a necessity.
 
 Sadly there is no real consesus on the best approach to versioning an API, with several of the 'big players' opting for different strategies. There are pros and cons to each approach.
 
-###Semver
+### Semver
 We will be using semantic versioning [https://semver.org](https://semver.org) -  all breaking changes will be signified by the first number:
 
 [breaking].[non-breaking features].[fixes]
@@ -48,9 +48,9 @@ Accept: application/vnd.opg-data.v1+json
 (will bring back any version from 1.0.0 to 1.9.9, whichever is the latest)
 ```
 
-###Common Solutions To Versioning
+### Common Solutions To Versioning
 
-####1. Version in the URI (path, or param)
+#### 1. Version in the URI (path, or param)
 ```
 GET /[version]/person/123 HTTP/1.1
 GET /person/123?version=[version] HTTP/1.1
@@ -70,7 +70,7 @@ GET /person/123?version=[version] HTTP/1.1
 * It forces API clients to do weird things to keep bookmarked links up to date. RESTfully, a URI to a resource should never change. If the client stores/bookmarks URI references, then wants to support an upgraded version of the API they they have a painful choice: choose to rewrite those bookmarks based on some out of band knowledge, support both the old and new version of the API, or force the user to start over from scratch.
 * Not future-proof architecturally. We may choose to implement future versions of the API with a different server or codebase - which would probably mean cumbersome proxy trickery.
 
-####2. Hostname Versioning
+#### 2. Hostname Versioning
 `GET https://api-[version].example.com/person/123`
 
 **Pros**
@@ -80,7 +80,7 @@ GET /person/123?version=[version] HTTP/1.1
 **Cons**
 * All the same cons as Option 1
 
-####3. Put the version in the body
+#### 3. Put the version in the body
 ```
 POST /customer/123 HTTP/1.1
 
@@ -103,7 +103,7 @@ It's fine if the body is JSON, but if posting with a content-type such as image/
 * No consistency about where the param is placed - Having a parameter that shifts around depending on the content-type is confusing and ugly
 * Many PHP frameworks just ignore the querystring on anything other than a GET request
 
-####4. Custom Header
+#### 4. Custom Header
 If the version can't go in the URI or the body, that leaves headers.
 ```
 GET /person/123 HTTP/1.1
@@ -123,7 +123,7 @@ Without the `Vary` header, it's hard for cache systems like Varnish to know that
 * Cache systems can get confused
 * non-standard headers might cause trouble with firewalls
 
-####5. Content negotiation using the Accept header
+#### 5. Content negotiation using the Accept header
 **Notable users**
 * Github
 
@@ -158,7 +158,7 @@ Accept: application/vnd.opg-data.[version][+json]
 * API developers must be made aware about how the Accept header is being used
 * Browsers may have trouble understanding nonstandard content-types. However, browsers are almost certainly not the target consumer of the services.
 
-###References
+### References
 * https://thereisnorightway.blogspot.com/2011/02/versioning-and-types-in-resthttp-api.html
 * http://barelyenough.org/blog/2008/05/versioning-rest-web-services/
 * https://nordicapis.com/introduction-to-api-versioning-best-practices/
