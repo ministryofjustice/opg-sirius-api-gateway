@@ -68,7 +68,7 @@ orbs:
       python:
         docker: [image: circleci/python]
       python-build:
-        docker: [image: python:alpine]
+        docker: [image: python:3.8.1-alpine]
       newman:
         docker: [image: postman/newman:alpine]
     commands:
