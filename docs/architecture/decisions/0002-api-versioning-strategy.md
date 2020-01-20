@@ -1,6 +1,6 @@
 # 2. API versioning strategy
 
-Date: 2020-01-15
+Date: 2020-01-20
 
 ## Status
 
@@ -14,17 +14,39 @@ There is no real consensus as there are several methods of versioning used by ma
 
 ###TL;DR 
 ####OPG-data Proposed Versioning Strategy (borrows the best bits from around the web)
-* We will implement versioning via the Content Negotiation using the Accept header, as per option 5, below. This seems the most future proof, most RESTful solution.
-* We will also support requests with a standard `Accept: application/json` - these will default to the latest version of the API (or should it be the oldest)
-* All breaking changes will be bundled into a new version
-* A Versions Timeline Document will be published and kept up to date with all breaking changes
-* At any given time, the API will allow requests from two versions simultaneously, however older versions may be unsupported
+* We will be using semantic versioning [https://semver.org](https://semver.org) see below for more
+* We will implement versioning via the Content Negotiation using the Accept header, as per option 5, below. This seems the most future proof, most RESTful solution. 
+* This necessitates our own vendor content type. Examples:
+  * `application/vnd.opg-data.v1+json` (v1 presented as JSON)
+  * `application/vnd.opg-data.v1+yml` (v1 presented as YAML)
+  * `application/vnd.opg-data.v1` (v1 presented as JSON)
+  * `application/vnd.opg-data` (latest version, presented as JSON)
+  * `application/json` (latest version, as JSON)
+  
+  The final two are dangerous in that the version presented will change over time without warning.
+* At any given time, the API will allow requests from two major versions: The latest version and the previous, deprecated version. 
 * All API responses will contain a x-current-api-version which will be set to the current version of the API in addition to an x-api-warn header when calling any deprecated API endpoints.
+* A Versions Timeline Document kept up to date with all changes and presented at an endpoint `api/release-info` from within the API itself
 
-##OPG-data API Versioning Strategy
+###OPG-data API Versioning Strategy
 Regardless of how well planned an API is, it's a sure bet that business requirements WILL eventually dictate that backwards-incompatible changes will be made to the API. Versioning the API is a necessity.
 
 Sadly there is no real consesus on the best approach to versioning an API, with several of the 'big players' opting for different strategies. There are pros and cons to each approach.
+
+###Semver
+We will be using semantic versioning [https://semver.org](https://semver.org) -  all breaking changes will be signified by the first number:
+
+[breaking].[non-breaking features].[fixes]
+
+To that end, clients only need to reference the first number in requests:
+
+```
+GET /articles/123 HTTP/1.1
+Host: api.example.com
+Accept: application/vnd.opg-data.v1+json
+
+(will bring back any version from 1.0.0 to 1.9.9, whichever is the latest)
+```
 
 ###Common Solutions To Versioning
 
@@ -97,7 +119,7 @@ Without the `Vary` header, it's hard for cache systems like Varnish to know that
 * Quite RESTful
 
 **Cons**
-* non-obvious for developers, who are forced to consult docs
+* a less common pattern which might require more explanation for developers
 * Cache systems can get confused
 * non-standard headers might cause trouble with firewalls
 
@@ -130,11 +152,10 @@ Accept: application/vnd.opg-data.[version][+json]
 * HATEOAS-friendly
 * Cache-friendly
 * RESTfully Keeps a URI for a resource the same
-* It opens up the possibility of adding resource-specific versioning in the future, eg `application/vnd.opg-data.donor.v1.1+json` would be a JSON representation of a donor resource at version 1.1
+* It opens up the possibility of adding resource-specific versioning in the future, eg `application/vnd.opg-data.donor.v1+json` would be a JSON representation of a donor resource at version 1
 
 **Cons**
 * API developers must be made aware about how the Accept header is being used
-* Harder to test - have to configure the accept header appropriately
 * Browsers may have trouble understanding nonstandard content-types. However, browsers are almost certainly not the target consumer of the services.
 
 ###References
@@ -146,19 +167,15 @@ Accept: application/vnd.opg-data.[version][+json]
 
 ## Decision
 
-We will use content-negotiation using the Accept header (option 5)
+We will use content-negotiation using the Accept header (option 5, above)
 
 ## Consequences
 
-**Pros**
 * Simple for API consumers (if they know about headers)
 * HATEOAS-friendly
 * Cache-friendly
 * RESTfully Keeps a URI for a resource the same
-* It opens up the possibility of adding resource-specific versioning in the future, eg `application/vnd.opg-data.donor.v1.1+json` would be a JSON representation of a donor resource at version 1.1
+* It opens up the possibility of adding resource-specific versioning in the future, eg `application/vnd.opg-data.donor.v1+json` would be a JSON representation of a donor resource at version 1
 
-**Cons**
 * API developers must be made aware about how the Accept header is being used
-* Harder to test - have to configure the accept header appropriately
 * Browsers may have trouble understanding nonstandard content-types. However, browsers are almost certainly not the target consumer of the services.
-
