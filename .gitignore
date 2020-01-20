@@ -17,6 +17,7 @@ lambda_artifact.zip
 .idea
 __pycache__
 .vscode/
+*.iml
 
 # Mac
 .DS_Store
