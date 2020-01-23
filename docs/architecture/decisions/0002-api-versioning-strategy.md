@@ -14,12 +14,12 @@ The OPG-Data API must implement versioning. Must be RESTful, and offer as much f
 
 Sadly there is no real consesus on the best approach to versioning an API, with several of the 'big players' opting for different strategies. There are pros and cons to each approach.
 
-An exploration of various API versioning strategies may be found here [further-notes.md](../supporting-notes/versioning-strategy.md)
+An exploration of various API versioning strategies may be found here [versioning-strategy.md](../supporting-notes/versioning-strategy.md)
 
 ## Decision(s)
 
-* We will be using semantic versioning [https://semver.org](https://semver.org) see [further-notes.md#api-versioning-semver](../supporting-notes/versioning-strategy.md#semver) for more
-* We will implement versioning via the Content Negotiation using the Accept header, as per [further-notes.md#api-versioning-options-5](../supporting-notes/versioning-strategy.md#options-5). This seems the most future proof, most RESTful solution.
+* We will be using semantic versioning [https://semver.org](https://semver.org) see [versioning-strategy.md#semver](../supporting-notes/versioning-strategy.md#semver) for more
+* We will implement versioning via the Content Negotiation using the Accept header, as per [versioning-strategy.md#options-5](../supporting-notes/versioning-strategy.md#options-5). This seems the most future proof, most RESTful solution.
 
 This necessitates our own vendor content type. Examples:
   * `application/vnd.opg-data.v1+json` (v1 presented as JSON)

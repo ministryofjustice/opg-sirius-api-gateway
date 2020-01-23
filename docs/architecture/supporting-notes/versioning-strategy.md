@@ -1,6 +1,6 @@
 # API Versioning Strategy
 
-Our chosen strategy is defined in ADR [2. API versioning strategy](decisions/0002-api-versioning-strategy.md)
+Our chosen strategy is defined in ADR [2. API versioning strategy](../decisions/0002-api-versioning-strategy.md)
 
 ## <a name="semver"></a> Semantic Versioning Numbering
 
