@@ -66,13 +66,13 @@ Accept: application/vnd.opg-data.v1+json
 returns
 
 {
-    "data": [
-        {
-            "id": 123,
+    "data": {
+        "type": "articles",
+        "id": "123",
+        "attributes": {
             "title": "Article 123"
         }
-        ...
-    ]
+    }
 }
 ```
 
@@ -85,19 +85,17 @@ Accept: application/vnd.opg-data.v1+json
 
 returns
 
+---
 data:
-    - {id: 1, title: 'My comment'}
-    ...
+    type: articles
+    id: '123'
+    attributes:
+        title: Article 123
+
 ```
 
 * API respects the Accept Header, or else is free to choose a default content-type
 * User does not need to know about the id param
-
-### Hypermedia Controls using HAL
-
-HAL, short for "Hypertext Application Language", is an [open specification describing a generic structure for RESTful resources](http://stateless.co/hal_specification.html). The structure it proposes readily achieves the Richardson Maturity Model's Level 3 by ensuring that each resource contains relational links, and that a standard, identifiable structure exists for embedding other resources
-
-We're going to implement HATEOAS using HAL. [Read more about HAL here](hal.md).
 
 ## The HTTP `OPTIONS` verb:
 
