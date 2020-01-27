@@ -25,16 +25,37 @@ This **MUST** contain at least one of the following root-level members:
   * A collection or resource objects is represented by an array of objects
 * errors: an array of error objects
 
+#### Single resource object
+
 ```json
 {
     "data": {},
-    "errors": {},
     "meta": {},
-    "links": {}
+    "links": []
 }
 ```
 
-Contrary to JSON-API, and in line with Twitter's implementation, it IS possible for data{} and errors{} to co-exist at the root level (in instances where a GET was partially successful and a limited result-set is returned, along with errors). For more, see: [7. Error Handling And Status Codes](0007-error-handling-and-status-codes.md)
+#### Collection of resource objects
+
+```json
+{
+    "data": [
+        {...},
+        {...}
+    ],
+    "errors": [],
+    "meta": {},
+    "links": []
+}
+```
+
+JSON-API states
+
+> The members data and errors MUST NOT coexist in the same document.
+
+`opg-data` standard is that if a data resource OBJECT is returned, then there **MUST be no** error member.
+
+However there ARE certain circumstances where an array of errors **MAY** be returned alongside a data resource COLLECTION. See [0007-error-handling-and-status-codes.md#errors-in-20x](0007-error-handling-and-status-codes.md#errors-in-20x)
 
 The root JSON object **MAY** also contain the following root-level members:
 
@@ -47,11 +68,11 @@ See [JSON-AP](https://jsonapi.org/format/#document-resource-objects)
 
 Namely:
 
-* As a minimum, every resource object MUST contain:
+* As a minimum, every resource object **MUST** contain:
   * an id member
-  * a type member. The values of the id and type members MUST be strings. For consistency and the avoidance of confusion, types MUST use PLURAL. eg "articles", "people"
+  * a type member. The values of the id and type members **MUST** be strings. For consistency and the avoidance of confusion, types **MUST** use PLURAL. eg "articles", "people"
   * an array of attributes (even if empty)
-  * a `links` array, containing as it's minimum, a `self` member with a URL which **MUST** be callable at the API
+* IF the "data" top level member is present, then there **MUST** be a `links` array, containing as it's minimum, a `self` member with a URL which **MUST** be callable at the API
 * A resource object's data is presented in an array named "attributes"
 * A resource object's links is presented in an array named "links"
 * A resource object's relationships is presented in an array named "relationships"
@@ -67,10 +88,10 @@ Namely:
                 "title": "My First Article",
                 "description": "..."
             },
-            "links": {
+            "links": [
                 "self": "https://api.example.com/articles/1",
                 "next": "https://api.example.com/articles/2"
-            }
+            ]
             "relationships": {
                 ...
             }
@@ -82,39 +103,17 @@ Namely:
                 "title": "Second Article",
                 "description": "..."
             },
-            "links": {
+            "links": [
                 "self": "https://api.example.com/articles/2",
                 "prev": "https://api.example.com/articles/1"
-            }
+            ]
             "relationships": {
                 ...
             }
         }
     ]
     "meta": {},
-    "links": {}
-}
-```
-
-### Collection
-
-```json
-{
-    "data": [
-        {
-            "id": "1",
-            "title": "Article 1"
-        },
-        {
-            "id": "2",
-            "title": "Article 2"
-        }
-    ],
-    "pagination": {
-        "first": 50,
-        "last": 10,
-        ...
-    }
+    "links": []
 }
 ```
 
