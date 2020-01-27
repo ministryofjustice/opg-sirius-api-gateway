@@ -22,12 +22,17 @@ An exploration of various API versioning strategies may be found here [versionin
 * We will implement versioning via the Content Negotiation using the Accept header, as per [versioning-strategy.md#options-5](../supporting-notes/versioning-strategy.md#options-5). This seems the most future proof, most RESTful solution.
 
 This necessitates our own vendor content type. Examples:
-  * `application/vnd.opg-data.v1+json` (v1 presented as JSON)
-  * `application/vnd.opg-data.v1+yml` (v1 presented as YAML)
-  * `application/vnd.opg-data.v1` (v1 presented as JSON)
-  * `application/vnd.opg-data` (latest version, presented as JSON)
-  * `application/json` (latest version, as JSON)
-  The final two are dangerous in that the version presented will change over time without warning.
+
+* `application/vnd.opg-data.v1+json` (v1 presented as JSON)
+* `application/vnd.opg-data.v1+yml` (v1 presented as YAML)
+* `application/vnd.opg-data.v1` (v1 presented as JSON)
+* `application/vnd.opg-data` (latest version, presented as JSON)
+* `application/json` (latest version, as JSON)
+
+The final two are dangerous in that the version presented will change over time without warning.
+
+See also: [4. Content Negotiation](0004-content-negotiation.md)
+
 * At any given time, the API will allow requests from two major versions: The latest version and the previous, deprecated version.
 * All API responses will contain a x-current-api-version which will be set to the current version of the API in addition to an x-api-warn header when calling any deprecated API endpoints.
 * A Versions Timeline Document kept up to date with all changes and presented at an endpoint `api/release-info` from within the API itself
