@@ -35,6 +35,11 @@ The following additional standards are also in force in `application/vnd.opg-dat
 * boolean are represented by `true` and `false`
 * null values are represented by `null`
 * empty arrays are always shown, represented by `[]`
+* To represent time and date. The government mandates using the [ISO 8601](https://www.gov.uk/government/publications/open-standards-for-government/date-times-and-time-stamps-standard) standard to represent date and time in your payload response. This helps people read the time correctly.
+Use a consistent date format. For dates, this looks like 2017-08-09. For dates and times, use the form 2017-08-09T13:58:07Z.
+
+### Use Unicode for encoding
+The Unicode Transformation Format (UTF-8) standard is mandatory for use in government when encoding text or other textual representations of data.
 
 ```json
 {
@@ -44,6 +49,8 @@ The following additional standards are also in force in `application/vnd.opg-dat
         "string": "Like so",
         "boolean": true,
         "boolean": false,
+        "date": "1977-03-08",
+        "datetime": "1977-03-08T02:03:52Z",
         "explicit_empty_arrays_are_shown": [],
         "explicit_null_for_everything_else": null,
         "use_underscores_in_naming": true,
