@@ -36,6 +36,7 @@ See also: [4. Content Negotiation](0004-content-negotiation.md)
 * At any given time, the API will allow requests from two major versions: The latest version and the previous, deprecated version.
 * All API responses will contain a x-current-api-version which will be set to the current version of the API in addition to an x-api-warn header when calling any deprecated API endpoints.
 * A Versions Timeline Document kept up to date with all changes and presented at an endpoint `api/release-info` from within the API itself
+* When using a version-non-specific content-type as with the final two examples of the preceding list, an x-api-warn header will be returned, warning the client to specify a version
 
 ## Consequences
 

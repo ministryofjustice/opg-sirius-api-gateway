@@ -57,9 +57,15 @@ So, for GET queries where a range of resources are attempted, we return those re
 
 See [JSON-API](https://jsonapi.org/format/#errors)
 
-> Error objects MUST be returned as an array keyed by errors in the top level of a JSON:API document.
+> Error objects **MUST** be returned as an array keyed by errors in the top level of a JSON:API document.
 
 Below are some of the suggested response members
+
+The following members are required:
+
+* status
+* code
+* title
 
 ```json
 {
@@ -85,5 +91,5 @@ Below are some of the suggested response members
 
 ## Consequences
 
-Standardised unambiguous error reporting, using the established JSON-API format, aiming to point our consumer to the source of the error as quickly as possible.
-Returning multiple errors as an array is very helpful to the consumer
+* Standardised unambiguous error reporting, using the established JSON-API format, aiming to point our consumer to the source of the error as quickly as possible.
+* Returning multiple errors as an array is very helpful to the consumer

@@ -30,8 +30,7 @@ This **MUST** contain at least one of the following root-level members:
 ```json
 {
     "data": {},
-    "meta": {},
-    "links": []
+    "meta": {}
 }
 ```
 
@@ -45,7 +44,7 @@ This **MUST** contain at least one of the following root-level members:
     ],
     "errors": [],
     "meta": {},
-    "links": []
+    "links": {}
 }
 ```
 
@@ -73,8 +72,8 @@ Namely:
   * a type member. The values of the id and type members **MUST** be strings. For consistency and the avoidance of confusion, types **MUST** use PLURAL. eg "articles", "people"
   * an array of attributes (even if empty)
 * IF the "data" top level member is present, then there **MUST** be a `links` array, containing as it's minimum, a `self` member with a URL which **MUST** be callable at the API
-* A resource object's data is presented in an array named "attributes"
-* A resource object's links is presented in an array named "links"
+* A resource object's data attributes is presented in an array named "attributes"
+* A resource object's links is presented in an object named "links"
 * A resource object's relationships is presented in an array named "relationships"
 * A resource object's attributes and its relationships are collectively called its "fields"
 
@@ -88,10 +87,10 @@ Namely:
                 "title": "My First Article",
                 "description": "..."
             },
-            "links": [
+            "links": {
                 "self": "https://api.example.com/articles/1",
                 "next": "https://api.example.com/articles/2"
-            ]
+            }
             "relationships": {
                 ...
             }
@@ -103,17 +102,17 @@ Namely:
                 "title": "Second Article",
                 "description": "..."
             },
-            "links": [
+            "links": {
                 "self": "https://api.example.com/articles/2",
                 "prev": "https://api.example.com/articles/1"
-            ]
+            }
             "relationships": {
                 ...
             }
         }
     ]
-    "meta": {},
-    "links": []
+    "links": {},
+    "meta": {}
 }
 ```
 

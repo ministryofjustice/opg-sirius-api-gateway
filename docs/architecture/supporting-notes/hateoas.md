@@ -81,7 +81,7 @@ YAML:
 ```yaml
 GET /articles/123 HTTP/1.1
 Host: api.example.com
-Accept: application/vnd.opg-data.v1+json
+Accept: application/vnd.opg-data.v1+yml
 
 returns
 
