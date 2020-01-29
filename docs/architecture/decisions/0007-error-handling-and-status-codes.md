@@ -66,7 +66,32 @@ The following members are required:
 * code
 * title
 
+## Examples
+
+### 404 Not Found
+
 ```json
+PATCH /clients/invalidID HTTP/1.1
+Host: api.example.com
+Accept: application/vnd.opg-data.v1+json
+
+{
+    "data": {
+        "type": "clients",
+        "id": "invalidID",
+        "attributes": {
+            "first_name": "Bob",
+            "last_name": "Jones"
+        }
+    }
+}
+```
+
+```json
+HTTP/1.1 404 Not Found
+Host: api.example.com
+Content-Type: application/vnd.opg-data.v1+json
+
 {
     "errors": [
         {
@@ -74,7 +99,6 @@ The following members are required:
             "links": {
                 "about": "https://api.example.com/help/errors/no-resource"
             },
-            "status": "404",
             "code": "OPGDATA-API-NO-RESOURCE",
             "title": "No resource at this URI",
             "detail": "You requested a resource which doesn't exist",
@@ -82,13 +106,68 @@ The following members are required:
                 "parameter": "id"
             }
         }
-    ],
-    "meta": {},
-    "links": {}
+    ]
 }
 ```
+
+### 403 Forbidden
+
+```json
+PATCH /clients/123123abc HTTP/1.1
+Host: api.example.com
+Accept: application/vnd.opg-data.v1+json
+
+{
+    "data": {
+        "type": "clients",
+        "id": "123123abc",
+        "attributes": {
+            "admin_rights", "elevated",
+            "payment_status", "paid"
+        }
+    }
+}
+```
+
+```json
+HTTP/1.1 403 Forbidden
+Host: api.example.com
+Content-Type: application/vnd.opg-data.v1+json
+
+{
+    "errors": [
+        {
+            "id": "A123BCD",
+            "links": {
+                "about": "https://api.example.com/help/errors/forbidden"
+            },
+            "code": "OPGDATA-API-FORBIDDEN",
+            "title": "User Lacks Permissions",
+            "detail": "You are not authorised to perform the selected action(s) on this resource",
+            "source": {
+                "parameter": "/data/attributes/admin_rights"
+            }
+        },
+        {
+            "id": "B456DEF",
+            "links": {
+                "about": "https://api.example.com/help/errors/forbidden"
+            },
+            "code": "OPGDATA-API-FORBIDDEN",
+            "title": "User Lacks Permissions",
+            "detail": "You are not authorised to perform the selected action(s) on this resource",
+            "source": {
+                "pointer": "/data/attributes/payment_status"
+            }
+        }
+    ]
+}
+```
+
+For more details, see [https://jsonapi.org/format/#errors](https://jsonapi.org/format/#errors)
 
 ## Consequences
 
 * Standardised unambiguous error reporting, using the established JSON-API format, aiming to point our consumer to the source of the error as quickly as possible.
 * Returning multiple errors as an array is very helpful to the consumer
+
