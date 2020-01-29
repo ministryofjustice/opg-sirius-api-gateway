@@ -63,7 +63,6 @@ Below are some of the suggested response members
 
 The following members are required:
 
-* status
 * code
 * title
 
@@ -78,7 +77,7 @@ The following members are required:
             "status": "404",
             "code": "OPGDATA-API-NO-RESOURCE",
             "title": "No resource at this URI",
-            "detail": "You requested a resource which doesn't wxist",
+            "detail": "You requested a resource which doesn't exist",
             "source": {
                 "parameter": "id"
             }
