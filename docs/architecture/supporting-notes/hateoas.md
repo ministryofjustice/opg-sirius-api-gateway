@@ -21,20 +21,20 @@ We use the `Accept` header to RESTfully ask for our data to come back with diffe
 
 URIs are not supposed to be a bunch of folders and filenames and an API is not just a list of JSON files. An API is a list of resources that can be represented in different formats according to the `Accept` header.
 
-## Hypermedia controls
-
-Hypermedia controls are just links to other content, relationships or further actions.
-
-They answer the question "Great, I have this resource or collection of resources - where do I go next or what can I do next?"
-
-This second part of HATEOAS is drastically underused in most API design, but technically an API is not RESTful until all the Third Level Of REST (Richardson Maturity Model) is met:
-
 ### The [Richardson Maturity Model](https://martinfowler.com/articles/richardsonMaturityModel.html)
 
 0 You're using **HTTP as a transport** system (tunnelling mechanism) for remote interactions.
 1 **Resources** Rather than hit a single endpoint the API has adopted a 'Divide and Conquer approach, you have multiple endpoints to represent resources, and you're talking to them
 2 **HTTP Verbs and HTTP response codes** You interact with HTTP resources using HTTP verbs, rather than always using POST. If there's a problem of any sort, the API does not respond with a non-2xx response
-3 **Hypermedia Controls**. HATEOAS. The Holy Grail. This addresses the question of 'where to go/what to do next' - resources provide canonical links to themselves, as well as link to other, related resources.
+3 **Hypermedia Controls**. HATEOAS. Tells the client what it can do with the resource object, or related actions that it might take, via URIs. Resources provide canonical links to themselves, as well as link to other, related resources.
+
+## Hypermedia controls
+
+* Self-Descriptive Control Flows: Make it easy for applications to understand the control flow, because instead of having to rely on information that is external to the actual service interactions, all the information required to proceed is contained in the response to a request
+* Flexibility: By having self-descriptive control flows, an added advantage is that control flows can change on a per-instance basis
+* Separate but Connected: Consumers of hypermedia services do not have to be aware of the implementation boundaries of individual services, as the links between them provide seamless interactions across various APIs
+* Statelessness: The REST hypermedia constraint not just requires hypermedia links, but also requires interactions to be stateless. This means that all information required to process a request needs to be contained in the request itself. This constraint makes hypermedia much more robust, because it means that requests can be scattered across servers/services without the need for those requests to be associated through shared data on the server/service side. It is this additional constraint that allows hypermedia to be truly decentralized, because now there is no implicit assumption that all requests have to be processed by a single server/service that uses state information to handle the workflow across requests.
+
 
 ### Examples of non-HATEOAS non-RESTful endpoints:
 
@@ -126,3 +126,4 @@ By inspecting the Allow header, an API client can work out what options are avai
 
 * [https://martinfowler.com/articles/richardsonMaturityModel.html](https://martinfowler.com/articles/richardsonMaturityModel.html)
 * [http://zacstewart.com/2012/04/14/http-options-method.html](http://zacstewart.com/2012/04/14/http-options-method.html)
+* [https://dret.typepad.com/dretblog/2016/08/whypermedia-why-use-hypermedia.html](https://dret.typepad.com/dretblog/2016/08/whypermedia-why-use-hypermedia.html)
