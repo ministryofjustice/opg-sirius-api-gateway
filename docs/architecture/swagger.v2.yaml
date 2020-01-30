@@ -1,0 +1,293 @@
+openapi: 3.0.0
+info:
+  version: '2.0.0'
+  title: 'OPG Data API'
+  description: 'Access to OPG Data'
+
+servers:
+  - description: OPG-Staging
+    url: https://opg-data-api.service.gov.uk/
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/leapday/opg-data/1.0.0
+
+paths:
+  '/clients/{caseref}/reports/':
+    post:
+      summary: Uploads a report file to Supervision
+      operationId: addReportDocument
+      tags:
+        - 'deputy-reporting'
+      parameters:
+        - in: path
+          name: caseref
+          required: true
+          description: Case Reference / Casrec number
+          schema:
+            type: string
+            example: '0319392T'
+            pattern: '^([0-9]{7}T|[0-9]{8})$'
+      requestBody:
+        required: true
+        description: A JSON object that contains the Report metadata, and the report file (pdf)
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                report:
+                  type: object
+                  required:
+                    - data
+                    - links
+                  properties:
+                    data:
+                      type: object
+                      required:
+                        - type
+                        - attributes
+                        - links
+                      properties:
+                        type:
+                          type: string
+                          example: reports
+                        attributes:
+                          $ref: '#/components/schemas/ReportAttributes'
+                        links:
+                          type: object
+                          required:
+                            - self
+                          properties:
+                            self:
+                              type: string
+                              format: url
+                              example: 'https://opg-data-api.service.gov.uk/clients/{caseref}/reports/urn:uuid:cecdb2d7-5d93-8d1c-27b7-b392c2b42fd2'
+                            client:
+                              type: string
+                              format: url
+                              example: 'https://opg-data-api.service.gov.uk/clients/{caseref}'
+                    links:
+                      type: object
+                      properties:
+                        api-docs:
+                          type: string
+                          format: url
+                          example: 'https://opg-data-api.service.gov.uk/developer/'
+                    meta:
+                      type: object
+                report_file:
+                  type: string
+                  format: base64
+            encoding:
+              report:
+                contentType: application/vnd.opg-data.v1+json
+              report_file:
+                contentType: application/pdf
+      responses:
+        '201':
+          description: Report created
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                required:
+                  - data
+                  - links
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - type
+                      - id
+                      - attributes
+                      - links
+                    properties:
+                      type:
+                        type: string
+                        enum:
+                          - 'reports'
+                        example: reports
+                        default: reports
+                      id:
+                        type: string
+                        format: uuid
+                        example: 'urn:uuid:cecdb2d7-5d93-8d1c-27b7-b392c2b42fd2'
+                        description: ID of the created user.
+                      attributes:
+                        $ref: '#/components/schemas/ReportAttributes'
+                      links:
+                        type: object
+                        required:
+                          - self
+                        properties:
+                          self:
+                            type: string
+                            format: url
+                            example: 'https://opg-data-api.service.gov.uk/clients/0319392T/reports/urn:uuid:cecdb2d7-5d93-8d1c-27b7-b392c2b42fd2'
+                          client:
+                            type: string
+                            format: url
+                            example: 'https://opg-data-api.service.gov.uk/clients/0319392T'
+                    
+                  links:
+                    type: object
+                    properties:
+                      api-docs:
+                        type: string
+                        format: url
+                        example: 'https://opg-data-api.service.gov.uk/developer/'
+          
+                  meta:
+                    type: object
+        '400':
+          description: Generic bad request (generally invalid syntax)
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorised (no current user and there should be)
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - The current user is forbidden from accessing this data (in this way)
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '404':
+          description: That URL is not a valid route, or the item resource does not exist
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '413':
+          description: Payload too large
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported media type
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '500':
+          description: Something unexpected happened and it is the API's fault
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+        '503':
+          description: Service Unavailable - please try again later
+          content:
+            application/vnd.opg-data.v1+json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'A123BCD'
+        code:
+          type: string
+          example: 'OPGDATA-API-FORBIDDEN'
+        title:
+          type: string
+          example: 'User Lacks Permissions'
+        detail:
+          type: string
+          example: 'You are not authorised to perform the selected action(s) on this resource'
+        links:
+          type: object
+          properties:
+            about:
+              type: 'string'
+              example: 'https://opg-data-api.service.gov.uk/help/errors/forbidden'
+        source:
+          type: object
+          properties:
+            parameter:
+              type: string
+              example: 'clientref'
+            pointer:
+              type: string
+              example: '/data/attributes/payment_status'
+    ReportAttributes:
+      type: object
+      required:
+        - source
+        - reporting_period_from
+        - reporting_period_to
+        - year
+        - date_submitted
+      properties:
+        source:
+          type: string
+          enum:
+            - 'DIGIDEPS'
+          example: 'DIGIDEPS'
+        reporting_period_from:
+          type: string
+          format: date
+          example: '2019-01-01'
+        reporting_period_to:
+          type: string
+          format: date
+          example: '2019-12-31'
+        year:
+          type: integer
+          format: int32
+          minimum: 2010
+          maximum: 2020
+          example: 2019
+        date_submitted:
+          type: string
+          format: date-time
+          example: '2020-01-03T09:30:00.001Z'
