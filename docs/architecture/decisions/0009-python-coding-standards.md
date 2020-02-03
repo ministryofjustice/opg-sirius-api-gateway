@@ -21,26 +21,22 @@ Proposed
 
 
 #### Code Style
-* 
+* See the [Python Style Guide](../supporting-notes/python-style-guide.md)
 
 #### Documentation
 
-* Follow [PEP-257](https://www.python.org/dev/peps/pep-0257/) for docstring formatting using reStructured Text
+* Follow [PEP-257](https://www.python.org/dev/peps/pep-0257/) for docstring formatting using [reStructured Text](https://www.writethedocs.org/guide/writing/reStructuredText/)
 * Generate documentation with Sphinx
 
 #### Standard Tools
-* Code Formatting: [Black]
-* Linting/Complexity/Error Detection: [Flake8]
-* Type Checking: [MyPy]
-* Unit Tests: [PyTest]()
-* WSGI Server: [Gunicorn]()
-* Package Management: [Pip]()
+* Code Formatting: [Black](https://black.readthedocs.io/en/stable/)
+* Linting/Complexity/Error Detection: [Flake8](https://flake8.pycqa.org/en/latest/)
+* Type Checking: [MyPy](http://mypy-lang.org/)
+* Unit Tests: [PyTest](https://docs.pytest.org/en/latest/)
+* WSGI Server: [Gunicorn](https://gunicorn.org/)
+* Package Management: [Pip](https://pypi.org/project/pip/)
 * Emojis: [Emoji](https://pypi.org/project/emoji/)
-* Dates: []
-
-
-
-
+* Dates: [????]
 
 
 
