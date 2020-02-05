@@ -5,8 +5,6 @@ info:
   description: 'Access to OPG Data'
 
 servers:
-  - description: OPG-Staging
-    url: https://opg-data-api.service.gov.uk/
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/leapday/opg-data/1.0.0
 
@@ -38,42 +36,19 @@ paths:
                   type: object
                   required:
                     - data
-                    - links
                   properties:
                     data:
                       type: object
                       required:
                         - type
                         - attributes
-                        - links
                       properties:
                         type:
                           type: string
+                          pattern: '^reports$'
                           example: reports
                         attributes:
                           $ref: '#/components/schemas/ReportAttributes'
-                        links:
-                          type: object
-                          required:
-                            - self
-                          properties:
-                            self:
-                              type: string
-                              format: url
-                              example: 'https://opg-data-api.service.gov.uk/clients/{caseref}/reports/urn:uuid:cecdb2d7-5d93-8d1c-27b7-b392c2b42fd2'
-                            client:
-                              type: string
-                              format: url
-                              example: 'https://opg-data-api.service.gov.uk/clients/{caseref}'
-                    links:
-                      type: object
-                      properties:
-                        api-docs:
-                          type: string
-                          format: url
-                          example: 'https://opg-data-api.service.gov.uk/developer/'
-                    meta:
-                      type: object
                 report_file:
                   type: string
                   format: base64
@@ -258,7 +233,7 @@ components:
               example: 'clientref'
             pointer:
               type: string
-              example: '/data/attributes/payment_status'
+              example: '/data/attributes/date_submitted'
     ReportAttributes:
       type: object
       required:
@@ -267,6 +242,7 @@ components:
         - reporting_period_to
         - year
         - date_submitted
+        - type
       properties:
         source:
           type: string
@@ -284,10 +260,15 @@ components:
         year:
           type: integer
           format: int32
-          minimum: 2010
-          maximum: 2020
           example: 2019
         date_submitted:
           type: string
           format: date-time
           example: '2020-01-03T09:30:00.001Z'
+        type:
+          type: string
+          enum:
+            - 'PF'
+            - 'HW'
+            - 'NDR'
+          example: 'PF'
