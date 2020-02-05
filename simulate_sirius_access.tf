@@ -6,7 +6,7 @@ module "sirius_access_test_lambda" {
   lambda_handler           = "test_handler"
 
   security_group_ids = [
-    "${aws_security_group.lambda.id}",
+    "${data.aws_security_group.lambda.id}",
   ]
 
   vpc = "${local.vpc_name}"
@@ -17,7 +17,7 @@ module "sirius_access_test_lambda" {
   environment {
     variables {
       CREDENTIALS  = "${data.aws_secretsmanager_secret_version.sirius_credentials.secret_string}"
-      URL_MEMBRANE = "http://${local.membrane_hostname}"
+      URL_MEMBRANE = "http://membrane.${local.target_environment}.ecs"
     }
   }
 
