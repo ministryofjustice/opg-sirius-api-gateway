@@ -22,12 +22,12 @@ locals {
 
   vpc_name = "${lookup(local.vpcs, terraform.workspace)}"
 
-  membrane_hostnames = {
-    "production"  = "membrane.production.ecs"
-    "development" = "membrane.integration.ecs"
+  target_environments = {
+    "production"  = "production"
+    "development" = "integration"
   }
 
-  membrane_hostname = "${lookup(local.membrane_hostnames, terraform.workspace)}"
+  target_environment = "${lookup(local.target_environments, terraform.workspace)}"
 
   target_accounts = {
     "production"  = "649098267436"

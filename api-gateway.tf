@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "resource_policy" {
       type = "AWS"
     }
 
-    actions   = ["execute-api:Invoke"]
+    actions = ["execute-api:Invoke"]
 
     // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
     resources = ["execute-api:/*/GET/lpa-online-tool/*"]
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "resource_policy" {
       type = "AWS"
     }
 
-    actions   = ["execute-api:Invoke"]
+    actions = ["execute-api:Invoke"]
 
     // API Gateway will add all of the rest of the ARN details in for us. Provents a circular dependency.
     resources = ["execute-api:/*/GET/use-an-lpa/*"]
@@ -61,7 +61,7 @@ resource "aws_api_gateway_deployment" "deployment_v1" {
   // The policy is dependent on the module completing, so we can depend on that to mean everything is in place
   depends_on = [
     "aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy",
-    "aws_iam_role_policy_attachment.use_an_lpa_get_sirius_uid_access_policy"
+    "aws_iam_role_policy_attachment.use_an_lpa_get_sirius_uid_access_policy",
   ]
 
   variables {

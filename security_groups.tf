@@ -12,3 +12,13 @@ resource "aws_security_group" "lambda" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+data "aws_security_group" "lambda" {
+  tags {
+    Name = "integration-lambda-membrane-access-${local.target_environment}"
+  }
+  filter {
+    name = "tag:Name"
+    values = ["integration-lambda-membrane-access-${local.target_environment}"]
+  }
+}

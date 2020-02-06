@@ -1,9 +1,8 @@
-
 resource "aws_dynamodb_table" "auth_cache" {
-  name          = "opg-gateway-cache-auth"
-  billing_mode  = "PAY_PER_REQUEST"
+  name         = "opg-gateway-cache-auth"
+  billing_mode = "PAY_PER_REQUEST"
 
-  hash_key       = "id"
+  hash_key = "id"
 
   attribute {
     name = "id"
@@ -18,10 +17,10 @@ resource "aws_dynamodb_table" "auth_cache" {
 }
 
 resource "aws_dynamodb_table" "data_cache" {
-  name          = "opg-gateway-cache-data"
-  billing_mode  = "PAY_PER_REQUEST"
+  name         = "opg-gateway-cache-data"
+  billing_mode = "PAY_PER_REQUEST"
 
-  hash_key       = "id"
+  hash_key = "id"
 
   attribute {
     name = "id"
@@ -30,7 +29,7 @@ resource "aws_dynamodb_table" "data_cache" {
 
   ttl {
     attribute_name = "expires"
-    enabled = true
+    enabled        = true
   }
 
   tags = "${local.default_tags}"
