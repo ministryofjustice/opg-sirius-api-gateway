@@ -17,22 +17,25 @@ We need to establish a domain structure which
 
 We will adopt the pattern:
 
-[account-type].[api-domain]/[restapi-name]
+https://[pr].[env].[integration].[api-domain]
 
-#### [account-type]
+### examples
 
-* dev
-* preprod
-* prod
+#### root:
 
-#### [api-domain]
+* https://api.opg.service.justice.gov.uk
 
-* api.sirius.opg.digital
+#### integration:
 
-#### examples
+* https://deputy-reporting.api.opg.service.justice.gov.uk
 
-* https://dev.api.sirius.opg.digital/health
-* https://preprod.api.sirius.opg.digital/health
-* https://api.sirius.opg.digital/health
+#### environments per integration:
+
+* https://pre.deputy-reporting.api.opg.service.justice.gov.uk
+* https://dev.deputy-reporting.api.opg.service.justice.gov.uk
+
+#### pr raised on an environment per integration:
+
+* https://pr-1234.dev.deputy-reporting.api.opg.service.justice.gov.uk
 
 ## Consequences
