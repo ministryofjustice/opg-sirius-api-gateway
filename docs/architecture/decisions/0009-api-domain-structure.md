@@ -17,7 +17,11 @@ We need to establish a domain structure which
 
 We will adopt the pattern:
 
-https://[pr].[env].[integration].[api-domain]
+[pull-request-id].[account-stage].[microservice-domain].api.opg.service.justive.gov.uk
+
+Where [pull-request-id] is for ephemeral dev environments.
+Where [account-stage] is the stage in our path to live/accounts i.e. dev,pre and empty for prod services.
+Where [microservice-domain] is the scoped domain of the microservice/integration in in question.
 
 ### examples
 
