@@ -13,20 +13,35 @@ Proposed
 
 ## Decision
 
+
 #### Code Formatting
 
-* Follow [PEP-8](https://www.python.org/dev/peps/pep-0008/) and the [Google Python Style Guide](http://google.github.io/styleguide/pyguide.html) for code formatting
-* Use static-typing as per [PEP-484](https://www.python.org/dev/peps/pep-0484/) wherever it is reasonable
+* Follow [PEP-8](https://www.python.org/dev/peps/pep-0008/) 
 * Use pre-commit hooks to enforce these standards where possible 
 
+#### Types
 
-#### Code Style
-* See the [Python Style Guide](../supporting-notes/python-style-guide.md)
+* Type checking is a bit overkill for small single functions, so we will not enforce this.
+
+#### General Style Guide
+* Make your comments verbose, not your code, eg:
+    * Use list comprehensions and map() where it is sensible to instead of a loop
+    * Use ternary operator
+* Only use f-strings for string interpolation
+* Catch  named errors, don't just use generic `except` blocks
+* Be sensible with log levels, debug is useful but we don't need to know *everything*
+
+#### Project Structure
+* Separate tests out into their own folder 
 
 #### Documentation
 
 * Follow [PEP-257](https://www.python.org/dev/peps/pep-0257/) for docstring formatting using [reStructured Text](https://www.writethedocs.org/guide/writing/reStructuredText/)
 * Generate documentation with Sphinx
+
+
+#### AWS Lambda Specific Guidelines 
+* See [Amazon guidelines](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
 
 #### Standard Tools
 * Code Formatting: [Black](https://black.readthedocs.io/en/stable/)
@@ -36,10 +51,14 @@ Proposed
 * WSGI Server: [Gunicorn](https://gunicorn.org/)
 * Package Management: [Pip](https://pypi.org/project/pip/)
 * Emojis: [Emoji](https://pypi.org/project/emoji/)
-* Dates: [????]
+* Dates: TBD
 
 
 
 
 ## Consequences
+
+* Reduced code complexity
+* Code that is easy to test 
+* Code that is consistent and therefore easy maintain by any developer
 
