@@ -1,6 +1,6 @@
-# 9. Python Best Practices
+# 11. Python Best Practices
 
-Date: 2020-02-03
+Date: 2020-02-11
 
 ## Status
 
@@ -31,8 +31,6 @@ Proposed
 * Catch  named errors, don't just use generic `except` blocks
 * Be sensible with log levels, debug is useful but we don't need to know *everything*
 
-#### Project Structure
-* Separate tests out into their own folder 
 
 #### Documentation
 
