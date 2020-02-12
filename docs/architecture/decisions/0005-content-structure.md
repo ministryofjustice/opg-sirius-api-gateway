@@ -90,7 +90,7 @@ Namely:
             "links": {
                 "self": "https://api.example.com/articles/1",
                 "next": "https://api.example.com/articles/2"
-            }
+            },
             "relationships": {
                 ...
             }
@@ -105,12 +105,12 @@ Namely:
             "links": {
                 "self": "https://api.example.com/articles/2",
                 "prev": "https://api.example.com/articles/1"
-            }
+            },
             "relationships": {
                 ...
             }
         }
-    ]
+    ],
     "links": {},
     "meta": {}
 }
