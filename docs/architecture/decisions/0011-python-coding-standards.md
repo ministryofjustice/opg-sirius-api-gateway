@@ -46,7 +46,6 @@ Proposed
 * Linting/Complexity/Error Detection: [Flake8](https://flake8.pycqa.org/en/latest/)
 * Type Checking: [MyPy](http://mypy-lang.org/)
 * Unit Tests: [PyTest](https://docs.pytest.org/en/latest/)
-* WSGI Server: [Gunicorn](https://gunicorn.org/)
 * Package Management: [Pip](https://pypi.org/project/pip/)
 * Emojis: [Emoji](https://pypi.org/project/emoji/)
 * Dates: TBD
