@@ -77,6 +77,9 @@ locals {
     "arn:aws:iam::631181914621:user/seema.menon",
     "arn:aws:iam::631181914621:user/gemma.taylor",
     "arn:aws:iam::631181914621:user/pam.crosby",
+    "arn:aws:iam::367815980639:role/operator",       // ual dev operator
+    "arn:aws:iam::888228022356:role/operator",       // ual preprod operator
+    "arn:aws:iam::690083044361:role/operator",       // ual prod operator
   ]
 
   default_tags = {
