@@ -57,7 +57,7 @@ locals {
 
   online_lpa_tool_production_api_gateway_allowed_roles = [
     "arn:aws:iam::980242665824:role/production-api-task-role", // ecs lpa prod
-    "arn:aws:iam::980242665824:role/breakglass",               // lpa prod operator
+    "arn:aws:iam::980242665824:role/operator",                 // lpa prod operator
   ]
 
   api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
@@ -70,8 +70,8 @@ locals {
   ]
 
   use_an_lpa_production_api_gateway_allowed_roles = [
-    "arn:aws:iam::690083044361:root",            // Prod
-    "arn:aws:iam::690083044361:role/breakglass", // ual prod operator
+    "arn:aws:iam::690083044361:root",          // Prod
+    "arn:aws:iam::690083044361:role/operator", // ual prod operator
   ]
 
   api_gateway_allowed_roles_use_an_lpa = "${split(",", terraform.workspace == "development" ? join(",", local.use_an_lpa_development_api_gateway_allowed_roles) : join(",", local.use_an_lpa_production_api_gateway_allowed_roles))}"
