@@ -51,7 +51,7 @@ locals {
   online_lpa_tool_development_api_gateway_allowed_roles = [
     "arn:aws:iam::050256574573:root",                             // ecs lpa dev
     "arn:aws:iam::987830934591:role/preproduction-api-task-role", // ecs lpa preprod
-    "arn:aws:iam::050256574573::role/operator",                   // lpa dev operator
+    "arn:aws:iam::050256574573:role/operator",                    // lpa dev operator
     "arn:aws:iam::987830934591:role/operator",                    // lpa preprod operator
   ]
 
