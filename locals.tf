@@ -60,12 +60,15 @@ locals {
   api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
 
   use_an_lpa_development_api_gateway_allowed_roles = [
-    "arn:aws:iam::367815980639:root", // Dev
-    "arn:aws:iam::888228022356:root", // Preprod
+    "arn:aws:iam::367815980639:root",          // Dev
+    "arn:aws:iam::888228022356:root",          // Preprod
+    "arn:aws:iam::367815980639:role/operator", // ual dev operator
+    "arn:aws:iam::888228022356:role/operator", // ual preprod operator
   ]
 
   use_an_lpa_production_api_gateway_allowed_roles = [
-    "arn:aws:iam::690083044361:root", // Prod
+    "arn:aws:iam::690083044361:root",          // Prod
+    "arn:aws:iam::690083044361:role/operator", // ual prod operator
   ]
 
   api_gateway_allowed_roles_use_an_lpa = "${split(",", terraform.workspace == "development" ? join(",", local.use_an_lpa_development_api_gateway_allowed_roles) : join(",", local.use_an_lpa_production_api_gateway_allowed_roles))}"
@@ -77,9 +80,6 @@ locals {
     "arn:aws:iam::631181914621:user/seema.menon",
     "arn:aws:iam::631181914621:user/gemma.taylor",
     "arn:aws:iam::631181914621:user/pam.crosby",
-    "arn:aws:iam::367815980639:role/operator",       // ual dev operator
-    "arn:aws:iam::888228022356:role/operator",       // ual preprod operator
-    "arn:aws:iam::690083044361:role/operator",       // ual prod operator
   ]
 
   default_tags = {
