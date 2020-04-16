@@ -51,21 +51,27 @@ locals {
   online_lpa_tool_development_api_gateway_allowed_roles = [
     "arn:aws:iam::050256574573:root",                             // ecs lpa dev
     "arn:aws:iam::987830934591:role/preproduction-api-task-role", // ecs lpa preprod
+    "arn:aws:iam::050256574573:role/operator",                    // lpa dev operator
+    "arn:aws:iam::987830934591:role/operator",                    // lpa preprod operator
   ]
 
   online_lpa_tool_production_api_gateway_allowed_roles = [
     "arn:aws:iam::980242665824:role/production-api-task-role", // ecs lpa prod
+    "arn:aws:iam::980242665824:role/operator",                 // lpa prod operator
   ]
 
   api_gateway_allowed_roles_online_lpa_tool = "${split(",", terraform.workspace == "development" ? join(",", local.online_lpa_tool_development_api_gateway_allowed_roles) : join(",", local.online_lpa_tool_production_api_gateway_allowed_roles))}"
 
   use_an_lpa_development_api_gateway_allowed_roles = [
-    "arn:aws:iam::367815980639:root", // Dev
-    "arn:aws:iam::888228022356:root", // Preprod
+    "arn:aws:iam::367815980639:root",          // Dev
+    "arn:aws:iam::888228022356:root",          // Preprod
+    "arn:aws:iam::367815980639:role/operator", // ual dev operator
+    "arn:aws:iam::888228022356:role/operator", // ual preprod operator
   ]
 
   use_an_lpa_production_api_gateway_allowed_roles = [
-    "arn:aws:iam::690083044361:root", // Prod
+    "arn:aws:iam::690083044361:root",          // Prod
+    "arn:aws:iam::690083044361:role/operator", // ual prod operator
   ]
 
   api_gateway_allowed_roles_use_an_lpa = "${split(",", terraform.workspace == "development" ? join(",", local.use_an_lpa_development_api_gateway_allowed_roles) : join(",", local.use_an_lpa_production_api_gateway_allowed_roles))}"
