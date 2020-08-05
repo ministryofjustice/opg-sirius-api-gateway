@@ -83,11 +83,58 @@ paths:
         '429':
           description: API Gateway throttling limit exceeded
         '500':
+          description: Unhandled internal exception within OPG Gateway
+        '502':
+          description: The Sirius data provider returned an exception
+        '504':
+          description: The Sirius data provider timed out
+  /use-an-lpa/lpas/{sirius_uid}:
+    get:
+      security:
+      - sigv4: []
+      parameters:
+        - in: path
+          name: sirius_uid
+          schema:
+            type: string
+            pattern: '^7\d{11}$'
+          required: true
+          description: Online Tool ID
+          example: 700000000001
+      responses:
+        '200':
+          description: LPA details returned for the requested ID
+          headers:
+            Age:
+              schema:
+                type: integer
+              description: |
+                The time elapsed, measured in seconds, since the returned response body was retrieved from Sirius.
+                Under normal circumstances this will be zero (0), indicating the response represents the current 'live' state within Sirius.
+                In the case that the Gateway was unable to retrieve an up to date response from Sirius, it will make best efforts to return a cached version.
+                It's up to the consumer of the API to determine if they wish to use a response based on its age.
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/Lpa'
+        '404':
+          description: An LPA with the passed ID Not Found
+        '400':
+          description: Bad request
+        '403':
+          description: Authentication failed
+        '429':
+          description: API Gateway throttling limit exceeded
+        '500':
           description: Unhandeled internal exception within OPG Gateway
         '502':
           description: The Sirius data provider returned an exception
         '504':
           description: The Sirius data provider timed out
+
 components:
   securitySchemes:
     sigv4:
@@ -95,3 +142,225 @@ components:
       name: "Authorization"
       in: "header"
       x-amazon-apigateway-authtype: "awsSigv4"
+  schemas:
+    Lpa:
+      type: object
+      required:
+        - id
+        - uId
+        - applicationType
+        - caseSubtype
+        - receiptDate
+        - rejectedDate
+        - registrationDate
+        - cancellationDate
+        - status
+        - caseAttorneySingular
+        - caseAttorneyJointlyAndSeverally
+        - caseAttorneyJointly
+        - caseAttorneyJointlyAndJointlyAndSeverally
+        - applicationHasRestrictions
+        - applicationHasGuidance
+        - lpaDonorSignatureDate
+        - lifeSustainingTreatment
+        - onlineLpaId
+        - attorneyActDecisions
+        - donor
+        - attorneys
+        - replacementAttorneys
+        - certificateProviders
+        - trustCorporations
+      properties:
+        id:
+          type: integer
+        uId:
+          type: string
+          example: '7000-0000-0054'
+          description: e.g. 7000-0000-0054
+        applicationType:
+          type: string
+          enum: [Online, Classic]
+        caseSubtype:
+          type: string
+          enum: [hw, pfa]
+          minLength: 1
+          maxLength: 3
+        receiptDate:
+          type: string
+          format: date
+          description: The date the LPA was created
+          example: '2018-06-30'
+        rejectedDate:
+          type: string
+          format: date
+          description: The date the LPA was rejected
+          example: '2018-06-30'
+        registrationDate:
+          type: string
+          format: date
+          description: The date the LPA was registered
+          example: '2018-06-30'
+        cancellationDate:
+          type: string
+          format: date
+          description: The date the LPA was cancelled
+          example: '2018-06-30'
+        status:
+          type: string
+          enum: [Cancelled, Imperfect, Invalid, Pending, Perfect, Rejected, Revoked, Suspended, With COP, Withdrawn, Registered]
+          minLength: 1
+          maxLength: 10
+        caseAttorneySingular:
+          type: boolean
+        caseAttorneyJointlyAndSeverally:
+          type: boolean
+        caseAttorneyJointly:
+          type: boolean
+        caseAttorneyJointlyAndJointlyAndSeverally:
+          type: boolean
+        applicationHasRestrictions:
+          type: boolean
+        applicationHasGuidance:
+          type: boolean
+        lpaDonorSignatureDate:
+          type: string
+          format: date
+          example: '2018-06-30'
+        lifeSustainingTreatment:
+          type: string
+          enum: ['Option A', 'Option B', null]
+        onlineLpaId:
+          type: string
+          example: ABC123
+        attorneyActDecisions:
+          type: string
+          enum: ['When Registered', 'Loss of capacity', null]
+        donor:
+          $ref: '#/components/schemas/CaseActor'
+        attorneys:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseActor'
+        replacementAttorneys:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseActor'
+        trustCorporations:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseActor'
+        certificateProviders:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseActor'
+    CaseActor:
+      type: object
+      required:
+        - id
+        - uId
+        - email
+        - dob
+        - salutation
+        - firstname
+        - middlenames
+        - surname
+        - companyName
+        - systemStatus
+        - addresses
+      properties:
+        id:
+          type: integer
+          description: The case actor's database ID
+        uId:
+          type: string
+          example: '7000-0000-0054'
+          description: The case actor's unique ID (e.g. 7000-0000-0054)
+        email:
+          type: string
+          description: The case actor's contact email address
+          maxLength: 255
+        dob:
+          type: string
+          description: The case actor's date of birth
+          example: '1980-10-10'
+        salutation:
+          type: string
+          description: The case actor's salutation
+          example: Mrs
+        firstname:
+          type: string
+          description: The case actor's first name
+          example: Ian
+          maxLength: 255
+        middlenames:
+          type: string
+          description: The case actor's last name
+          example: Deputy
+          maxLength: 255
+        surname:
+          type: string
+          description: The case actor's last name
+          example: Deputy
+          maxLength: 255
+        companyName:
+          type: string
+          description: The case actor's company name (if relevant)
+          example: ABC Ltd
+          maxLength: 255
+        systemStatus:
+          type: boolean
+          description: The active/inactive status of the case actor
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+    Address:
+      required:
+        - id
+        - town
+        - county
+        - postcode
+        - country
+        - type
+        - addressLine1
+        - addressLine2
+        - addressLine3
+      properties:
+        id:
+          type: integer
+          description: The address database ID
+        town:
+          type: string
+          description: The town
+          maxLength: 255
+        county:
+          type: string
+          description: The county
+          maxLength: 255
+        postcode:
+          type: string
+          description: The postcode
+          maxLength: 255
+        country:
+          type: string
+          description: Address country
+          example: UK
+          maxLength: 255
+        type:
+          type: string
+          description: Address type
+          example: Primary
+          enum: [Primary]
+          maxLength: 7
+        addressLine1:
+          type: string
+          description: The first line of the address
+          maxLength: 255
+        addressLine2:
+          type: string
+          description: The second line of the address
+          maxLength: 255
+        addressLine3:
+          type: string
+          description: The third line of the address
+          maxLength: 255
