@@ -109,7 +109,7 @@ data "aws_route53_zone" "sirius_opg_digital" {
 }
 
 data "aws_acm_certificate" "sirius_opg_digital" {
-  domain      = "*.${local.opg_sirius_hosted_zone}"
+  domain      = "${local.opg_sirius_hosted_zone}"
   types       = ["AMAZON_ISSUED"]
   most_recent = true
 }
