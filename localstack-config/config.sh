@@ -1,9 +1,11 @@
 #!/bin/sh
 
+endpoint=${AWS_ENDPOINT_DYNAMODB:-"gateway-localstack:14569"}
+
 #
 #  Setup DynamoDB
 #
-/usr/local/bin/waitforit -address=tcp://gateway-localstack:14569 -timeout 60 -retry 6000 -debug
+/usr/local/bin/waitforit -address=tcp://$endpoint -timeout 60 -retry 6000 -debug
 
 if [ $? -ne 0 ]; then
     echo "DynamoDB failed to start"
@@ -14,7 +16,7 @@ else
     --key-schema AttributeName=id,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 \
     --region eu-west-1 \
-    --endpoint http://gateway-localstack:14569
+    --endpoint http://$endpoint
 
     aws dynamodb create-table \
     --attribute-definitions AttributeName=id,AttributeType=S \
@@ -22,11 +24,11 @@ else
     --key-schema AttributeName=id,KeyType=HASH \
     --provisioned-throughput ReadCapacityUnits=10,WriteCapacityUnits=10 \
     --region eu-west-1 \
-    --endpoint http://gateway-localstack:14569
+    --endpoint http://$endpoint
 
     aws dynamodb update-time-to-live \
     --table-name opg-gateway-cache-data \
     --time-to-live-specification "Enabled=true, AttributeName=expires" \
     --region eu-west-1 \
-    --endpoint http://gateway-localstack:14569
+    --endpoint http://$endpoint
 fi
