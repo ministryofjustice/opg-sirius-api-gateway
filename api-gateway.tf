@@ -62,6 +62,7 @@ resource "aws_api_gateway_deployment" "deployment_v1" {
   depends_on = [
     "aws_iam_role_policy_attachment.lpa_online_tool_get_lpas_id_access_policy",
     "aws_iam_role_policy_attachment.use_an_lpa_get_sirius_uid_access_policy",
+    "aws_iam_role_policy_attachment.lpas_request_code_access_policy",
   ]
 
   variables {

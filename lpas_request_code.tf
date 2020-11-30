@@ -26,22 +26,18 @@ module "lpas_request_code_lambda" {
   tags = "${local.default_tags}"
 }
 
-module "use_an_lpa_lpas_request_code" {
-  source = "modules/api_gateway_get_collection_id"
+module "lpas_request_code_gateway" {
+  source = "modules/lpas_request_code"
 
   api_gateway_id               = "${aws_api_gateway_rest_api.opg_api_gateway.id}"
   api_gateway_root_resource_id = "${aws_api_gateway_rest_api.opg_api_gateway.root_resource_id}"
   api_gateway_execution_arn    = "${aws_api_gateway_rest_api.opg_api_gateway.execution_arn}"
 
-  gateway_path_product    = "use-an-lpa2" // change me
-  gateway_path_collection = "requestCode"
-  gateway_path_id_name    = "{sirius_uid}"
-
   lambda_arn  = "${module.lpas_request_code_lambda.lambda_arn}"
   lambda_name = "${module.lpas_request_code_lambda.lambda_name}"
 }
 
-resource "aws_iam_role_policy_attachment" "use_an_lpa_lpas_request_code_access_policy" {
+resource "aws_iam_role_policy_attachment" "lpas_request_code_access_policy" {
   role       = "${aws_iam_role.use_an_lpa_role.name}"
-  policy_arn = "${module.use_an_lpa_lpas_request_code.access_policy_arn}"
+  policy_arn = "${module.lpas_request_code_gateway.access_policy_arn}"
 }
