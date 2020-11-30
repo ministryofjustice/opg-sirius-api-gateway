@@ -32,6 +32,33 @@ class SiriusProvider:
         url = self._membrane_url + '/api/public/v1/lpas?lpa-online-tool-id=%s' % online_tool_id
         return self._get_lpa(online_tool_id, url)
 
+    def request_code(self, actor_uid, case_uid):
+        url = self._membrane_url + '/api/public/v1/lpas/requestCode'
+        data = {'actor_uid': actor_uid, 'case_uid': case_uid}
+
+        try:
+            resp, cached_token = self._attempt_post(url=url, json=data, accept_cached_token=True)
+
+            # If we get a 401 Unauthorized, try again with the cached token
+            if resp.status_code == 401 and cached_token is True:
+                logging.warning('Request code failed with cached token. Refreshing token.')
+                resp, cached_token = self._attempt_post(url=url, json=data, accept_cached_token=False)
+
+            if resp.status_code == 204:
+                return ()
+
+            raise UpstreamExceptionError('Sirius returned an unexpected response %d - %s' % (resp.status_code, resp.text))
+
+        except SiriusAuthenticationError:
+            raise InternalExceptionError('Sirius authentication error')
+
+        except exceptions.Timeout:
+            raise UpstreamTimeoutError
+
+        except exceptions.RequestException as e:
+            raise UpstreamExceptionError(e)
+
+
     def _get_lpa(self, id_value, url):
         """
         Performs the lookup of the requested LPA.
@@ -75,6 +102,15 @@ class SiriusProvider:
         s = Session()
 
         req = Request('GET', url, headers={'host': 'membrane'}).prepare()
+
+        req, cached = self._authenticator.authorise_request(req, accept_cached_token=accept_cached_token)
+
+        return s.send(req, verify=False, timeout=(3.05, 5)), cached
+
+    def _attempt_post(self, url, json, accept_cached_token):
+        s = Session()
+
+        req = Request('POST', url, json=json, headers={'host': 'membrane'}).prepare()
 
         req, cached = self._authenticator.authorise_request(req, accept_cached_token=accept_cached_token)
 

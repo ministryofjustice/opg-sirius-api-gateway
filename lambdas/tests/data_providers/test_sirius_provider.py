@@ -208,3 +208,103 @@ class TestSiriusProvider(object):
         # No attempt should be made to acquire an auth token.
         # (And thus no attempt will be made to use it)
         assert mock_authenticator.authorise_request.call_count == 0
+
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
+    @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
+    @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
+    def test_request_code_with_first_time_valid_token(self, mock_authenticator):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.POST, os.environ['URL_MEMBRANE'] + '/api/public/v1/lpas/requestCode',
+                     status=204, match=[responses.json_params_matcher({'actor_uid': '70001', 'case_uid': '70005'})])
+
+            def authorise_request_response(req, accept_cached_token):
+                return req, False
+
+            mock_authenticator.authorise_request = mock.MagicMock(side_effect=authorise_request_response)
+
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
+
+            result = p.request_code('70001', '70005')
+
+            assert result == ()
+            mock_authenticator.authorise_request.assert_called_once()
+
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
+    @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
+    @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
+    def test_request_code_with_second_time_valid_token(self, mock_authenticator):
+        with responses.RequestsMock() as rsps:
+            lookup_http_response_response_order = [401, 204]
+
+            def lookup_http_response(request):
+                return lookup_http_response_response_order.pop(0), {}, json.dumps({})
+
+            rsps.add_callback(rsps.POST, os.environ['URL_MEMBRANE'] + '/api/public/v1/lpas/requestCode',
+                callback=lookup_http_response, content_type='application/json')
+
+            # expect only first request to accept cached token
+            authorise_request_response_order = [True, False]
+
+            def authorise_request_response(req, accept_cached_token):
+                expected = authorise_request_response_order.pop(0)
+
+                assert accept_cached_token == expected
+                return req, expected
+
+            mock_authenticator.authorise_request = mock.MagicMock(side_effect=authorise_request_response)
+
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
+
+            result = p.request_code('70001', '70005')
+
+            assert result == ()
+            assert mock_authenticator.authorise_request.call_count == 2
+
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
+    @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
+    @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
+    def test_request_code_with_no_valid_token(self, mock_authenticator):
+        with responses.RequestsMock() as rsps:
+            lookup_http_response_response_order = [401, 401]
+
+            def lookup_http_response(request):
+                return lookup_http_response_response_order.pop(0), {}, json.dumps({})
+
+            rsps.add_callback(rsps.POST, os.environ['URL_MEMBRANE'] + '/api/public/v1/lpas/requestCode',
+                callback=lookup_http_response, content_type='application/json')
+
+            # expect only first request to accept cached token
+            authorise_request_response_order = [True, False]
+
+            def authorise_request_response(req, accept_cached_token):
+                return req, authorise_request_response_order.pop(0)
+
+            mock_authenticator.authorise_request = mock.MagicMock(side_effect=authorise_request_response)
+
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
+
+            with pytest.raises(UpstreamExceptionError):
+                p.request_code('70001', '70005')
+
+            assert mock_authenticator.authorise_request.call_count == 2
+
+    @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
+    @mock.patch.dict('os.environ', {'URL_MEMBRANE': 'https://example.com'})
+    @mock.patch.dict('os.environ', {'CREDENTIALS': json.dumps({'email': 'test@example.com', 'password': 'password'})})
+    def test_request_code_with_no_valid_token_and_no_cached_token(self, mock_authenticator):
+        with responses.RequestsMock() as rsps:
+            rsps.add(rsps.POST, os.environ['URL_MEMBRANE'] + '/api/public/v1/lpas/requestCode',
+                status=401, json=[])
+
+            def authorise_request_response(req, accept_cached_token):
+                return req, False
+
+            mock_authenticator.authorise_request = mock.MagicMock(side_effect=authorise_request_response)
+
+            p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
+
+            with pytest.raises(UpstreamExceptionError):
+                p.request_code('70001', '70005')
+
+            assert mock_authenticator.authorise_request.call_count == 1
+
