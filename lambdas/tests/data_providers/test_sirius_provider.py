@@ -215,7 +215,7 @@ class TestSiriusProvider(object):
     def test_request_code_with_first_time_valid_token(self, mock_authenticator):
         with responses.RequestsMock() as rsps:
             rsps.add(rsps.POST, os.environ['URL_MEMBRANE'] + '/api/public/v1/lpas/requestCode',
-                     status=204, match=[responses.json_params_matcher({'actor_uid': '70001', 'case_uid': '70005'})])
+                     status=204, match=[responses.json_params_matcher({'actor_uid': 70001, 'case_uid': 70005})])
 
             def authorise_request_response(req, accept_cached_token):
                 return req, False
@@ -224,9 +224,9 @@ class TestSiriusProvider(object):
 
             p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
-            result = p.request_code('70001', '70005')
+            result = p.request_code('{"actor_uid": 70001, "case_uid": 70005}')
 
-            assert result == ()
+            assert result == None
             mock_authenticator.authorise_request.assert_called_once()
 
     @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
@@ -255,9 +255,9 @@ class TestSiriusProvider(object):
 
             p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
-            result = p.request_code('70001', '70005')
+            result = p.request_code('{"actor_uid": 70001, "case_uid": 70005}')
 
-            assert result == ()
+            assert result == None
             assert mock_authenticator.authorise_request.call_count == 2
 
     @mock.patch('data_providers.authentication.SiriusAuthenticator', autospec=True)
@@ -284,7 +284,7 @@ class TestSiriusProvider(object):
             p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
             with pytest.raises(UpstreamExceptionError):
-                p.request_code('70001', '70005')
+                p.request_code('{"actor_uid": 70001, "case_uid": 70005}')
 
             assert mock_authenticator.authorise_request.call_count == 2
 
@@ -304,7 +304,7 @@ class TestSiriusProvider(object):
             p = SiriusProvider(mock_authenticator, os.environ['URL_MEMBRANE'], False)
 
             with pytest.raises(UpstreamExceptionError):
-                p.request_code('70001', '70005')
+                p.request_code('{"actor_uid": 70001, "case_uid": 70005}')
 
             assert mock_authenticator.authorise_request.call_count == 1
 
