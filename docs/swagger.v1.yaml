@@ -134,7 +134,31 @@ paths:
           description: The Sirius data provider returned an exception
         '504':
           description: The Sirius data provider timed out
-
+  /requestCode:
+    post:
+      description: |
+        Sends an Activation Key Requested letter to the actor with a code to add the case.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - case_uid
+                - actor_uid
+              properties:
+                actor_uid:
+                  type: integer
+                case_uid:
+                  type: integer
+      responses:
+        '200':
+          description: Letter was successfully enqueued
+        '400':
+          description: Invalid request
+        '500':
+          description: Unexpected error
 components:
   securitySchemes:
     sigv4:
