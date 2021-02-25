@@ -40,6 +40,10 @@ def test_format_lpa_collection_by_id_with_only_results_expected_fields(response)
         'receiptDate': 'test',
         'registrationDate': 'test',
         'rejectedDate': 'test',
+        'cancellationDate': 'test',
+        'invalidDate': 'test',
+        'withdrawnDate': 'test',
+        'dispatchDate': 'test',
         'status': 'test',
         'should-not-be-returned-2': 'test',
     }
@@ -74,6 +78,10 @@ def test_format_lpa_collection_by_id_with_sirius_uids(response):
         'receiptDate': 'test',
         'registrationDate': 'test',
         'rejectedDate': 'test',
+        'cancellationDate': 'test',
+        'invalidDate': 'test',
+        'withdrawnDate': 'test',
+        'dispatchDate': 'test',
         'status': 'test',
         'uId': '7000-8423-8541',
         'attorneys': [
