@@ -5,6 +5,9 @@
       "receiptDate": "2018-06-30",
       "registrationDate": null,
       "rejectedDate": null,
+      "cancellationDate": null,
+      "invalidDate": null,
+      "withdrawnDate": null,
       "status": "Pending"
   },
   {
@@ -13,6 +16,9 @@
       "receiptDate": "2018-06-30",
       "registrationDate": "2018-07-12",
       "rejectedDate": null,
+      "cancellationDate": null,
+      "invalidDate": null,
+      "withdrawnDate": null,
       "status": "Perfect"
   },
   {
@@ -21,6 +27,9 @@
       "receiptDate": "2018-06-30",
       "registrationDate": null,
       "rejectedDate": "2018-07-12",
+      "cancellationDate": null,
+      "invalidDate": null,
+      "withdrawnDate": null,
       "status": "Rejected"
   }
 ]

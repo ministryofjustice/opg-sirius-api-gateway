@@ -154,6 +154,8 @@ components:
         - rejectedDate
         - registrationDate
         - cancellationDate
+        - invalidDate
+        - withdrawnDate
         - status
         - caseAttorneySingular
         - caseAttorneyJointlyAndSeverally
@@ -204,6 +206,16 @@ components:
           type: string
           format: date
           description: The date the LPA was cancelled
+          example: '2018-06-30'
+        invalidDate:
+          type: string
+          format: date
+          description: The date the LPA was marked invalid
+          example: '2018-06-30'
+        withdrawnDate:
+          type: string
+          format: date
+          description: The date the LPA was withdrawn
           example: '2018-06-30'
         status:
           type: string

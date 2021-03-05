@@ -10,7 +10,7 @@ def format_lpa_collection_by_id(event, response):
     fields = []
 
     if event['resource'].startswith('/lpa-online-tool'):
-        fields = ['onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'status']
+        fields = ['onlineLpaId', 'receiptDate', 'registrationDate', 'rejectedDate', 'cancellationDate', 'invalidDate', 'withdrawnDate', 'status']
 
     # Filter the return fields
     if len(fields) > 0:
