@@ -45,15 +45,28 @@ paths:
                 type: object
                 required:
                   - onlineLpaId
+                  - cancellationDate
+                  - invalidDate
                   - receiptDate
                   - registrationDate
                   - rejectedDate
                   - status
+                  - withdrawnDate
                 properties:
                   onlineLpaId:
                     type: string
                     example: A22486562341
                     pattern: '^A\d{11}$'
+                  cancellationDate:
+                    type: string
+                    format: date
+                    description: The date the LPA was cancelled
+                    example: '2018-06-30'
+                  invalidDate:
+                    type: string
+                    format: date
+                    description: The date the LPA was marked invalid
+                    example: '2018-06-30'
                   receiptDate:
                     type: string
                     format: date
@@ -74,6 +87,12 @@ paths:
                   status:
                     type: string
                     enum: [Cancelled, Imperfect, Invalid, Pending, Perfect, Rejected, Revoked, Withdrawn, Registered]
+                  withdrawnDate:
+                    type: string
+                    format: date
+                    nullable: true
+                    description: The date the LPA was withdrawn
+                    example: '2018-06-30'
         '404':
           description: An LPA with the passed ID Not Found
         '400':
