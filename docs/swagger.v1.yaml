@@ -60,11 +60,13 @@ paths:
                   cancellationDate:
                     type: string
                     format: date
+                    nullable: true
                     description: The date the LPA was cancelled
                     example: '2018-06-30'
                   invalidDate:
                     type: string
                     format: date
+                    nullable: true
                     description: The date the LPA was marked invalid
                     example: '2018-06-30'
                   receiptDate:
