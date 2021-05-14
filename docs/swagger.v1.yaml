@@ -52,6 +52,7 @@ paths:
                   - rejectedDate
                   - status
                   - withdrawnDate
+                  - dispatchDate
                 properties:
                   onlineLpaId:
                     type: string
@@ -94,6 +95,12 @@ paths:
                     format: date
                     nullable: true
                     description: The date the LPA was withdrawn
+                    example: '2018-06-30'
+                  dispatchDate:
+                    type: string
+                    format: date
+                    nullable: true
+                    description: The date the LPA was dispatched
                     example: '2018-06-30'
         '404':
           description: An LPA with the passed ID Not Found
@@ -177,6 +184,7 @@ components:
         - cancellationDate
         - invalidDate
         - withdrawnDate
+        - dispatchDate
         - status
         - caseAttorneySingular
         - caseAttorneyJointlyAndSeverally
@@ -237,6 +245,11 @@ components:
           type: string
           format: date
           description: The date the LPA was withdrawn
+          example: '2018-06-30'
+        dispatchDate:
+          type: string
+          format: date
+          description: The date the LPA was dispatched
           example: '2018-06-30'
         status:
           type: string

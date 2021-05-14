@@ -8,6 +8,7 @@
       "cancellationDate": null,
       "invalidDate": null,
       "withdrawnDate": null,
+      "dispatchDate": null,
       "status": "Pending"
   },
   {
@@ -19,6 +20,7 @@
       "cancellationDate": null,
       "invalidDate": null,
       "withdrawnDate": null,
+      "dispatchDate": null,
       "status": "Perfect"
   },
   {
@@ -30,6 +32,7 @@
       "cancellationDate": null,
       "invalidDate": null,
       "withdrawnDate": null,
+      "dispatchDate": null,
       "status": "Rejected"
   }
 ]
